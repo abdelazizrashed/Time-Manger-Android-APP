@@ -20,4 +20,33 @@ public class EventSystem : MonoBehaviour
             onChangePage(pageTitle);
         }
     }
+
+    ///// <summary>
+    ///// This event gets triggered when a list of Tasks list is needed.
+    ///// A method attached to this event will get the list and then trigger
+    ///// an event which will carry the list.
+    ///// </summary>
+    //public event Action needTasksLists;
+
+    //public void NeedTasksList()
+    //{
+    //    if (needTasksLists != null)
+    //    {
+    //        needTasksLists();
+    //    }
+    //}
+
+    ///// <summary>
+    ///// This event get triggered when a list of tasks list is needed.
+    ///// This event will carry the list needed.
+    ///// </summary>
+    //public event Action<TasksListModel[]> getTasksLists;
+    //public void GetTasksLists(TasksListModel[] lists)
+    //{
+    //    if (getTasksLists != null)
+    //    {
+    //        getTasksLists(lists);
+    //    }
+    //}
+
 }

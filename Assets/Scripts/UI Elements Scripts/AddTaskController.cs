@@ -14,6 +14,7 @@ public class AddTaskController : MonoBehaviour
     void Start()
     {
         AddListnersToBtns();
+        //AttachMethodsToEvents();
         OnStartup();
     }
 
@@ -21,6 +22,11 @@ public class AddTaskController : MonoBehaviour
     void Update()
     {
 
+    }
+
+    private void OnApplicationQuit()
+    {
+        //DeattachMethodsFromEvents();
     }
 
     #region Cancel and Save functionalities
@@ -74,11 +80,14 @@ public class AddTaskController : MonoBehaviour
     #region Data variables
 
     private TasksListModel choosenList = null;
+    private TasksListModel[] tasksListsList = { };  
 
-    private DateTime dateFrom = DateTime.Now;
-    private DateTime dateTo = DateTime.Now;
-    private DateTime timeFrom = DateTime.Now;
-    private DateTime timeTo = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour + 1, DateTime.Now.Minute, 0, 0);
+    private DateTime dateFrom;
+    private DateTime dateTo;
+    private DateTime timeFrom;
+    private DateTime timeTo;
+
+    private RepeatModel choosenRepeatOption;
 
 
     #endregion
@@ -103,7 +112,9 @@ public class AddTaskController : MonoBehaviour
             {
                 chooseListBtn.GetComponentInChildren<TMP_Text>().text = choosenList.listTitle;
             }
-        });
+        },
+        theme: AGDialogTheme.Dark
+        );
     }
 
 
@@ -284,6 +295,86 @@ public class AddTaskController : MonoBehaviour
 
     #endregion
 
+    #region Repeat
+    
+    private void OnRepeatBtnClicked()
+    {
+        string[] repeatOptionsTitles =
+        {
+            "Does not repeat",
+            "Every day",
+            "Every week",
+            "Every month",
+            "Every year",
+            "Custom"
+        };
+
+        AGAlertDialog.ShowChooserDialog("", repeatOptionsTitles, optionIndex =>
+        {
+            switch (optionIndex)
+            {
+                case 0:
+                    choosenRepeatOption = null;
+                    break;
+                case 1:
+                    choosenRepeatOption = new RepeatModel(RepeatPeriod.Day, new WeekDays[] { });
+                    break;
+                case 2:
+                    choosenRepeatOption = new RepeatModel(RepeatPeriod.Week, new WeekDays[] { });
+                    break;
+                case 3:
+                    choosenRepeatOption = new RepeatModel(RepeatPeriod.Month, new WeekDays[] { });
+                    break;
+                case 4:
+                    choosenRepeatOption = new RepeatModel(RepeatPeriod.Year, new WeekDays[] { });
+                    break;
+                case 5:
+                    OnCustomRepeatChoosen();
+                    break;
+
+            }
+        });
+    }
+
+    private void OnCustomRepeatChoosen()
+    {
+
+    }
+
+    #endregion
+
+    #region Reminder
+
+    #endregion
+
+    #region Color
+
+    #endregion
+
+    #region Parent
+
+    #endregion
+
+    #endregion
+
+
+    #region Events
+
+    //private void SetTasksLists(TasksListModel[] lists)
+    //{
+    //    tasksListsList = lists;
+    //}
+
+    //private void AttachMethodsToEvents()
+    //{
+    //    EventSystem.instance.getTasksLists += SetTasksLists;
+    //}
+
+    //private void DeattachMethodsFromEvents()
+    //{
+    //    EventSystem.instance.getTasksLists -= SetTasksLists;
+
+    //}
     #endregion
 
     private void AddListnersToBtns()
@@ -327,6 +418,11 @@ public class AddTaskController : MonoBehaviour
 
     private void OnStartup()
     {
+        dateFrom = DateTime.Now;
+        timeFrom = DateTime.Now;
+        dateTo = DateTime.Now;
+        timeTo = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour + 1, DateTime.Now.Minute, 0, 0);
         SetTaskDateTimeOnStartup();
     }
+
 }
