@@ -9,12 +9,13 @@ using System;
 
 public class AddTaskController : MonoBehaviour
 {
-
+    public GameObject background;
     // Start is called before the first frame update
     void Start()
     {
+        background = GameObject.Find("Background");
         AddListnersToBtns();
-        //AttachMethodsToEvents();
+        AttachMethodsToEvents();
         OnStartup();
     }
 
@@ -23,10 +24,9 @@ public class AddTaskController : MonoBehaviour
     {
 
     }
-
-    private void OnApplicationQuit()
+    private void OnDestroy()
     {
-        //DeattachMethodsFromEvents();
+        DeattachMethodsFromEvents();
     }
 
     #region Cancel and Save functionalities
@@ -296,6 +296,9 @@ public class AddTaskController : MonoBehaviour
     #endregion
 
     #region Repeat
+
+    public Button repeatBtn;
+    public GameObject customRecurrancePanelPrefab;
     
     private void OnRepeatBtnClicked()
     {
@@ -333,12 +336,15 @@ public class AddTaskController : MonoBehaviour
                     break;
 
             }
-        });
+        }, AGDialogTheme.Dark);
     }
 
     private void OnCustomRepeatChoosen()
     {
-
+        if (customRecurrancePanelPrefab != null && background != null)
+        {
+            Instantiate(customRecurrancePanelPrefab, background.transform);
+        }
     }
 
     #endregion
@@ -365,16 +371,23 @@ public class AddTaskController : MonoBehaviour
     //    tasksListsList = lists;
     //}
 
-    //private void AttachMethodsToEvents()
-    //{
-    //    EventSystem.instance.getTasksLists += SetTasksLists;
-    //}
+    private void SetCustomRepeat(RepeatModel repeatModel)
+    {
+        choosenRepeatOption = repeatModel;
+    }
 
-    //private void DeattachMethodsFromEvents()
-    //{
-    //    EventSystem.instance.getTasksLists -= SetTasksLists;
+    private void AttachMethodsToEvents()
+    {
+        EventSystem.instance.onAddTaskCustomRepeatSave += SetCustomRepeat;
+        //EventSystem.instance.getTasksLists += SetTasksLists;
+    }
 
-    //}
+    private void DeattachMethodsFromEvents()
+    {
+        EventSystem.instance.onAddTaskCustomRepeatSave -= SetCustomRepeat;
+        //EventSystem.instance.getTasksLists -= SetTasksLists;
+
+    }
     #endregion
 
     private void AddListnersToBtns()
@@ -414,6 +427,10 @@ public class AddTaskController : MonoBehaviour
             dateToBtn.onClick.AddListener(OnDateToBtnClicked);
         }
 
+        if (repeatBtn != null)
+        {
+            repeatBtn.onClick.AddListener(OnRepeatBtnClicked);
+        }
     }
 
     private void OnStartup()

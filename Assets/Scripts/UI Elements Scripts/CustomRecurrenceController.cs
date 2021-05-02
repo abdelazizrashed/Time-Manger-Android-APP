@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -14,20 +13,8 @@ public class CustomRecurrenceController : MonoBehaviour
     void Start()
     {
         AddListnersToBtns();
-        //AttachEvents();
 
         OnStartup();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    private void OnDestroy()
-    {
-        //DeattachEvents();
     }
 
     public Button backBtn;
