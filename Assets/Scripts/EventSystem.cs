@@ -49,4 +49,31 @@ public class EventSystem : MonoBehaviour
     //    }
     //}
 
+    //public event Action<int> onCustomRecurrenceRepeatPeriodDropdownOptionSelected;
+    //public void OnCustomRecurrenceRepeatPeriodDropdownOptionSelected(int index)
+    //{
+    //    if (onCustomRecurrenceRepeatPeriodDropdownOptionSelected != null)
+    //    {
+    //        onCustomRecurrenceRepeatPeriodDropdownOptionSelected(index);
+    //    }
+    //}
+
+    //public event Action onAddTaskCustomRepeatCancel;
+    //public void OnAddTaskCustomRepeatCancel()
+    //{
+    //    if(onAddTaskCustomRepeatCancel != null)
+    //    {
+    //        onAddTaskCustomRepeatCancel();
+    //    }
+    //}
+
+    public event Action<RepeatModel> onAddTaskCustomRepeatSave;
+    public void OnAddTaskCustomRepeatSave(RepeatModel repeat)
+    {
+        if(onAddTaskCustomRepeatSave != null)
+        {
+            onAddTaskCustomRepeatSave(repeat);
+        }
+    }
+
 }

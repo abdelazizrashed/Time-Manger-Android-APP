@@ -3,7 +3,7 @@
 public class RepeatModel
 {
     RepeatPeriod repeatPeriod;
-    int repeatEvery;
+    int repeatEveryNum;
 
     WeekDays[] repeatDays;
 
@@ -12,7 +12,7 @@ public class RepeatModel
     public RepeatModel(RepeatPeriod period, WeekDays[] days, int every = 1, DateTime? end = null)
     {
         repeatPeriod = period;
-        repeatEvery = every;
+        repeatEveryNum = every;
         repeatDays = days;
         endDate = end;
     }
