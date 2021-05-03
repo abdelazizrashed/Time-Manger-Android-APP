@@ -67,13 +67,21 @@ public class EventSystem : MonoBehaviour
     //    }
     //}
 
-    public event Action<RepeatModel> onAddTaskCustomRepeatSave;
-    public void OnAddTaskCustomRepeatSave(RepeatModel repeat)
+    public event Action<RepeatModel, int> onAddTaskCustomRepeatSave;
+    public void OnAddTaskCustomRepeatSave(RepeatModel repeat, int pNum)
     {
         if(onAddTaskCustomRepeatSave != null)
         {
-            onAddTaskCustomRepeatSave(repeat);
+            onAddTaskCustomRepeatSave(repeat, pNum);
         }
     }
 
+    public event Action<NotifiAlarmReminderModel, int> onAddTaskCustomReminderSave;
+    public void OnAddTaskCustomReminderSave(NotifiAlarmReminderModel reminder, int pNum)
+    {
+        if(onAddTaskCustomReminderSave != null)
+        {
+            onAddTaskCustomReminderSave(reminder, pNum);
+        }
+    }
 }

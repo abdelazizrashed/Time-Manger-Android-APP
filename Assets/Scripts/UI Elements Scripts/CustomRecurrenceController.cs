@@ -7,7 +7,7 @@ using System;
 
 public class CustomRecurrenceController : MonoBehaviour
 {
-
+    public int parentPageNumber;
     //public Button 
     // Start is called before the first frame update
     void Start()
@@ -52,7 +52,7 @@ public class CustomRecurrenceController : MonoBehaviour
 
     private void OnCancelBtnClicked()
     {
-        EventSystem.instance.OnAddTaskCustomRepeatSave(null);
+        EventSystem.instance.OnAddTaskCustomRepeatSave(null, parentPageNumber);
         gameObject.SetActive(false);
         Destroy(gameObject);
     }
@@ -111,7 +111,7 @@ public class CustomRecurrenceController : MonoBehaviour
 
         RepeatModel customRepeat = new RepeatModel(repeatPeriodSelectedOption ?? RepeatPeriod.Week, repeatDays.ToArray(), repeatEveryNum, endDate);
 
-        EventSystem.instance.OnAddTaskCustomRepeatSave(customRepeat);
+        EventSystem.instance.OnAddTaskCustomRepeatSave(customRepeat, parentPageNumber);
         gameObject.SetActive(false);
         Destroy(gameObject);
     }

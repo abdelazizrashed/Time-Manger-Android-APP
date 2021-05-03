@@ -10,9 +10,12 @@ using System;
 public class AddTaskController : MonoBehaviour
 {
     public GameObject background;
+    private int pageNumber;
     // Start is called before the first frame update
     void Start()
     {
+        System.Random random = new System.Random();
+        pageNumber = random.Next(1000000000);
         background = GameObject.Find("Background");
         AddListnersToBtns();
         AttachMethodsToEvents();
@@ -351,6 +354,16 @@ public class AddTaskController : MonoBehaviour
 
     #region Reminder
 
+    public Button addReminderBtn;
+    public GameObject remindersList;
+    public GameObject notfiAlarmInfoPrefab;
+
+
+    private void OnAddReminderBtnClicked()
+    {
+
+    }
+
     #endregion
 
     #region Color
@@ -371,9 +384,12 @@ public class AddTaskController : MonoBehaviour
     //    tasksListsList = lists;
     //}
 
-    private void SetCustomRepeat(RepeatModel repeatModel)
+    private void SetCustomRepeat(RepeatModel repeatModel, int pNum)
     {
-        choosenRepeatOption = repeatModel;
+        if (pNum == pageNumber)
+        {
+            choosenRepeatOption = repeatModel;
+        }
     }
 
     private void AttachMethodsToEvents()
