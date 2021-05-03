@@ -94,6 +94,8 @@ public class AddTaskController : MonoBehaviour
 
     private NotifiAlarmReminderModel chosenReminder;
 
+    private ColorModel chosenColor;
+
 
     #endregion
 
@@ -377,10 +379,21 @@ public class AddTaskController : MonoBehaviour
     #endregion
 
     #region Color
+    public Button chooseColorBtn;
+    public GameObject colorBtnPrefab;
 
+    private void OnChooseColorBtnClicked()
+    {
+        ColorModel[] colors = ColorModel.GetColors();
+        CustomAlertDialog.ShowColorPickerDialog(colors, colorBtnPrefab, index =>
+        {
+            chosenColor = colors[index];
+        });
+
+    }
     #endregion
 
-    #region Parent
+    #region Choose Parent
 
     #endregion
 
@@ -490,6 +503,11 @@ public class AddTaskController : MonoBehaviour
         if(addReminderBtn != null)
         {
             addReminderBtn.onClick.AddListener(OnAddReminderBtnClicked);
+        }
+
+        if(chooseColorBtn != null)
+        {
+            chooseColorBtn.onClick.AddListener(OnChooseColorBtnClicked);
         }
     }
 

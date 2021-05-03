@@ -2281,6 +2281,8 @@ MonoBehaviour:
   customReminderPrefab: {fileID: 3325108763375017609, guid: 54fd9c2ec39ff944e880a54b62576567, type: 3}
   remindersList: {fileID: 8987836792776030178}
   notfiAlarmInfoPrefab: {fileID: 3824481069926035954, guid: 98bd90bb531ecd943aa800f14ef7c3c2, type: 3}
+  chooseColorBtn: {fileID: 8987836794051155833}
+  colorBtnPrefab: {fileID: 7114828859168211109, guid: d7d09e299c3cd11478d88e05a409e74d, type: 3}
 --- !u!1 &8987836793121727157
 GameObject:
   m_ObjectHideFlags: 0
