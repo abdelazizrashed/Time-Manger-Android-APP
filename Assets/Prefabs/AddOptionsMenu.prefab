@@ -1468,11 +1468,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c6141aca20e14341bd26437fb9e8743, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  background: {fileID: 0}
   addTaskBtn: {fileID: 171406605031305880}
-  addTaskPanelPrefab: {fileID: 3548042350324134343, guid: 0b5d0e10fc371434498479c01eecb43e, type: 3}
+  addTaskPanelPrefab: {fileID: 8987836793119014918, guid: 0b5d0e10fc371434498479c01eecb43e, type: 3}
   addReminderBtn: {fileID: 3345811897706177163}
   addReminderPanelPrefab: {fileID: 5449495104663243979, guid: 1ce4cac14ffb65f4ca0753bfc7cde536, type: 3}
   addEventBtn: {fileID: 1998534054795605607}
   addEventPanelPrefab: {fileID: 771794429924272599, guid: 741fc7d9333c67048921705b6976aa5b, type: 3}
-  addOptionsShadowPanel: {fileID: 0}

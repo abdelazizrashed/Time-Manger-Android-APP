@@ -7,6 +7,7 @@ using System;
 
 public class CustomRecurrenceController : MonoBehaviour
 {
+    [HideInInspector]
     public int parentPageNumber;
     //public Button 
     // Start is called before the first frame update

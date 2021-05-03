@@ -1,8 +1,8 @@
 ﻿public class NotifiAlarmReminderModel
 {
-    ReminderType reminderType;
-    TimePeriodsType timePeriodType;
-    int timePeriodsNum;
+    public ReminderType reminderType;
+    public TimePeriodsType timePeriodType;
+    public int timePeriodsNum;
 
     public NotifiAlarmReminderModel(ReminderType type, TimePeriodsType tPeriodsType, int tPeriodsNum)
     {

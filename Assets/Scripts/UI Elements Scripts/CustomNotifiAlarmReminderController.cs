@@ -7,7 +7,8 @@ using DeadMosquito.AndroidGoodies;
 
 public class CustomNotifiAlarmReminderController : MonoBehaviour
 {
-    private int parentPageNum;
+    [HideInInspector]
+    public int parentPageNum;
     // Start is called before the first frame update
     void Start()
     {
@@ -44,11 +45,13 @@ public class CustomNotifiAlarmReminderController : MonoBehaviour
             {
                 AGUIMisc.ShowToast("You need to specify the number of " + beforePeriodTypeBtn.GetComponentInChildren<TMP_Text>().text, AGUIMisc.ToastLength.Long);
             }
+            beforeNum = int.Parse(s);
         }
 
         NotifiAlarmReminderModel reminder = new NotifiAlarmReminderModel(reminderType, timePeriodType, beforeNum);
 
         EventSystem.instance.OnAddTaskCustomReminderSave(reminder, parentPageNum);
+        ClosePage();
     }
 
     private void OnBeforePeriodTypeBtnClicked()

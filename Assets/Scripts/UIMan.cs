@@ -9,8 +9,9 @@ public class UIMan : MonoBehaviour
     void Start()
     {
         Screen.fullScreen = false;
-        AGUIMisc.ShowStatusBar();
-
+        #if ANDROID
+            AGUIMisc.ShowStatusBar();
+        #endif
     }
 
     // Update is called once per frame

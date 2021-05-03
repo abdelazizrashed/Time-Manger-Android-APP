@@ -92,6 +92,8 @@ public class AddTaskController : MonoBehaviour
 
     private RepeatModel choosenRepeatOption;
 
+    private NotifiAlarmReminderModel chosenReminder;
+
 
     #endregion
 
@@ -346,7 +348,9 @@ public class AddTaskController : MonoBehaviour
     {
         if (customRecurrancePanelPrefab != null && background != null)
         {
-            Instantiate(customRecurrancePanelPrefab, background.transform);
+            GameObject gb = Instantiate(customRecurrancePanelPrefab, background.transform);
+            gb.SetActive(true);
+            gb.GetComponent<CustomRecurrenceController>().parentPageNumber = pageNumber;
         }
     }
 
@@ -355,13 +359,19 @@ public class AddTaskController : MonoBehaviour
     #region Reminder
 
     public Button addReminderBtn;
+    public GameObject customReminderPrefab;
     public GameObject remindersList;
     public GameObject notfiAlarmInfoPrefab;
 
 
     private void OnAddReminderBtnClicked()
     {
-
+        if(customReminderPrefab!= null && background != null)
+        {
+            GameObject gb = Instantiate(customReminderPrefab, background.transform);
+            gb.SetActive(true);
+            gb.GetComponent<CustomNotifiAlarmReminderController>().parentPageNum = pageNumber;
+        }
     }
 
     #endregion
@@ -392,15 +402,44 @@ public class AddTaskController : MonoBehaviour
         }
     }
 
+    private void SetCustomReminder(NotifiAlarmReminderModel reminder, int pNum)
+    {
+        if(pNum == pageNumber)
+        {
+            chosenReminder = reminder;
+            GameObject r = Instantiate(notfiAlarmInfoPrefab, remindersList.transform);
+            string txt = chosenReminder.reminderType == ReminderType.Notification ? "Notif: " : "Alarm: ";
+            txt += "before " + reminder.timePeriodsNum.ToString() + " ";
+            if(chosenReminder.timePeriodType == TimePeriodsType.Minutes)
+            {
+                txt += "minutes.";
+            }
+            else if(chosenReminder.timePeriodType == TimePeriodsType.Hours)
+            {
+                txt += "hours.";
+            }else if (chosenReminder.timePeriodType == TimePeriodsType.Days)
+            {
+                txt += "days.";
+            }
+            else
+            {
+                txt += "weeks.";
+            }
+            r.GetComponentInChildren<TMP_Text>().text = txt; 
+        }
+    }
+
     private void AttachMethodsToEvents()
     {
         EventSystem.instance.onAddTaskCustomRepeatSave += SetCustomRepeat;
+        EventSystem.instance.onAddTaskCustomReminderSave += SetCustomReminder;
         //EventSystem.instance.getTasksLists += SetTasksLists;
     }
 
     private void DeattachMethodsFromEvents()
     {
         EventSystem.instance.onAddTaskCustomRepeatSave -= SetCustomRepeat;
+        EventSystem.instance.onAddTaskCustomReminderSave -= SetCustomReminder;
         //EventSystem.instance.getTasksLists -= SetTasksLists;
 
     }
@@ -446,6 +485,11 @@ public class AddTaskController : MonoBehaviour
         if (repeatBtn != null)
         {
             repeatBtn.onClick.AddListener(OnRepeatBtnClicked);
+        }
+
+        if(addReminderBtn != null)
+        {
+            addReminderBtn.onClick.AddListener(OnAddReminderBtnClicked);
         }
     }
 
