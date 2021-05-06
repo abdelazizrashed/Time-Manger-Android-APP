@@ -18,7 +18,7 @@ public class AddTaskController : MonoBehaviour
     {
         System.Random random = new System.Random();
         pageNumber = random.Next(1000000000);
-        background = GameObject.Find("Background");
+        background = GameObject.FindGameObjectWithTag("MainBackground");
         AddListnersToBtns();
         AttachMethodsToEvents();
 
@@ -448,6 +448,8 @@ public class AddTaskController : MonoBehaviour
         EventModel[] events = EventModel.GetEvents();
         string[] eventTaskTitles = { "Event", "Task" };
 
+        string chooseParentBtnTxt = "";
+
         AGAlertDialog.ShowChooserDialog(
             "Choose the type of parent",
             eventTaskTitles,
@@ -456,17 +458,20 @@ public class AddTaskController : MonoBehaviour
             switch (index)
             {
                 case 0:
-                    string[] eventsTitles = EventModel.GetEventsTitles(events);
-                    AGAlertDialog.ShowChooserDialog(
-                        "Choose Event",
-                        eventsTitles,
-                        i =>
-                        {
-                            parentEvent = events[i];
-                        }
-                            );
+                        chooseParentBtnTxt += "Event: ";
+                        string[] eventsTitles = EventModel.GetEventsTitles(events);
+                        AGAlertDialog.ShowChooserDialog(
+                            "Choose Event",
+                            eventsTitles,
+                            i =>
+                            {
+                                parentEvent = events[i];
+                                chooseParentBtnTxt += parentEvent.eventTitle;
+                            }
+                                );
                         break;
                     case 1:
+                        chooseParentBtnTxt += "Task: ";
                         string[] tasksTitles = TaskModel.GetTasksTitles(tasks);
                         AGAlertDialog.ShowChooserDialog(
                             "Choose Task",
@@ -474,6 +479,7 @@ public class AddTaskController : MonoBehaviour
                             i =>
                             {
                                 parentTask = tasks[i];
+                                chooseParentBtnTxt += parentTask.taskTitle;
                             }
                                 );
                         break;
@@ -482,7 +488,7 @@ public class AddTaskController : MonoBehaviour
             },
             AGDialogTheme.Dark
             );
-
+        chooseParentBtn.GetComponentInChildren<TMP_Text>().text = chooseParentBtnTxt;
     }
 
     #endregion

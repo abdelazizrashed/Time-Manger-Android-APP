@@ -33,7 +33,7 @@ public class EventModel
     public static EventModel[] GetEvents()
     {
         //Todo: implement this method
-        EventModel[] events = new EventModel[] { new EventModel(_eventTitle: "e 1"), new EventModel(eventTitle: "e 2") }; //Just a place holder
+        EventModel[] events = new EventModel[] { new EventModel(_eventTitle: "e 1"), new EventModel(_eventTitle: "e 2") }; //Just a place holder
         return events;
     }
 

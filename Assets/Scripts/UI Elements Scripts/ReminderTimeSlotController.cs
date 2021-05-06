@@ -1,11 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class AddReminderController : MonoBehaviour
+public class ReminderTimeSlotController : MonoBehaviour
 {
-    #region Main functions   
+    #region Main functions
     // Start is called before the first frame update
     void Start()
     {
@@ -21,9 +20,9 @@ public class AddReminderController : MonoBehaviour
 
     #endregion
 
-    #region Controll methods
+    #region Control
 
-    #region Save Cancel
+    #region Cancel and Get time slot
 
     #endregion
 
@@ -31,19 +30,19 @@ public class AddReminderController : MonoBehaviour
 
     #region Input handling
 
-    #region Title and Description
+    #region Time
 
     #endregion
 
-    #region Time slots
+    #region Repeat
 
     #endregion
 
-    #region Choose color
+    #region Location
 
     #endregion
 
-    #region Choose parent
+    #region Reminder
 
     #endregion
 
@@ -54,15 +53,16 @@ public class AddReminderController : MonoBehaviour
     #endregion
 
     #region General
+
     private void AddListners()
     {
 
     }
-
     private void OnStartUp()
     {
 
     }
-
     #endregion
+
+
 }
