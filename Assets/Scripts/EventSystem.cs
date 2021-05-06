@@ -84,4 +84,22 @@ public class EventSystem : MonoBehaviour
             onAddTaskCustomReminderSave(reminder, pNum);
         }
     }
+
+    public event Action onNewTaskAdded;
+    public void NewTaskAdded()
+    {
+        if(onNewTaskAdded != null)
+        {
+            onNewTaskAdded();
+        }
+    }
+
+    public event Action onAddNewEvent;
+    public void AddNewEvent()
+    {
+        if (onAddNewEvent != null)
+        {
+            onNewTaskAdded();
+        }
+    }
 }

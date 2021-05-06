@@ -77,8 +77,6 @@ public class AddOptions : MonoBehaviour
             GameObject addTaskPanelGameObject = Instantiate(addTaskPanelPrefab, new Vector3(0f, -2000f, 0), background.transform.rotation, background.transform);
             addTaskPanelGameObject.SetActive(true);
             addTaskPanelGameObject.GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, 0), 0.25f);
-            //addTaskPanelGameObject.GetComponent<AddTaskController>().OnStartup();
-            //Invoke("addTaskPanelGameObject.GetComponent<AddTaskController>().OnStartup", 0.5f); 
         }
     }
 
@@ -109,16 +107,6 @@ public class AddOptions : MonoBehaviour
             GameObject addEventPanelGameObject = Instantiate(addEventPanelPrefab, new Vector3(0, -2000f, 0), background.transform.rotation, background.transform);
             addEventPanelGameObject.SetActive(true);
             addEventPanelGameObject.GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, 0), 0.25f);
-        }
-    }
-
-    private void HideAddEventPanel()
-    {
-        if (gameObject != null)
-        {
-            gameObject.GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, -2000f), 0.25f);
-            gameObject.SetActive(false);
-            Destroy(gameObject);
         }
     }
 

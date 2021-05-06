@@ -84,7 +84,7 @@ public class AddTaskController : MonoBehaviour
             _taskList: choosenList
             );
         TaskModel.SaveTask(newTask);
-
+        EventSystem.instance.NewTaskAdded();
         HideAddTaskPanel();
     }
 

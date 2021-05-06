@@ -7,33 +7,33 @@ public class EventModel
     public string eventTitle { get; set; }
     public string eventDescription { get; set; }
     public int userID { get; set; }
-    public EventTimeSlotModel timeSlot { get; set; }
+    public EventTimeSlotModel[] timeSlots { get; set; }
     public ColorModel color { get; set; }
     public EventModel parentEvent { get; set; }
 
     public EventModel(
-        int id = 0,
-        string title = "",
-        string description = "",
-        int uID = 0,
-        EventTimeSlotModel tSlot = null,
-        ColorModel c = null,
-        EventModel parent = null
+        int _eventID = 0,
+        string _eventTitle = "",
+        string _eventDescription = "",
+        int _userID = 0,
+        EventTimeSlotModel[] _timeSlots = null,
+        ColorModel _color = null,
+        EventModel _parent = null
         )
     {
-        eventID = id;
-        eventTitle = title;
-        eventDescription = description;
-        userID = uID;
-        timeSlot = tSlot;
-        color = c;
-        parentEvent = parent;
+        eventID = _eventID;
+        eventTitle = _eventTitle;
+        eventDescription = _eventDescription;
+        userID = _userID;
+        timeSlots = _timeSlots;
+        color = _color;
+        parentEvent = _parent;
     }
 
     public static EventModel[] GetEvents()
     {
         //Todo: implement this method
-        EventModel[] events = new EventModel[] { new EventModel(title: "e 1"), new EventModel(title: "e 2") }; //Just a place holder
+        EventModel[] events = new EventModel[] { new EventModel(_eventTitle: "e 1"), new EventModel(eventTitle: "e 2") }; //Just a place holder
         return events;
     }
 
@@ -46,4 +46,9 @@ public class EventModel
         }
         return eventsTitles.ToArray();
     }
+
+    public static void SaveEvent(EventModel newEvent){
+        //Todo: implement this method
+    }
+
 }
