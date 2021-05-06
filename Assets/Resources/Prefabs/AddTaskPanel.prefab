@@ -204,7 +204,7 @@ MonoBehaviour:
       m_Calls: []
   hoverSound: {fileID: 0}
   clickSound: {fileID: 0}
-  normalText: {fileID: 8556659229318036456}
+  normalText: {fileID: 0}
   soundSource: {fileID: 0}
   rippleParent: {fileID: 6317784852023694942}
   useCustomContent: 0
@@ -440,7 +440,7 @@ MonoBehaviour:
       m_Calls: []
   hoverSound: {fileID: 0}
   clickSound: {fileID: 0}
-  normalText: {fileID: 1348187403983157001}
+  normalText: {fileID: 0}
   soundSource: {fileID: 0}
   rippleParent: {fileID: 9221528524730513944}
   useCustomContent: 0
@@ -1178,7 +1178,7 @@ MonoBehaviour:
       m_Calls: []
   hoverSound: {fileID: 0}
   clickSound: {fileID: 0}
-  normalText: {fileID: 5938943405322368661}
+  normalText: {fileID: 0}
   soundSource: {fileID: 0}
   rippleParent: {fileID: 3470093943783013225}
   useCustomContent: 0
@@ -2283,6 +2283,7 @@ MonoBehaviour:
   notfiAlarmInfoPrefab: {fileID: 3824481069926035954, guid: 98bd90bb531ecd943aa800f14ef7c3c2, type: 3}
   chooseColorBtn: {fileID: 8987836794051155833}
   colorBtnPrefab: {fileID: 7114828859168211109, guid: d7d09e299c3cd11478d88e05a409e74d, type: 3}
+  chooseParentBtn: {fileID: 8987836794826326565}
 --- !u!1 &8987836793121727157
 GameObject:
   m_ObjectHideFlags: 0
@@ -3563,95 +3564,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 0
---- !u!1 &8987836793522742624
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8987836793522742625}
-  - component: {fileID: 8987836793522742620}
-  - component: {fileID: 8987836793522742627}
-  - component: {fileID: 8987836793522742626}
-  m_Layer: 5
-  m_Name: Ripple
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &8987836793522742625
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8987836793522742624}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 8987836794051155839}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &8987836793522742620
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8987836793522742624}
-  m_CullTransparentMesh: 0
---- !u!114 &8987836793522742627
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8987836793522742624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 951352f31055aae46b6e9786313c632d, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 12
---- !u!114 &8987836793522742626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8987836793522742624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ShowMaskGraphic: 0
 --- !u!1 &8987836793560890250
 GameObject:
   m_ObjectHideFlags: 0
@@ -4377,7 +4289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a12ddbc47b17cd478cb447d1113a22b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonText: Mon, Apr 19, 2021
+  buttonText: 
   clickEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -4386,7 +4298,7 @@ MonoBehaviour:
       m_Calls: []
   hoverSound: {fileID: 0}
   clickSound: {fileID: 0}
-  normalText: {fileID: 8987836792782249260}
+  normalText: {fileID: 0}
   soundSource: {fileID: 0}
   rippleParent: {fileID: 8987836792933833458}
   useCustomContent: 0
@@ -4962,7 +4874,6 @@ GameObject:
   - component: {fileID: 8987836794051155835}
   - component: {fileID: 8987836794051155834}
   - component: {fileID: 8987836794051155833}
-  - component: {fileID: 8987836794051155832}
   m_Layer: 5
   m_Name: ChooseColorBtn
   m_TagString: Untagged
@@ -4983,7 +4894,6 @@ RectTransform:
   m_Children:
   - {fileID: 8987836793989894758}
   - {fileID: 8987836794821221005}
-  - {fileID: 8987836793522742625}
   m_Father: {fileID: 8987836794653590833}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5023,9 +4933,9 @@ MonoBehaviour:
   hoverSound: {fileID: 0}
   clickSound: {fileID: 0}
   normalImage: {fileID: 8987836793989894759}
-  normalText: {fileID: 8987836794821221006}
+  normalText: {fileID: 0}
   soundSource: {fileID: 0}
-  rippleParent: {fileID: 8987836793522742624}
+  rippleParent: {fileID: 0}
   useCustomContent: 0
   enableButtonSounds: 0
   useHoverSound: 1
@@ -5077,40 +4987,10 @@ MonoBehaviour:
     m_SelectedTrigger: Highlighted
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 8987836794051155832}
+  m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8987836794051155832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8987836794051155838}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 12
 --- !u!1 &8987836794240720533
 GameObject:
   m_ObjectHideFlags: 0

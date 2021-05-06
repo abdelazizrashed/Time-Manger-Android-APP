@@ -77,6 +77,8 @@ public class AddOptions : MonoBehaviour
             GameObject addTaskPanelGameObject = Instantiate(addTaskPanelPrefab, new Vector3(0f, -2000f, 0), background.transform.rotation, background.transform);
             addTaskPanelGameObject.SetActive(true);
             addTaskPanelGameObject.GetComponent<RectTransform>().DOAnchorPos(new Vector2(0, 0), 0.25f);
+            //addTaskPanelGameObject.GetComponent<AddTaskController>().OnStartup();
+            //Invoke("addTaskPanelGameObject.GetComponent<AddTaskController>().OnStartup", 0.5f); 
         }
     }
 

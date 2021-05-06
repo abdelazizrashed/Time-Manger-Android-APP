@@ -11,6 +11,8 @@ public class AddTaskController : MonoBehaviour
 {
     public GameObject background;
     private int pageNumber;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,14 +21,10 @@ public class AddTaskController : MonoBehaviour
         background = GameObject.Find("Background");
         AddListnersToBtns();
         AttachMethodsToEvents();
+
         OnStartup();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     private void OnDestroy()
     {
         DeattachMethodsFromEvents();
@@ -58,9 +56,36 @@ public class AddTaskController : MonoBehaviour
 
     private void OnSaveBtnClicked()
     {
-        //Todo: Check that the required field are not empty
-        //Todo: create an object of a task with the data inputted.
-        //Todo: Close the add task panel
+        if (IsTaskTitleEmpty())
+        {
+            AGUIMisc.ShowToast("Task title is required.", AGUIMisc.ToastLength.Long);
+            return;
+        }
+        taskTitle = GetTheTaskTitle();
+
+        taskDescription = GetTheTaskDescription();
+
+        if(choosenList == null)
+        {
+            AGUIMisc.ShowToast("Tasks list is required.", AGUIMisc.ToastLength.Short);
+        }
+
+        TaskModel newTask = new TaskModel(
+            _taskTitle: taskTitle,
+            _taskDescription: taskDescription,
+            _timeFrom: timeFrom,
+            _timeTo: timeTo,
+            _repeat: choosenRepeatOption,
+            _reminders: chosenReminders.ToArray(),
+            _color: chosenColor,
+            _userID: UserModel.Instance.userID,
+            _parentEvent: parentEvent,
+            _parentTask: parentTask,
+            _taskList: choosenList
+            );
+        TaskModel.SaveTask(newTask);
+
+        HideAddTaskPanel();
     }
 
     /// <summary>
@@ -82,8 +107,11 @@ public class AddTaskController : MonoBehaviour
 
     #region Data variables
 
+    private string taskTitle = "";
+    private string taskDescription = "";
+
     private TasksListModel choosenList = null;
-    private TasksListModel[] tasksListsList = { };  
+    private TasksListModel[] tasksListsList = { };
 
     private DateTime dateFrom;
     private DateTime dateTo;
@@ -92,9 +120,12 @@ public class AddTaskController : MonoBehaviour
 
     private RepeatModel choosenRepeatOption;
 
-    private NotifiAlarmReminderModel chosenReminder;
+    private List<NotifiAlarmReminderModel> chosenReminders;
 
-    private ColorModel chosenColor;
+    private ColorModel chosenColor = null;
+
+    private TaskModel parentTask = null;
+    private EventModel parentEvent = null;
 
 
     #endregion
@@ -134,7 +165,11 @@ public class AddTaskController : MonoBehaviour
 
     private string GetTheTaskTitle()
     {
-        return taskTitleInputField.text;
+        if (taskTitleInputField != null)
+        {
+            return taskTitleInputField.text;
+        }
+        return "";
     }
 
     private bool IsTaskTitleEmpty()
@@ -144,7 +179,11 @@ public class AddTaskController : MonoBehaviour
 
     private string GetTheTaskDescription()
     {
-        return taskDescriptionInputField.text;
+        if (taskDescriptionInputField != null)
+        {
+            return taskDescriptionInputField.text;
+        }
+        return "";
     }
 
     private bool IsTaskDescriptionEmpty()
@@ -282,6 +321,7 @@ public class AddTaskController : MonoBehaviour
         if (timeFromBtn != null)
         {
             SetTextOfTimeBtn(ref timeFromBtn, DateTime.Now.ToString("hh:mm tt"));
+
         }
 
         if (dateFromBtn != null)
@@ -388,12 +428,62 @@ public class AddTaskController : MonoBehaviour
         CustomAlertDialog.ShowColorPickerDialog(colors, colorBtnPrefab, index =>
         {
             chosenColor = colors[index];
+            chooseColorBtn.GetComponentInChildren<TMP_Text>().text = colors[index].colorName;
+            chooseColorBtn.GetComponentInChildren<Image>().color = new Color32(
+                Helper.StringToByteArray(colors[index].colorValue)[0],
+                Helper.StringToByteArray(colors[index].colorValue)[1],
+                Helper.StringToByteArray(colors[index].colorValue)[2],
+                0xFF
+                );
         });
 
     }
     #endregion
 
     #region Choose Parent
+    public Button chooseParentBtn;
+    private void OnChooseParentBtnClicked()
+    {
+        TaskModel[] tasks = TaskModel.GetTasks();
+        EventModel[] events = EventModel.GetEvents();
+        string[] eventTaskTitles = { "Event", "Task" };
+
+        AGAlertDialog.ShowChooserDialog(
+            "Choose the type of parent",
+            eventTaskTitles,
+            index =>
+            {
+            switch (index)
+            {
+                case 0:
+                    string[] eventsTitles = EventModel.GetEventsTitles(events);
+                    AGAlertDialog.ShowChooserDialog(
+                        "Choose Event",
+                        eventsTitles,
+                        i =>
+                        {
+                            parentEvent = events[i];
+                        }
+                            );
+                        break;
+                    case 1:
+                        string[] tasksTitles = TaskModel.GetTasksTitles(tasks);
+                        AGAlertDialog.ShowChooserDialog(
+                            "Choose Task",
+                            tasksTitles,
+                            i =>
+                            {
+                                parentTask = tasks[i];
+                            }
+                                );
+                        break;
+
+                }
+            },
+            AGDialogTheme.Dark
+            );
+
+    }
 
     #endregion
 
@@ -419,18 +509,18 @@ public class AddTaskController : MonoBehaviour
     {
         if(pNum == pageNumber)
         {
-            chosenReminder = reminder;
+            chosenReminders.Add(reminder);
             GameObject r = Instantiate(notfiAlarmInfoPrefab, remindersList.transform);
-            string txt = chosenReminder.reminderType == ReminderType.Notification ? "Notif: " : "Alarm: ";
+            string txt = reminder.reminderType == ReminderType.Notification ? "Notification: " : "Alarm: ";
             txt += "before " + reminder.timePeriodsNum.ToString() + " ";
-            if(chosenReminder.timePeriodType == TimePeriodsType.Minutes)
+            if(reminder.timePeriodType == TimePeriodsType.Minutes)
             {
                 txt += "minutes.";
             }
-            else if(chosenReminder.timePeriodType == TimePeriodsType.Hours)
+            else if(reminder.timePeriodType == TimePeriodsType.Hours)
             {
                 txt += "hours.";
-            }else if (chosenReminder.timePeriodType == TimePeriodsType.Days)
+            }else if (reminder.timePeriodType == TimePeriodsType.Days)
             {
                 txt += "days.";
             }
@@ -509,15 +599,29 @@ public class AddTaskController : MonoBehaviour
         {
             chooseColorBtn.onClick.AddListener(OnChooseColorBtnClicked);
         }
+
+        if(chooseParentBtn != null)
+        {
+            chooseParentBtn.onClick.AddListener(OnChooseParentBtnClicked);
+        }
     }
 
-    private void OnStartup()
+    public void OnStartup()
     {
         dateFrom = DateTime.Now;
         timeFrom = DateTime.Now;
         dateTo = DateTime.Now;
         timeTo = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour + 1, DateTime.Now.Minute, 0, 0);
         SetTaskDateTimeOnStartup();
+        ColorModel[] colors = ColorModel.GetColors();
+        chosenColor = colors[0];
+        chooseColorBtn.GetComponentInChildren<TMP_Text>().text = colors[0].colorName;
+        chooseColorBtn.GetComponentInChildren<Image>().color = new Color32(
+            Helper.StringToByteArray(colors[0].colorValue)[0],
+            Helper.StringToByteArray(colors[0].colorValue)[1],
+            Helper.StringToByteArray(colors[0].colorValue)[2],
+            0xFF
+            );
     }
 
 }
