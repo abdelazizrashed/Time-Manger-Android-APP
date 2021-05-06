@@ -2,17 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ReminderModel : MonoBehaviour
+public class ReminderModel
 {
-    // Start is called before the first frame update
-    void Start()
+    public int reminderID { get; set; }
+    public string reminderTitle { get; set; }
+    public string reminderDescription { get; set; }
+    public int userID { get; set; }
+    public ReminderTimeSlotModel[] timeSlots { get; set; }
+    public ColorModel color { get; set; }
+    public EventModel parentEvent { get; set; }
+
+    public ReminderModel(
+        int _reminderID = 0,
+        string _reminderTitle = "",
+        string _description = "",
+        int _userID = 0,
+        ReminderTimeSlotModel[] _timeSlots = null,
+        ColorModel _color = null,
+        EventModel _parentEvent = null
+        )
     {
-        
+        reminderID = _reminderID;
+        reminderTitle = _reminderTitle;
+        reminderDescription = _description;
+        timeSlots = _timeSlots;
+        color = _color;
+        parentEvent = _parentEvent;
     }
 
-    // Update is called once per frame
-    void Update()
+    public static void SaveReminder(ReminderModel reminder)
     {
-        
+
     }
 }

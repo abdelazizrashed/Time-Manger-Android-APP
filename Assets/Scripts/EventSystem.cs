@@ -102,4 +102,13 @@ public class EventSystem : MonoBehaviour
             onNewTaskAdded();
         }
     }
+
+    public event Action onAddNewReminder;
+    public void AddNewReminder()
+    {
+        if(onAddNewReminder != null)
+        {
+            onAddNewReminder();
+        }
+    }
 }

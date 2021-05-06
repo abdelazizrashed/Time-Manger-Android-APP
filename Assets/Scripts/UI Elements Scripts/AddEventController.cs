@@ -8,24 +8,14 @@ using DG.Tweening;
 
 public class AddEventController : MonoBehaviour
 {
-    private GameObject background;
-    private int pageNumber;
+
     #region Main funcgtions
     // Start is called before the first frame update
     void Start()
     {
-        System.Random random = new System.Random();
-        pageNumber = random.Next(1000000000);
-        background = GameObject.FindGameObjectWithTag("MainBackground");
         AddListeners();
 
         OnStartUp();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     #endregion
@@ -67,7 +57,7 @@ public class AddEventController : MonoBehaviour
             eventDescription = eventDescriptionInputField.text;
         }
 
-        if(timeSlots.Count == 0)
+        if(timeSlotsGameObjects.Count == 0)
         {
             AGUIMisc.ShowToast("You need to supply at least one time slot.", AGUIMisc.ToastLength.Long);
         }
@@ -136,8 +126,6 @@ public class AddEventController : MonoBehaviour
         }
     }
 
-
-
     #endregion
 
     #region Choose Color
@@ -188,10 +176,6 @@ public class AddEventController : MonoBehaviour
     }
 
     #endregion
-
-    #endregion
-
-    #region Events
 
     #endregion
 

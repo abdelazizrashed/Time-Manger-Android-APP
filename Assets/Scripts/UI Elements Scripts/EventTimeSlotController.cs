@@ -26,12 +26,27 @@ public class EventTimeSlotController : MonoBehaviour
         DeattachMethodsFromEvents();
     }
 
+    #region Cancel Get time slot
+
     public Button cancelBtn;
 
     private void OnCancelBtnClicked()
     {
         Destroy(gameObject);
     }
+
+    public EventTimeSlotModel GetTimeSlot()
+    {
+        if (locationInputField != null)
+        {
+            location = locationInputField.text;
+        }
+
+        return new EventTimeSlotModel(timeFrom, dateFrom, timeTo, dateTo, repeat, location, reminders.ToArray());
+
+    }
+
+    #endregion
 
     #region Data variables
 
@@ -42,7 +57,7 @@ public class EventTimeSlotController : MonoBehaviour
 
     private RepeatModel repeat;
     private string location;
-    private List<NotifiAlarmReminderModel> reminders;
+    private List<NotifiAlarmReminderModel> reminders = new List<NotifiAlarmReminderModel>();
 
     #endregion
 
@@ -378,17 +393,6 @@ public class EventTimeSlotController : MonoBehaviour
         dateTo = DateTime.Now;
         timeTo = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour + 1, DateTime.Now.Minute, 0, 0);
         SetTaskDateTimeOnStartup();
-    }
-
-    public EventTimeSlotModel GetTimeSlot()
-    {
-        if(locationInputField != null)
-        {
-            location = locationInputField.text;
-        }
-
-        return new EventTimeSlotModel(timeFrom, dateFrom, timeTo, dateTo, repeat, location, reminders.ToArray());
-
     }
 
     #endregion
