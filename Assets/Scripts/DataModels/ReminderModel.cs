@@ -34,4 +34,10 @@ public class ReminderModel
     {
 
     }
+
+    public static ReminderModel[] GetReminders()
+    {
+        //Todo: implement this method
+        return new ReminderModel[] { new ReminderModel(_reminderTitle: "reminder 1"), new ReminderModel(_reminderTitle: "reminder 2"), new ReminderModel(_reminderTitle: "reminder 3"), };
+    }
 }

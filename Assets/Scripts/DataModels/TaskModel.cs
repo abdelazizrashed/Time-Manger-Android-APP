@@ -20,7 +20,8 @@ public class TaskModel
     public EventModel parentEvent { get; set; }
     public TaskModel parentTask { get; set; }
     public TasksListModel taskList { get; set; }
-    
+    public TaskModel[] childrenTasks { get; set; }
+
     public TaskModel(
         int _taskID = 0,
         string _taskTitle = "",
@@ -79,5 +80,39 @@ public class TaskModel
     public static void SaveTask(TaskModel task)
     {
         //Todo: implement this method
+    }
+
+    public static TaskModel[] GetTaskChildrenOrderedByStartTime(TaskModel parentTask)
+    {
+        TaskModel[] tasks = TaskModel.GetTasks();
+        List<TaskModel> children = new List<TaskModel>();
+        foreach (TaskModel child in tasks)
+        {
+            if (child.parentTask.taskID == parentTask.taskID)
+            {
+                children.Add(child);
+            }
+        }
+        List<TaskModel> orderedChildren = new List<TaskModel>();
+        foreach (TaskModel child in children)
+        {
+            TaskModel earlestChild = child;
+            foreach(TaskModel child2 in children)
+            {
+                if(DateTime.Compare(earlestChild.timeFrom, child2.timeFrom) > 0)
+                {
+                    earlestChild = child2;
+                }else if(DateTime.Compare(earlestChild.timeFrom, child2.timeFrom) == 0)
+                {
+                    if(DateTime.Compare(earlestChild.timeTo, child2.timeTo) > 0)
+                    {
+                        earlestChild = child2;
+                    }
+                }
+            }
+            orderedChildren.Add(earlestChild);
+        }
+
+        return orderedChildren.ToArray();
     }
 }

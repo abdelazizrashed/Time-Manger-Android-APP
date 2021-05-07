@@ -242,4 +242,14 @@ public class Helper : MonoBehaviour
                          .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                          .ToArray();
     }
+
+    public static Color32 StringToColor(string hex)
+    {
+        return new Color32(
+                        Helper.StringToByteArray(hex)[0],
+                        Helper.StringToByteArray(hex)[1],
+                        Helper.StringToByteArray(hex)[2],
+                        0xFF
+                        );
+    }
 }
