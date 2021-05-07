@@ -14,12 +14,6 @@ public class AddReminderController : MonoBehaviour
         OnStartUp();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     #endregion
 
     #region Controll methods

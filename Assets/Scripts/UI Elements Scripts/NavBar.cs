@@ -21,11 +21,17 @@ public class NavBar : MonoBehaviour
 
     }
 
-    private void OnApplicationQuit()
+    private void OnDestroy()
     {
         DeattachActionsToEvents();
     }
     #endregion
+
+    #region Data variables
+
+    private Pages currentPage;
+
+    #endregion 
 
     #region UI Variables
     public Button sideMenuBtn;
@@ -112,7 +118,7 @@ public class NavBar : MonoBehaviour
     private void CloseSideMenu()
     {
         shadowPanel.SetActive(false);
-        if (sideMenuGameObject != null && isSideMenuOpen)
+        if (sideMenuGameObject != null)
         {
             if (shadowPanel == null)
             {
@@ -159,7 +165,7 @@ public class NavBar : MonoBehaviour
     private void CloseMoreOptionsMenu()
     {
         shadowPanel.SetActive(false);
-        if (moreOptionsMenuGameObject != null && isMoreOptionsMenuOpen)
+        if (moreOptionsMenuGameObject != null)
         {
             if (shadowPanel == null)
             {
@@ -186,10 +192,20 @@ public class NavBar : MonoBehaviour
 
     #region Events related methods
     
-    private void OnChagePage(string pageTitle)
+    private void OnChagePage(Pages page)
     {
-        if (!IsNull(pageTitleTxt) && pageTitle != null){
-            pageTitleTxt.text = pageTitle;
+        if (!IsNull(pageTitleTxt) && page != null){
+            CloseAllMenus();
+            currentPage = page;
+            if(page.Value == Pages.Tasks.Value)
+            {
+                pageTitleTxt.text = page.tasksList.listTitle;
+            }
+            else
+            {
+                pageTitleTxt.text = page.Value;
+            }
+            //Todo: update the content
         }
     }
 

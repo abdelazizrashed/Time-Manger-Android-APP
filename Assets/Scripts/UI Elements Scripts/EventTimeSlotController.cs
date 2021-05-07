@@ -333,14 +333,14 @@ public class EventTimeSlotController : MonoBehaviour
     {
         EventSystem.instance.onAddTaskCustomRepeatSave += SetCustomRepeat;
         EventSystem.instance.onAddTaskCustomReminderSave += SetCustomReminder;
-        //EventSystem.instance.getTasksLists += SetTasksLists;
+
     }
 
     private void DeattachMethodsFromEvents()
     {
         EventSystem.instance.onAddTaskCustomRepeatSave -= SetCustomRepeat;
         EventSystem.instance.onAddTaskCustomReminderSave -= SetCustomReminder;
-        //EventSystem.instance.getTasksLists -= SetTasksLists;
+
 
     }
 

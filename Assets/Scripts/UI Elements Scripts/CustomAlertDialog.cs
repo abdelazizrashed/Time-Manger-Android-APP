@@ -7,17 +7,6 @@ using UnityEngine.UI;
 
 public class CustomAlertDialog : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public static void ShowColorPickerDialog(ColorModel[] colors, GameObject colorBtnPrefab, Action<int> onClickCallback)
     {

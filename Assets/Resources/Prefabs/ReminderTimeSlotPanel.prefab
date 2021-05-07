@@ -637,6 +637,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514af367e5792f54faa161b268c1f746, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cancelBtn: {fileID: 1805435544214571137}
+  dateBtn: {fileID: 3261810945693107181}
+  timeBtn: {fileID: 3203089246148242734}
+  repeatBtn: {fileID: 1805435543336676304}
+  customRecurrancePanelPrefab: {fileID: 1631191050680443422, guid: 43cd0efe705b4d24f96b55c0f7c38731, type: 3}
+  addReminderBtn: {fileID: 1805435543608409999}
+  customReminderPrefab: {fileID: 3325108763375017609, guid: 54fd9c2ec39ff944e880a54b62576567, type: 3}
+  remindersList: {fileID: 1805435544814828517}
+  notfiAlarmInfoPrefab: {fileID: 3824481069926035954, guid: 98bd90bb531ecd943aa800f14ef7c3c2, type: 3}
 --- !u!1 &1805435543927538883
 GameObject:
   m_ObjectHideFlags: 0

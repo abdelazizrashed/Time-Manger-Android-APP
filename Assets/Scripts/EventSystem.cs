@@ -12,12 +12,12 @@ public class EventSystem : MonoBehaviour
         instance = this;
     }
 
-    public event Action<string> onChangePage;
-    public void ChangePage(string pageTitle)
+    public event Action<Pages> onChangePage;
+    public void ChangePage(Pages page)
     {
         if (onChangePage != null)
         {
-            onChangePage(pageTitle);
+            onChangePage(page);
         }
     }
 
@@ -109,6 +109,15 @@ public class EventSystem : MonoBehaviour
         if(onAddNewReminder != null)
         {
             onAddNewReminder();
+        }
+    }
+
+    public event Action onAddNewTasksList;
+    public void AddNewTasksList()
+    {
+        if(onAddNewTasksList != null)
+        {
+            onAddNewTasksList();
         }
     }
 }

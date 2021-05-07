@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿
 
 public sealed class UserModel
 {
@@ -9,12 +7,21 @@ public sealed class UserModel
 
     public int userID { get; set; }
     public string username { get; set; }
+    public string firstName { get; set; }
+    public string lastName { get; set; }
     public string email { get; set; }
     public string accessToken { get; set; }
     public string refreshToken { get; set; }
 
     UserModel()
     {
+        userID = 0;
+        username = "username";
+        firstName = "first name";
+        lastName = "last name";
+        email = "email";
+        accessToken = "access token";
+        refreshToken = "refresh token";
     }
 
     public static UserModel Instance
