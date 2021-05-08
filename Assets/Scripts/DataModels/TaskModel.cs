@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TaskModel
+public class TaskModel: System.Object
 {
     public int taskID { get; set; }
     public string taskTitle { get; set; }
@@ -21,6 +21,7 @@ public class TaskModel
     public TaskModel parentTask { get; set; }
     public TasksListModel taskList { get; set; }
     public TaskModel[] childrenTasks { get; set; }
+    public bool isChildrenTasksOrdered { get; set; }
 
     public TaskModel(
         int _taskID = 0,
@@ -56,6 +57,7 @@ public class TaskModel
         parentEvent = _parentEvent;
         parentTask = _parentTask;
         taskList = _taskList;
+        isChildrenTasksOrdered = false;
 
     }
 
@@ -77,20 +79,25 @@ public class TaskModel
     }
 
 
-    public static void SaveTask(TaskModel task)
+    public static void SaveTask(ref TaskModel task)
     {
         //Todo: implement this method
     }
 
-    public static TaskModel[] GetTaskChildrenOrderedByStartTime(TaskModel parentTask)
+    public static TaskModel[] GetTaskChildrenOrderedByStartTime(ref TaskModel parentTask)
     {
+        if (parentTask.isChildrenTasksOrdered)
+        {
+            return parentTask.childrenTasks;
+        }
         TaskModel[] tasks = TaskModel.GetTasks();
         List<TaskModel> children = new List<TaskModel>();
-        foreach (TaskModel child in tasks)
+        for(int i = 0; i< tasks.Length; i++)
         {
-            if (child.parentTask.taskID == parentTask.taskID)
+            if (tasks[i].parentTask.taskID == parentTask.taskID)
             {
-                children.Add(child);
+                tasks[i].childrenTasks = TaskModel.GetTaskChildrenOrderedByStartTime(ref tasks[i]);
+                children.Add(tasks[i]);
             }
         }
         List<TaskModel> orderedChildren = new List<TaskModel>();
@@ -111,8 +118,38 @@ public class TaskModel
                 }
             }
             orderedChildren.Add(earlestChild);
+            children.Remove(earlestChild);
         }
-
+        parentTask.isChildrenTasksOrdered = true;
         return orderedChildren.ToArray();
+    }
+
+    public static TaskModel[] OrderTasks(ref TaskModel[] tasks)
+    {
+        for (int i = 0; i < tasks.Length; i++)
+        {
+            tasks[i].childrenTasks = TaskModel.GetTaskChildrenOrderedByStartTime(ref tasks[i]);
+        }
+        List<TaskModel> orderedTasks = new List<TaskModel>();
+        foreach (TaskModel task in tasks)
+        {
+            TaskModel earlestTask = task;
+            foreach (TaskModel task2 in tasks)
+            {
+                if (DateTime.Compare(earlestTask.timeFrom, task2.timeFrom) > 0)
+                {
+                    earlestTask = task2;
+                }
+                else if (DateTime.Compare(earlestTask.timeFrom, task2.timeFrom) == 0)
+                {
+                    if (DateTime.Compare(earlestTask.timeTo, task2.timeTo) > 0)
+                    {
+                        earlestTask = task2;
+                    }
+                }
+            }
+            orderedTasks.Add(earlestTask);
+        }
+        return orderedTasks.ToArray();
     }
 }

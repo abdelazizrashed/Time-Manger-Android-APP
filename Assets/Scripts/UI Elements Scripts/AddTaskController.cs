@@ -70,6 +70,34 @@ public class AddTaskController : MonoBehaviour
             AGUIMisc.ShowToast("Tasks list is required.", AGUIMisc.ToastLength.Short);
         }
 
+        if (parentEvent != null)
+        {
+            bool isWithinParentTimeRange = false;
+            foreach (EventTimeSlotModel parentTimeSlot in parentEvent.timeSlots)
+            {
+                if (DateTime.Compare(timeFrom, parentTimeSlot.timeFrom) < 0 && DateTime.Compare(timeTo, parentTimeSlot.timeTo) > 0)
+                {
+                    isWithinParentTimeRange = true;
+                    break;
+                }
+            }
+
+            if (!isWithinParentTimeRange)
+            {
+                AGUIMisc.ShowToast("Event time frame must be with its parent.", AGUIMisc.ToastLength.Long);
+                return;
+            }
+        }
+
+        if (parentTask != null)
+        {
+            if (DateTime.Compare(timeFrom, parentTask.timeFrom) < 0 && DateTime.Compare(timeTo, parentTask.timeTo) > 0)
+            {
+                AGUIMisc.ShowToast("Event time frame must be with its parent.", AGUIMisc.ToastLength.Long);
+                return;
+            }
+        }
+
         TaskModel newTask = new TaskModel(
             _taskTitle: taskTitle,
             _taskDescription: taskDescription,

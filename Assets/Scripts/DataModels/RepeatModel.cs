@@ -1,13 +1,13 @@
 ﻿using System;
 
-public class RepeatModel
+public class RepeatModel: System.Object
 {
-    RepeatPeriod repeatPeriod;
-    int repeatEveryNum;
+    public RepeatPeriod repeatPeriod { get; set; }
+    public int repeatEveryNum { get; set; }
 
-    WeekDays[] repeatDays;
+    public WeekDays[] repeatDays { get; set; }
 
-    DateTime? endDate;
+    public DateTime? endDate { get; set; }
 
     public RepeatModel(RepeatPeriod period, WeekDays[] days, int every = 1, DateTime? end = null)
     {

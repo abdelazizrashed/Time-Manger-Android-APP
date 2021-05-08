@@ -9,6 +9,7 @@ public class ReminderTimeSlotModel
     public DateTime date { get; set; }
     public RepeatModel repeat { get; set; }
     public NotifiAlarmReminderModel[] reminders { get; set; }
+    public ReminderModel parentReminder { get; set; }
     
     public ReminderTimeSlotModel(
         DateTime? _time = null,

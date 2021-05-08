@@ -1,4 +1,5 @@
 ﻿using DeadMosquito.AndroidGoodies;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -72,6 +73,29 @@ public class AddReminderController : MonoBehaviour
         if (timeSlots.Count == 0)
         {
             AGUIMisc.ShowToast("You need to supply at least one time slot.", AGUIMisc.ToastLength.Long);
+        }
+
+        if (parentEvent != null)
+        {
+            foreach (ReminderTimeSlotModel timeSlot in timeSlots)
+            {
+                bool isWithinParentTimeRange = false;
+                foreach (EventTimeSlotModel parentTimeSlot in parentEvent.timeSlots)
+                {
+                    if (DateTime.Compare(timeSlot.time, parentTimeSlot.timeFrom) < 0 && DateTime.Compare(timeSlot.time, parentTimeSlot.timeTo) > 0)
+                    {
+                        isWithinParentTimeRange = true;
+                        break;
+                    }
+                }
+
+                if (!isWithinParentTimeRange)
+                {
+                    AGUIMisc.ShowToast("Event time frame must be with its parent.", AGUIMisc.ToastLength.Long);
+                    return;
+                }
+
+            }
         }
 
         ReminderModel newReminder = new ReminderModel(

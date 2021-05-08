@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using DeadMosquito.AndroidGoodies;
 using DG.Tweening;
+using System;
 
 public class AddEventController : MonoBehaviour
 {
@@ -60,6 +61,7 @@ public class AddEventController : MonoBehaviour
         if(timeSlotsGameObjects.Count == 0)
         {
             AGUIMisc.ShowToast("You need to supply at least one time slot.", AGUIMisc.ToastLength.Long);
+            return;
         }
 
         foreach(GameObject timeSlotGameObject in timeSlotsGameObjects)
@@ -67,6 +69,28 @@ public class AddEventController : MonoBehaviour
             if(timeSlotGameObject != null)
             {
                 timeSlots.Add(timeSlotGameObject.GetComponent<EventTimeSlotController>().GetTimeSlot());
+            }
+        }
+
+        if(parentEvent != null)
+        {
+            foreach(EventTimeSlotModel timeSlot in timeSlots)
+            {
+                bool isWithinParentTimeRange = false;
+                foreach(EventTimeSlotModel parentTimeSlot in parentEvent.timeSlots)
+                {
+                    if(DateTime.Compare(timeSlot.timeFrom, parentTimeSlot.timeFrom) < 0 && DateTime.Compare(timeSlot.timeTo, parentTimeSlot.timeTo) > 0)
+                    {
+                        isWithinParentTimeRange = true;
+                        break;
+                    }
+                }
+
+                if(!isWithinParentTimeRange)
+                {
+                    AGUIMisc.ShowToast("Event time frame must be with its parent.", AGUIMisc.ToastLength.Long);
+                    return;
+                }
 
             }
         }
