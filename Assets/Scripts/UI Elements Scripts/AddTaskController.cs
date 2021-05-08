@@ -68,6 +68,16 @@ public class AddTaskController : MonoBehaviour
         if(choosenList == null)
         {
             AGUIMisc.ShowToast("Tasks list is required.", AGUIMisc.ToastLength.Short);
+            return;
+        }
+
+        timeFrom = new DateTime(dateFrom.Year, dateFrom.Month, dateFrom.Day, timeFrom.Hour, timeFrom.Minute, timeFrom.Second);
+        timeTo = new DateTime(dateTo.Year, dateTo.Month, dateTo.Day, timeTo.Hour, timeTo.Minute, timeTo.Second);
+
+        if(DateTime.Compare(timeFrom, timeTo)> 0)
+        {
+            AGUIMisc.ShowToast("The start time must be earlier than the finish time", AGUIMisc.ToastLength.Long);
+            return;
         }
 
         if (parentEvent != null)
@@ -111,7 +121,7 @@ public class AddTaskController : MonoBehaviour
             _parentTask: parentTask,
             _taskList: choosenList
             );
-        TaskModel.SaveTask(newTask);
+        TaskModel.SaveTask(ref newTask);
         EventSystem.instance.NewTaskAdded();
         HideAddTaskPanel();
     }

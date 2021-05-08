@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -251,5 +252,19 @@ public class Helper : MonoBehaviour
                         Helper.StringToByteArray(hex)[2],
                         0xFF
                         );
+    }
+
+    /// <summary>
+    /// This method takes two object of type TaskModel, EventModel, or Reminder Model and sort them
+    /// </summary>
+    /// <returns></returns>
+    public static System.Object[] SortTwoByDateTime<T, R>(T[] object1, R[] object2) 
+    {
+        int m = object1.Length;
+        int n = object2.Length;
+
+        List<object> sortedList = new List<object>();
+
+
     }
 }

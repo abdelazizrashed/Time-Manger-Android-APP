@@ -42,6 +42,22 @@ public class EventTimeSlotController : MonoBehaviour
             location = locationInputField.text;
         }
 
+        if (DateTime.Compare(dateTo, dateFrom) > 0)
+        {
+            AGUIMisc.ShowToast("The start date must be ealier thant the finish date", AGUIMisc.ToastLength.Long);
+            return null;
+        }
+        if(timeFrom.Hour > timeTo.Hour)
+        { 
+            AGUIMisc.ShowToast("The start time must be ealier thant the finish time", AGUIMisc.ToastLength.Long);
+            return null;
+        }
+        if (timeFrom.Minute > timeTo.Minute)
+        {
+            AGUIMisc.ShowToast("The start time must be ealier thant the finish time", AGUIMisc.ToastLength.Long);
+            return null;
+        }
+
         return new EventTimeSlotModel(timeFrom, dateFrom, timeTo, dateTo, repeat, location, reminders.ToArray());
 
     }

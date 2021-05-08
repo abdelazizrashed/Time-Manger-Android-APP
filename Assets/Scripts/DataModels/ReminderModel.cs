@@ -52,7 +52,7 @@ public class ReminderModel: System.Object
         return timeSlots;
     }
 
-    public static ReminderTimeSlotModel[] OrderRemindersTimeSlots(ReminderModel[] reminders)
+    public static ReminderTimeSlotModel[] OrderRemindersTimeSlots(ref ReminderModel[] reminders)
     {
         for (int i = 0; i < reminders.Length; i++)
         {

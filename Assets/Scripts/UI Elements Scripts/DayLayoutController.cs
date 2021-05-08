@@ -99,33 +99,48 @@ public class DayLayoutController : MonoBehaviour
 
     #region Helpers
 
-    private TaskModel[] OrderTasks(TaskModel[] tasks)
+    private TaskModel[] GetDaysTasksOrdered(DateTime day)
     {
-        for (int i = 0; i < tasks.Length; i++)
+        TaskModel[] tasks = TaskModel.GetTasks();
+        List<TaskModel> daysTasks = new List<TaskModel>();
+        foreach(TaskModel task in tasks)
         {
-            tasks[i].childrenTasks = TaskModel.GetTaskChildrenOrderedByStartTime(tasks[i]);
-        }
-        List<TaskModel> orderedTasks = new List<TaskModel>();
-        foreach (TaskModel task in tasks)
-        {
-            TaskModel earlestTask = task;
-            foreach (TaskModel task2 in tasks)
+            if(task.timeFrom.Year == day.Year && task.timeFrom.Month == day.Month && task.timeFrom.Day == day.Day)
             {
-                if (DateTime.Compare(earlestTask.timeFrom, task2.timeFrom) > 0)
-                {
-                    earlestTask = task2;
-                }
-                else if (DateTime.Compare(earlestTask.timeFrom, task2.timeFrom) == 0)
-                {
-                    if (DateTime.Compare(earlestTask.timeTo, task2.timeTo) > 0)
-                    {
-                        earlestTask = task2;
-                    }
-                }
+                daysTasks.Add(task);
             }
-            orderedTasks.Add(earlestTask);
         }
-        return orderedTasks.ToArray();
+        tasks = null;
+        tasks = daysTasks.ToArray();
+        return TaskModel.OrderTasks(ref tasks);
+    }
+    private EventTimeSlotModel[] GetDaysEventsOrdered(DateTime day)
+    {
+        EventModel[] events = EventModel.GetEvents();
+        EventTimeSlotModel[] timeSlots = EventModel.OrderEventsTimeSlots(ref events);
+        List<EventTimeSlotModel> orderedSlots = new List<EventTimeSlotModel>();
+        for(int i = 0; i< timeSlots.Length; i++)
+        {
+            if(timeSlots[i].dateFrom.Year == day.Year && timeSlots[i].dateFrom.Month == day.Month && timeSlots[i].dateFrom.Day == day.Day) { }
+            {
+                orderedSlots.Add(timeSlots[i]);
+            }
+        }
+        return orderedSlots.ToArray();
+    }
+    private ReminderTimeSlotModel[] GetDaysRemindersOrdered(DateTime day)
+    {
+        ReminderModel[] reminders = ReminderModel.GetReminders();
+        ReminderTimeSlotModel[] timeSlots = ReminderModel.OrderRemindersTimeSlots(ref reminders);
+        List<ReminderTimeSlotModel> orderedSlots = new List<ReminderTimeSlotModel>();
+        for (int i = 0; i < timeSlots.Length; i++)
+        {
+            if (timeSlots[i].date.Year == day.Year && timeSlots[i].date.Month == day.Month && timeSlots[i].date.Day == day.Day) { }
+            {
+                orderedSlots.Add(timeSlots[i]);
+            }
+        }
+        return orderedSlots.ToArray();
     }
 
     #endregion

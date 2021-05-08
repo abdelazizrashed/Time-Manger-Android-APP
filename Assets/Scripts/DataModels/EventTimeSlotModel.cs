@@ -34,4 +34,31 @@ public class EventTimeSlotModel
         reminders = _reminders;
         parentEvent = _parentEvent;
     }
+
+    public static EventTimeSlotModel[] OrderTimeSlots(List<EventTimeSlotModel> timeSlots)
+    {
+        List<EventTimeSlotModel> orderedSlots = new List<EventTimeSlotModel>();
+        foreach (EventTimeSlotModel timeSlot in timeSlots)
+        {
+            EventTimeSlotModel earlestSlot = timeSlot;
+            foreach (EventTimeSlotModel slot2 in timeSlots)
+            {
+                if (DateTime.Compare(earlestSlot.timeFrom, slot2.timeFrom) > 0)
+                {
+                    earlestSlot = slot2;
+                }
+                else if (DateTime.Compare(earlestSlot.timeFrom, slot2.timeFrom) == 0)
+                {
+                    if (DateTime.Compare(earlestSlot.timeTo, slot2.timeTo) > 0)
+                    {
+                        earlestSlot = slot2;
+                    }
+                }
+            }
+            orderedSlots.Add(earlestSlot);
+            timeSlots.Remove(earlestSlot);
+        }
+
+        return orderedSlots.ToArray();
+    }
 }

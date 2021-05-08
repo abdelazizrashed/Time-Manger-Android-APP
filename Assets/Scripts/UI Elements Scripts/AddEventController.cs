@@ -103,7 +103,7 @@ public class AddEventController : MonoBehaviour
             _color: color,
             _parent: parentEvent
             );
-        EventModel.SaveEvent(newEvent);
+        EventModel.SaveEvent(ref newEvent);
         EventSystem.instance.AddNewEvent();
         HideAddEventPanel();
 
