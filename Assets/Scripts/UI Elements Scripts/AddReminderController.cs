@@ -24,9 +24,48 @@ public class AddReminderController : MonoBehaviour
         Destroy(gameObject);
     }
 
+    public TMP_Text addReminderTitleTxt;
     public void SetUpFieldsForEdit(ReminderModel reminder)
     {
+        //title
+        title = reminder.reminderTitle;
+        if(reminderTitleInputField != null)
+        {
+            reminderTitleInputField.text = title;
+        }
+        if(addReminderTitleTxt != null)
+        {
+            addReminderTitleTxt.text = title;
+        }
 
+        //description
+        description = reminder.reminderDescription;
+        if(reminderDescriptionInputField != null)
+        {
+            reminderDescriptionInputField.text = description;
+        }
+
+        //time slots
+        timeSlots = new List<ReminderTimeSlotModel>(reminder.timeSlots);
+
+        foreach (ReminderTimeSlotModel timeSlot in timeSlots)
+        {
+            if (addReminderPanelContent != null && reminderTimeSlotPrefab != null)
+            {
+                GameObject newTimeSlot = Instantiate(reminderTimeSlotPrefab, addReminderPanelContent.transform);
+                newTimeSlot.transform.SetSiblingIndex(3);
+                newTimeSlot.GetComponent<ReminderTimeSlotController>().SetUpFieldsForEdit(timeSlot);
+                timeSlotsGameObjects.Add(newTimeSlot);
+            }
+        }
+
+        //color
+        color = reminder.color;
+        SetChooseColorBtn(color);
+
+        //parent
+        parentEvent = reminder.parentEvent;
+        chooseParentBtn.GetComponentInChildren<TMP_Text>().text = "Event: " + parentEvent.eventTitle;
     }
 
     #region Save Cancel
@@ -170,15 +209,23 @@ public class AddReminderController : MonoBehaviour
         CustomAlertDialog.ShowColorPickerDialog(colors, colorBtnPrefab, index =>
         {
             color = colors[index];
-            chooseColorBtn.GetComponentInChildren<TMP_Text>().text = colors[index].colorName;
-            chooseColorBtn.GetComponentInChildren<Image>().color = new Color32(
-                Helper.StringToByteArray(colors[index].colorValue)[0],
-                Helper.StringToByteArray(colors[index].colorValue)[1],
-                Helper.StringToByteArray(colors[index].colorValue)[2],
-                0xFF
-                );
+            SetChooseColorBtn(color);
         });
 
+    }
+
+    private void SetChooseColorBtn(ColorModel color)
+    {
+        if (chooseColorBtn != null)
+        {
+            chooseColorBtn.GetComponentInChildren<TMP_Text>().text = color.colorName;
+            chooseColorBtn.GetComponentInChildren<Image>().color = new Color32(
+                Helper.StringToByteArray(color.colorValue)[0],
+                Helper.StringToByteArray(color.colorValue)[1],
+                Helper.StringToByteArray(color.colorValue)[2],
+                0xFF
+                );
+        }
     }
 
     #endregion

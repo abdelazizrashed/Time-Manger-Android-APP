@@ -29,6 +29,22 @@ public class ReminderTimeSlotController : MonoBehaviour
 
     #region Control
 
+    public void SetUpFieldsForEdit(ReminderTimeSlotModel timeSlot)
+    {
+        date = timeSlot.date;
+        if (dateBtn != null)
+        {
+            SetTextOfTimeBtn(ref dateBtn, date.ToString("ddd, dd MMM, yyy"));
+        }
+
+        time = timeSlot.time;
+
+        if (timeBtn != null)
+        {
+            SetTextOfTimeBtn(ref timeBtn, time.ToString("hh:mm tt"));
+        }
+    }
+
     #region Cancel and Get time slot
 
     public Button cancelBtn;

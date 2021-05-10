@@ -30,9 +30,75 @@ public class AddTaskController : MonoBehaviour
         DeattachMethodsFromEvents();
     }
 
+    public TMP_Text addTaskTitleTxt;
     public void SetUpFieldsForEdit(TaskModel editTask)
     {
+        //choose list
 
+        choosenList = editTask.taskList;
+        if (chooseListBtn != null)
+        {
+            chooseListBtn.GetComponentInChildren<TMP_Text>().text = choosenList.listTitle;
+        }
+
+        //Task title
+        taskTitle = editTask.taskTitle;
+        if(taskTitleInputField != null)
+        {
+            taskTitleInputField.text = taskTitle;
+        }
+        if(addTaskTitleTxt != null)
+        {
+            addTaskTitleTxt.text = taskTitle;
+        }
+
+        //Task description
+        taskDescription = editTask.taskDescription;
+        if(taskDescriptionInputField != null)
+        {
+            taskDescriptionInputField.text = taskDescription;
+        }
+
+        //time date from 
+        timeFrom = editTask.timeFrom;
+        if (timeFromBtn != null)
+        {
+            SetTextOfTimeBtn(ref timeFromBtn, timeFrom.ToString("hh:mm tt"));
+        }
+
+        dateFrom = editTask.timeFrom.Date;
+        if (dateFromBtn != null)
+        {
+            SetTextOfTimeBtn(ref dateFromBtn, dateFrom.ToString("ddd, dd MMM, yyy"));
+        }
+
+        //time date to
+        timeTo = editTask.timeTo;
+        if (timeToBtn != null)
+        {
+            SetTextOfTimeBtn(ref timeToBtn, timeTo.ToString("hh:mm tt"));
+        }
+
+        dateTo = editTask.timeTo.Date;
+        if (dateToBtn != null)
+        {
+            SetTextOfTimeBtn(ref dateToBtn, dateTo.ToString("ddd, dd MMM, yyy"));
+        }
+
+        //color
+        chosenColor = editTask.color;
+        SetChooseColorBtn(chosenColor);
+        //parent
+        parentEvent = editTask.parentEvent;
+        parentTask = editTask.parentTask;
+        if(parentTask != null)
+        {
+            chooseParentBtn.GetComponentInChildren<TMP_Text>().text = "Task: " + parentTask.taskTitle;
+        }
+        else
+        {
+            chooseParentBtn.GetComponentInChildren<TMP_Text>().text = "Event: " + parentEvent.eventTitle;
+        }
     }
 
     #region Cancel and Save functionalities
@@ -154,7 +220,6 @@ public class AddTaskController : MonoBehaviour
     private string taskDescription = "";
 
     private TasksListModel choosenList = null;
-    private TasksListModel[] tasksListsList = { };
 
     private DateTime dateFrom;
     private DateTime dateTo;
@@ -471,15 +536,23 @@ public class AddTaskController : MonoBehaviour
         CustomAlertDialog.ShowColorPickerDialog(colors, colorBtnPrefab, index =>
         {
             chosenColor = colors[index];
-            chooseColorBtn.GetComponentInChildren<TMP_Text>().text = colors[index].colorName;
-            chooseColorBtn.GetComponentInChildren<Image>().color = new Color32(
-                Helper.StringToByteArray(colors[index].colorValue)[0],
-                Helper.StringToByteArray(colors[index].colorValue)[1],
-                Helper.StringToByteArray(colors[index].colorValue)[2],
-                0xFF
-                );
+            SetChooseColorBtn(chosenColor);
         });
 
+    }
+
+    private void SetChooseColorBtn(ColorModel color)
+    {
+        if(chooseColorBtn != null)
+        {
+            chooseColorBtn.GetComponentInChildren<TMP_Text>().text = color.colorName;
+            chooseColorBtn.GetComponentInChildren<Image>().color = new Color32(
+                Helper.StringToByteArray(color.colorValue)[0],
+                Helper.StringToByteArray(color.colorValue)[1],
+                Helper.StringToByteArray(color.colorValue)[2],
+                0xFF
+                );
+        }
     }
     #endregion
 
