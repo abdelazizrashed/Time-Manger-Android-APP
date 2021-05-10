@@ -16,7 +16,7 @@ public class DayLayoutController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void OnApplicationQuit()
@@ -35,6 +35,12 @@ public class DayLayoutController : MonoBehaviour
     #region Page change 
 
     private Pages currentPage;
+    public GameObject dayLayoutContent;
+    public GameObject dayLayoutElementPrefab;
+    public GameObject rowPrefab;
+    public GameObject columnPrefab;
+    public GameObject emptyPanelPrefab;
+
 
     private void OnAllPageSelected()
     {
@@ -44,19 +50,172 @@ public class DayLayoutController : MonoBehaviour
         List<object> all = new List<object>();
     }
 
+    private void OnTaskPageSelected()
+    {
+        if (currentPage.Value == Pages.Tasks.Value)
+        {
+            TasksListModel list = currentPage.tasksList;
+            TaskModel[] tasks = GetDaysTasksOrdered(currentDay);
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                if(DateTime.Compare(tasks[i-1].timeTo, tasks[i].timeFrom) < 0)
+                {
+                    float duration = (float)(tasks[i].timeFrom - tasks[i - 1].timeTo).TotalHours;
+                    GameObject emptyPlaceHolder = Instantiate(emptyPanelPrefab, dayLayoutContent.transform);
+                    emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 60f);
+                }
+                if (i + 1 < tasks.Length)
+                {
+                    if (
+                        DateTime.Compare(
+                            tasks[i].timeFrom,
+                            tasks[i + 1].timeFrom
+                            ) == 0
+                            )
+                    {
+                        GameObject rowGameObject = Instantiate(rowPrefab, dayLayoutContent.transform);
+                        GameObject child1Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
+                        {
+                            obj.GetComponent<DayLayoutElementController>().currentTask = tasks[i];
+                            obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
+                            obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
+                        });
+                        while (
+                            DateTime.Compare(
+                            tasks[i].timeFrom,
+                            tasks[i + 1].timeFrom
+                            ) == 0 &&
+                            i + 1 < tasks.Length
+                            )
+                        {
+                            i++;
+                            GameObject child2Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
+                            {
+                                obj.GetComponent<DayLayoutElementController>().currentTask = tasks[i];
+                                obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
+                                obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
+                            });
+                        }
+                        continue;
+                    }
+                }
+                GameObject childElement = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, dayLayoutContent.transform, (obj) =>
+                {
+                    obj.GetComponent<DayLayoutElementController>().currentTask = tasks[i];
+                    obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
+                    obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
+                });
+            }
+
+        }
+    }
+
     private void OnRemindersPageSelected()
     {
-        //Todo: implement this method
+        ReminderTimeSlotModel[] timeSlots = GetDaysRemindersOrdered(currentDay);
+        for (int i = 0; i < timeSlots.Length; i++)
+        {
+            if(DateTime.Compare(timeSlots[i-1].time, timeSlots[i].time) != 0)
+            {
+                float duration = (float)(timeSlots[i].time - timeSlots[i - 1].time).TotalHours;
+                GameObject emptyPlaceHolder = Instantiate(emptyPanelPrefab, dayLayoutContent.transform);
+                emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 60f - 15f);
+
+            }
+
+            if(i+1 < timeSlots.Length)
+            {
+                if (DateTime.Compare(timeSlots[i].time, timeSlots[i + 1].time) == 0)
+                {
+                    GameObject rowGameObject = Instantiate(rowPrefab, dayLayoutContent.transform);
+                    GameObject child1Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
+                    {
+                        obj.GetComponent<DayLayoutElementController>().currentReminderTimeSlot = timeSlots[i];
+                        obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
+                        obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
+                    });
+                    while(DateTime.Compare(timeSlots[i].time, timeSlots[i + 1].time) == 0 && i + 1 < timeSlots.Length)
+                    {
+                        i++;
+                        GameObject child2Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
+                        {
+                            obj.GetComponent<DayLayoutElementController>().currentReminderTimeSlot = timeSlots[i];
+                            obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
+                            obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
+                        });
+                    }
+                    continue;
+                }
+                GameObject childElement = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, dayLayoutContent.transform, (obj) =>
+                {
+                    obj.GetComponent<DayLayoutElementController>().currentReminderTimeSlot = timeSlots[i];
+                    obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
+                    obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
+                });
+            }
+        }
     }
 
     private void OnEventsPageSelected()
     {
-        //Todo: implement this method
+        EventTimeSlotModel[] eventTimeSlots = GetDaysEventsOrdered(currentDay);
+        for(int i = 0; i< eventTimeSlots.Length; i++)
+        {
+            if (i + 1 < eventTimeSlots.Length)
+            {
+                if (DateTime.Compare(eventTimeSlots[i - 1].timeTo, eventTimeSlots[i].timeFrom) < 0)
+                {
+                    float duration = (float)(eventTimeSlots[i].timeFrom - eventTimeSlots[i - 1].timeTo).TotalHours;
+                    GameObject emptyPlaceHolder = Instantiate(emptyPanelPrefab, dayLayoutContent.transform);
+                    emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 60f);
+                }
+                if (
+                    DateTime.Compare(
+                        eventTimeSlots[i].timeFrom,
+                        eventTimeSlots[i+1].timeFrom
+                        ) == 0
+                        )
+                {
+                    GameObject rowGameObject = Instantiate(rowPrefab, dayLayoutContent.transform);
+                    GameObject child1Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
+                    {
+                        obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = eventTimeSlots[i];
+                        obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
+                        obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
+                    });
+                    while (
+                        DateTime.Compare(
+                        eventTimeSlots[i].timeFrom,
+                        eventTimeSlots[i + 1].timeFrom
+                            ) == 0 &&
+                        i + 1 < eventTimeSlots.Length
+                        )
+                    {
+                        i++;
+                        GameObject child2Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
+                        {
+                            obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = eventTimeSlots[i];
+                            obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
+                            obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
+                        });
+                    }
+                    continue;
+                }
+            }
+            GameObject childElement = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, dayLayoutContent.transform, (obj) =>
+            {
+                obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = eventTimeSlots[i];
+                obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
+                obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
+            });
+        }
     }
 
     #endregion
 
     #region Change Day
+
+    private DateTime currentDay;
 
     #endregion
 
@@ -95,17 +254,27 @@ public class DayLayoutController : MonoBehaviour
     private void OnStartUp()
     {
         currentPage = Pages.All;
+        currentDay = DateTime.Now.Date;
+        OnAllPageSelected();
     }
 
     #region Helpers
 
-    private TaskModel[] GetDaysTasksOrdered(DateTime day)
+    private TaskModel[] GetDaysTasksOrdered(DateTime day, TasksListModel list = null)
     {
-        TaskModel[] tasks = TaskModel.GetTasks();
+        TaskModel[] tasks = { };
+        if(list != null)
+        {
+            tasks = TaskModel.GetListTasks(list);
+        }
+        else
+        {
+            tasks = TaskModel.GetTasks();
+        }
         List<TaskModel> daysTasks = new List<TaskModel>();
         foreach(TaskModel task in tasks)
         {
-            if(task.timeFrom.Year == day.Year && task.timeFrom.Month == day.Month && task.timeFrom.Day == day.Day)
+            if(DateTime.Compare(task.timeFrom.Date, day.Date) == 0 || DateTime.Compare(task.timeTo.Date, day.Date) == 0)
             {
                 daysTasks.Add(task);
             }
@@ -121,12 +290,12 @@ public class DayLayoutController : MonoBehaviour
         List<EventTimeSlotModel> orderedSlots = new List<EventTimeSlotModel>();
         for(int i = 0; i< timeSlots.Length; i++)
         {
-            if(timeSlots[i].dateFrom.Year == day.Year && timeSlots[i].dateFrom.Month == day.Month && timeSlots[i].dateFrom.Day == day.Day) { }
+            if(DateTime.Compare(timeSlots[i].dateFrom.Date, day.Date) == 0 || DateTime.Compare(timeSlots[i].dateTo.Date, day.Date) == 0)
             {
                 orderedSlots.Add(timeSlots[i]);
             }
         }
-        return orderedSlots.ToArray();
+        return EventTimeSlotModel.OrderTimeSlots(orderedSlots);
     }
     private ReminderTimeSlotModel[] GetDaysRemindersOrdered(DateTime day)
     {
@@ -135,7 +304,7 @@ public class DayLayoutController : MonoBehaviour
         List<ReminderTimeSlotModel> orderedSlots = new List<ReminderTimeSlotModel>();
         for (int i = 0; i < timeSlots.Length; i++)
         {
-            if (timeSlots[i].date.Year == day.Year && timeSlots[i].date.Month == day.Month && timeSlots[i].date.Day == day.Day) { }
+            if (DateTime.Compare(timeSlots[i].date.Date, day.Date) == 0)
             {
                 orderedSlots.Add(timeSlots[i]);
             }

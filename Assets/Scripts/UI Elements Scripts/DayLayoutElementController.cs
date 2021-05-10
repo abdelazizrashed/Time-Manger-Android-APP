@@ -106,7 +106,6 @@ public class DayLayoutElementController : MonoBehaviour
                 elementTitle.text = currentEventTimeSlot.parentEvent.eventTitle;
                 gameObject.GetComponent<Image>().color = Helper.StringToColor(currentEventTimeSlot.parentEvent.color.colorValue);
                 if (DateTime.Compare(currentEventTimeSlot.dateFrom.Date, currentEventTimeSlot.dateTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.dateTo.Date) == 0)
-                //currentEventTimeSlot.dateFrom.Year == currentEventTimeSlot.dateTo.Year && currentEventTimeSlot.dateFrom.Month == currentEventTimeSlot.dateTo.Month && currentEventTimeSlot.dateFrom.Day == currentEventTimeSlot.dateTo.Day)
                 {
                     float duration = (float)(currentEventTimeSlot.timeTo - currentEventTimeSlot.timeFrom).TotalMinutes;
                     gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 60f);
@@ -307,12 +306,12 @@ public class DayLayoutElementController : MonoBehaviour
 
                 }
 
-            } else if (currentTask != null)
+            } 
+            else if (currentTask != null)
             {
                 elementTitle.text = currentTask.taskTitle;
                 gameObject.GetComponent<Image>().color = Helper.StringToColor(currentTask.color.colorValue);
                 if (DateTime.Compare(currentTask.timeFrom.Date, currentTask.timeTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentTask.timeFrom.Date) == 0)
-                //currentEventTimeSlot.dateFrom.Year == currentEventTimeSlot.dateTo.Year && currentEventTimeSlot.dateFrom.Month == currentEventTimeSlot.dateTo.Month && currentEventTimeSlot.dateFrom.Day == currentEventTimeSlot.dateTo.Day)
                 {
                     float duration = (float)(currentTask.timeTo - currentTask.timeFrom).TotalMinutes;
                     gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 60f);

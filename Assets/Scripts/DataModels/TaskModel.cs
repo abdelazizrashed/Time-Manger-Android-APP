@@ -152,4 +152,12 @@ public class TaskModel: System.Object
         }
         return orderedTasks.ToArray();
     }
+
+    public static TaskModel[] GetListTasks(TasksListModel list)
+    {
+
+        //Todo: implement this method
+        TaskModel[] tasks = new TaskModel[] { new TaskModel(_taskTitle: "Task 1"), new TaskModel(_taskTitle: "Task 2") }; //Just a place holder
+        return tasks;
+    }
 }

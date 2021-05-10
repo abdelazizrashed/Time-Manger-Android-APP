@@ -2936,6 +2936,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   elementTitle: {fileID: 0}
+  dayLayoutElementPrefab: {fileID: 0}
+  dayLayoutElementChildrenPrefab: {fileID: 0}
+  rowPrefab: {fileID: 0}
+  columnPrefab: {fileID: 0}
 --- !u!114 &699799107
 MonoBehaviour:
   m_ObjectHideFlags: 0
