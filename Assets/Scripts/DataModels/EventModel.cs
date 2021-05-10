@@ -66,15 +66,15 @@ public class EventModel: System.Object
 
     public static TaskModel[] GetChildrenTasksOrdered(ref EventModel parentEvent)
     {
-        if (parentEvent.isChildrenTasksOrdered)
+        if (parentEvent?.isChildrenTasksOrdered ?? false)
         {
             return parentEvent.childrenTasks;
         }
         TaskModel[] tasks = TaskModel.GetTasks();
         List<TaskModel> children = new List<TaskModel>();
-        for(int i = 0; i< tasks.Length; i++)
+        for(int i = 0; i< tasks?.Length; i++)
         {
-            if (tasks[i].parentEvent.eventID == parentEvent.eventID)
+            if (tasks[i].parentEvent?.eventID == parentEvent.eventID)
             {
                 tasks[i].childrenTasks = TaskModel.GetTaskChildrenOrderedByStartTime(ref tasks[i]);
                 children.Add(tasks[i]);
@@ -108,22 +108,27 @@ public class EventModel: System.Object
 
     public static EventTimeSlotModel[] GetChildrenEventsTimeSlotsOrdered(ref EventModel parentEvent)
     {
-        if (parentEvent.isChildrenEventsOrdered)
+        if (parentEvent?.isChildrenEventsOrdered ?? false)
         {
             return parentEvent.childrenEventsTimeSlots;
         }
         EventModel[] events = EventModel.GetEvents();
         List<EventModel> children = new List<EventModel>();
-        for(int i = 0; i< events.Length; i++)
+        for(int i = 0; i< events?.Length; i++)
         {
-            if (events[i].parentEvent.eventID == parentEvent.eventID)
+            if (events[i].parentEvent?.eventID == parentEvent.eventID)
             {
                 events[i].childrenEventsTimeSlots = EventModel.GetChildrenEventsTimeSlotsOrdered(ref events[i]);
                 children.Add(events[i]);
             }
         }
         events = null;
-        List<EventTimeSlotModel> timeSlots = new List<EventTimeSlotModel>(EventModel.SetTimeSlotParentEvent(parentEvent));
+        List<EventTimeSlotModel> timeSlots = new List<EventTimeSlotModel>();
+        parentEvent.timeSlots = EventModel.SetTimeSlotParentEvent(parentEvent);
+        if(parentEvent.timeSlots != null)
+        {
+            timeSlots.AddRange(parentEvent.timeSlots);
+        }
         foreach(EventModel child in children)
         {
             timeSlots.AddRange(EventModel.SetTimeSlotParentEvent(child));
@@ -155,15 +160,15 @@ public class EventModel: System.Object
 
     public static ReminderTimeSlotModel[] GetChildrenReminderTimeSlotsOrdered(ref EventModel parentEvent)
     {
-        if (parentEvent.isChildrenRemindersOrdered)
+        if (parentEvent?.isChildrenRemindersOrdered ?? false)
         {
             return parentEvent.childrenRemindersTimeSlots;
         }
         ReminderModel[] reminders = ReminderModel.GetReminders();
         List<ReminderModel> children = new List<ReminderModel>();
-        for(int i = 0; i<reminders.Length; i++)
+        for(int i = 0; i<reminders?.Length; i++)
         {
-            if (reminders[i].parentEvent.eventID == parentEvent.eventID)
+            if (reminders[i].parentEvent?.eventID == parentEvent.eventID)
             {
                 children.Add(reminders[i]);
             }
@@ -194,7 +199,7 @@ public class EventModel: System.Object
     public static EventTimeSlotModel[] SetTimeSlotParentEvent(EventModel parentEvent)
     {
         EventTimeSlotModel[] timeSlots = parentEvent.timeSlots;
-        for (int i = 0; i < timeSlots.Length; i++)
+        for (int i = 0; i < timeSlots?.Length; i++)
         {
             timeSlots[i].parentEvent = parentEvent;
         }
@@ -203,7 +208,7 @@ public class EventModel: System.Object
 
     public static EventTimeSlotModel[] OrderEventsTimeSlots(ref EventModel[] events)
     {
-        for (int i = 0; i < events.Length; i++)
+        for (int i = 0; i < events?.Length; i++)
         {
             events[i].childrenTasks = EventModel.GetChildrenTasksOrdered(ref events[i]);
             events[i].childrenEventsTimeSlots = EventModel.GetChildrenEventsTimeSlotsOrdered(ref events[i]);
@@ -213,7 +218,11 @@ public class EventModel: System.Object
         List<EventTimeSlotModel> timeSlots = new List<EventTimeSlotModel>();
         foreach (EventModel e in events)
         {
-            timeSlots.AddRange(EventModel.SetTimeSlotParentEvent(e));
+            e.timeSlots = EventModel.SetTimeSlotParentEvent(e);
+            if (e.timeSlots != null)
+            {
+            timeSlots.AddRange(e.timeSlots);
+            }
         }
         List<EventTimeSlotModel> orderedSlots = new List<EventTimeSlotModel>();
         foreach (EventTimeSlotModel timeSlot in timeSlots)

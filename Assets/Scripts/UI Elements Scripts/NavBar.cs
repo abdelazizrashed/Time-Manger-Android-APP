@@ -10,15 +10,10 @@ public class NavBar : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        AttachActionsToEvents();
         AddListenerToBtns();
         CloseAllMenus();
-        AttachActionsToEvents();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        OnStartUp();
     }
 
     private void OnDestroy()
@@ -49,6 +44,24 @@ public class NavBar : MonoBehaviour
     #endregion
 
     #region Nav bar manager methods
+
+    private void OnStartUp()
+    {
+        Pages page = Pages.Events;
+        if (!IsNull(pageTitleTxt) && page != null)
+        {
+            CloseAllMenus();
+            currentPage = page;
+            if (page.Value == Pages.Tasks.Value)
+            {
+                pageTitleTxt.text = page.tasksList.listTitle;
+            }
+            else
+            {
+                pageTitleTxt.text = page.Value;
+            }
+        }
+    }
 
     private void AddListenerToBtns()
     {

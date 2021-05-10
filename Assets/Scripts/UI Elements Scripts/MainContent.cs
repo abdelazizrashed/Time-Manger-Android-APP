@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System;
+using System.Threading;
 
 public class MainContent : MonoBehaviour
 {
@@ -16,10 +18,98 @@ public class MainContent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        CheckSwipeDirectionAlongX();
     }
 
+    private DateTime currentDay;
+    private Pages currentPage;
+    #region Gesture Control
 
+    /// <summary>
+    /// This method checks the directions along the x axis.
+    /// </summary>
+    /// <returns></returns>
+    private void CheckSwipeDirectionAlongX()
+    {
+        Vector2 fingerDown = new Vector2();
+        Vector2 fingerUp = new Vector2();
+
+        float SWIPE_THRESHOLD = 10f;
+        foreach (Touch touch in Input.touches)
+        {
+            if (touch.phase == TouchPhase.Began)
+            {
+                fingerUp = touch.position;
+                fingerDown = touch.position;
+            }
+
+            //Detects swipe after finger is released
+            if (touch.phase == TouchPhase.Ended)
+            {
+                fingerDown = touch.position;
+                if (Mathf.Abs(fingerDown.x - fingerUp.x) > SWIPE_THRESHOLD && Mathf.Abs(fingerDown.x - fingerUp.x) > Mathf.Abs(fingerDown.y - fingerUp.y))
+                {
+                    //Debug.Log("Horizontal");
+                    if (fingerDown.x - fingerUp.x > 0)//Right swipe
+                    {
+                        OnSwipeRight();
+                    }
+                    else if (fingerDown.x - fingerUp.x < 0)//Left swipe
+                    {
+                        OnSwipeLeft();
+                    }
+                    fingerUp = fingerDown;
+
+                }
+            }
+
+        }
+    }
+
+    private GameObject currentDayLayoutPage;
+
+    private void OnSwipeRight()
+    {
+        currentDay = currentDay.AddDays(-1);
+
+        GameObject newLayoutPage = Helper.Instantiate<GameObject>(dayLayoutPagePrefab, gameObject.transform, (obj) =>
+        {
+            obj.GetComponent<DayLayoutController>().currentPage = currentPage;
+            obj.GetComponent<DayLayoutController>().currentDay = currentDay;
+        });
+        var pos = newLayoutPage.GetComponent<RectTransform>().anchoredPosition;
+        newLayoutPage.GetComponent<RectTransform>().anchoredPosition = new Vector2(pos.x - 2000, pos.y);
+        newLayoutPage.transform.SetSiblingIndex(0);
+        currentDayLayoutPage.GetComponent<RectTransform>().DOAnchorPos3DX(2000, 0.1f);
+        newLayoutPage.GetComponent<RectTransform>().DOAnchorPos3DX(pos.x, 0.1f);
+        //Thread.Sleep(250);
+        Destroy(currentDayLayoutPage);
+        currentDayLayoutPage = newLayoutPage;
+        newLayoutPage = null;
+    }
+
+    private void OnSwipeLeft()
+    {
+        currentDay = currentDay.AddDays(1);
+
+        GameObject newLayoutPage = Helper.Instantiate<GameObject>(dayLayoutPagePrefab, gameObject.transform, (obj) =>
+        {
+            obj.GetComponent<DayLayoutController>().currentPage = currentPage;
+            obj.GetComponent<DayLayoutController>().currentDay = currentDay;
+        });
+        var pos = newLayoutPage.GetComponent<RectTransform>().anchoredPosition;
+        newLayoutPage.GetComponent<RectTransform>().anchoredPosition = new Vector2(pos.x + 2000, pos.y);
+        newLayoutPage.transform.SetSiblingIndex(0);
+        currentDayLayoutPage.GetComponent<RectTransform>().DOAnchorPos3DX(-2000, 0.1f);
+        newLayoutPage.GetComponent<RectTransform>().DOAnchorPos3DX(pos.x, 0.1f);
+        //Thread.Sleep(250);
+        Destroy(currentDayLayoutPage);
+        currentDayLayoutPage = newLayoutPage;
+        newLayoutPage = null;
+
+    }
+
+    #endregion
     private void AddListenersToBtns()
     {
         if (addBtn != null)
@@ -36,14 +126,25 @@ public class MainContent : MonoBehaviour
         }
     }
 
+    public GameObject dayLayoutPagePrefab;
+
     private void OnStartUp()
     {
+        currentDay = DateTime.Now.Date;
+        currentPage = Pages.Events;
         HideAddOptionsBtns();
         if (addBtn != null)
         {
             addBtn.gameObject.SetActive(true);
         }
 
+        currentDayLayoutPage = Helper.Instantiate<GameObject>(dayLayoutPagePrefab, gameObject.transform, (obj) =>
+        {
+            obj.GetComponent<DayLayoutController>().currentPage = currentPage;
+            obj.GetComponent<DayLayoutController>().currentDay = currentDay;
+        });
+        currentDayLayoutPage.transform.SetSiblingIndex(0);
+        EventSystem.instance.ChangePage(Pages.Events);
     }
     
     #region Add menu

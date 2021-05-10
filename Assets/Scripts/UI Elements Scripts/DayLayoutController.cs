@@ -40,6 +40,14 @@ public class DayLayoutController : MonoBehaviour
 
     #endregion
 
+    private void DestroyAllChildren(GameObject parent)
+    {
+        while(parent.transform.childCount != 0)
+        {
+            Destroy(parent.transform.GetChild(0).gameObject);
+        }
+    }
+
     #region Page change 
 
     public GameObject dayLayoutContent;
@@ -169,6 +177,7 @@ public class DayLayoutController : MonoBehaviour
 
     private void OnTaskPageSelected()
     {
+        DestroyAllChildren(dayLayoutContent);
         if (currentPage.Value == Pages.Tasks.Value)
         {
             TasksListModel list = currentPage.tasksList;
@@ -229,6 +238,7 @@ public class DayLayoutController : MonoBehaviour
 
     private void OnRemindersPageSelected()
     {
+        DestroyAllChildren(dayLayoutContent);
         ReminderTimeSlotModel[] timeSlots = GetDaysRemindersOrdered(currentDay);
         for (int i = 0; i < timeSlots.Length; i++)
         {
@@ -275,6 +285,7 @@ public class DayLayoutController : MonoBehaviour
 
     private void OnEventsPageSelected()
     {
+        DestroyAllChildren(dayLayoutContent);
         EventTimeSlotModel[] eventTimeSlots = GetDaysEventsOrdered(currentDay);
         for(int i = 0; i< eventTimeSlots.Length; i++)
         {
@@ -387,9 +398,13 @@ public class DayLayoutController : MonoBehaviour
             }
 
             dayInfo.GetComponentInChildren<TMP_Text>().text = currentDay.ToString("MMM dd, yyyy");
+            if (dayInfo.GetComponentInChildren<TMP_Text>() == null)
+            {
+                Debug.LogError("The text component of the dayinfo is null");
+            }
             if(DateTime.Compare(currentDay.Date, DateTime.Now.Date) == 0)
             {
-                dayInfo.GetComponent<Image>().color = new Color(43, 47, 212);
+                dayInfo.GetComponent<Image>().color = new Color(43/255f, 47 / 255f, 212 / 255f);
             }
 
         }
@@ -397,7 +412,6 @@ public class DayLayoutController : MonoBehaviour
         {
             Debug.LogError("You forgot to set the current page and the current day");
         }
-        //OnAllPageSelected();
     }
 
     #region Helpers
