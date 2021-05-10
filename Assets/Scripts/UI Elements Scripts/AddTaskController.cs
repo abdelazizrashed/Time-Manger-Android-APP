@@ -30,6 +30,11 @@ public class AddTaskController : MonoBehaviour
         DeattachMethodsFromEvents();
     }
 
+    public void SetUpFieldsForEdit(TaskModel editTask)
+    {
+
+    }
+
     #region Cancel and Save functionalities
 
     #region UI Variables

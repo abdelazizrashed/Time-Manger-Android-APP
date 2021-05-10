@@ -24,6 +24,11 @@ public class AddReminderController : MonoBehaviour
         Destroy(gameObject);
     }
 
+    public void SetUpFieldsForEdit(ReminderModel reminder)
+    {
+
+    }
+
     #region Save Cancel
 
     public Button cancelBtn;

@@ -34,6 +34,9 @@ public class EventModel: System.Object
         timeSlots = _timeSlots;
         color = _color;
         parentEvent = _parent;
+        childrenEventsTimeSlots = new EventTimeSlotModel[] { };
+        childrenTasks = new TaskModel[] { };
+        childrenRemindersTimeSlots = new ReminderTimeSlotModel[] { };
         isChildrenEventsOrdered = false;
         isChildrenRemindersOrdered = false;
         isChildrenTasksOrdered = false;

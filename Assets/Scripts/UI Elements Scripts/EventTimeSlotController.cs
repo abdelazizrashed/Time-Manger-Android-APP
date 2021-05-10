@@ -26,6 +26,33 @@ public class EventTimeSlotController : MonoBehaviour
         DeattachMethodsFromEvents();
     }
 
+    public void SetUpFieldsForEdit(EventTimeSlotModel timeSlot)
+    {
+        if(timeFromBtn != null)
+        {
+            SetTextOfTimeBtn(ref timeFromBtn, timeSlot.timeFrom.ToString("hh:mm tt"));
+            timeFrom = timeSlot.timeFrom;
+        }
+        if(dateFromBtn != null)
+        {
+            SetTextOfTimeBtn(ref dateFromBtn, timeSlot.dateFrom.ToString("ddd, dd MMM, yyy"));
+            dateFrom = timeSlot.dateFrom;
+        }
+        if(timeToBtn != null)
+        {
+            SetTextOfTimeBtn(ref timeToBtn, timeSlot.timeTo.ToString("hh:mm tt"));
+            timeTo = timeSlot.timeTo;
+        }
+        if(dateToBtn != null)
+        {
+            SetTextOfTimeBtn(ref dateToBtn, timeSlot.dateTo.ToString("ddd, dd MMM, yyy"));
+            dateTo = timeSlot.dateTo;
+        }
+
+        location = timeSlot.location;
+        locationInputField.text = timeSlot.location;
+    }
+
     #region Cancel Get time slot
 
     public Button cancelBtn;

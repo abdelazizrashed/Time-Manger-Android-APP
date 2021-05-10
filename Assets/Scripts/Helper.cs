@@ -258,13 +258,94 @@ public class Helper : MonoBehaviour
     /// This method takes two object of type TaskModel, EventModel, or Reminder Model and sort them
     /// </summary>
     /// <returns></returns>
-    public static System.Object[] SortTwoByDateTime<T, R>(T[] object1, R[] object2) 
+    public static System.Object[] MergeSort3ArraysByTime(TaskModel[] tasks, EventTimeSlotModel[] eventTimeSlots, ReminderTimeSlotModel[] reminderTimeSlots) 
     {
-        int m = object1.Length;
-        int n = object2.Length;
-
         List<object> sortedList = new List<object>();
+        int i = 0;
+        int j = 0; 
+        int k = 0;
+        while(i< tasks.Length && j< eventTimeSlots.Length && k < reminderTimeSlots.Length)
+        {
+            DateTime tTimeFrom = tasks[i].timeFrom;
+            DateTime eTimeFrom = eventTimeSlots[j].timeFrom;
+            DateTime rTime = reminderTimeSlots[k].time;
+            if(DateTime.Compare(tTimeFrom, eTimeFrom) <= 0 && DateTime.Compare(tTimeFrom, rTime) <= 0)
+            {
+                sortedList.Add(tasks[i]);
+                i++;
+            }
+            else if(DateTime.Compare(eTimeFrom, tTimeFrom) <= 0 && DateTime.Compare(eTimeFrom, rTime) <= 0)
+            {
+                sortedList.Add(eventTimeSlots[j]);
+                j++;
+            }
+            else
+            {
+                sortedList.Add(reminderTimeSlots[k]);
+                k++;
+            }
+        }
 
+        while(i <tasks.Length && j < eventTimeSlots.Length)
+        {
+            if(DateTime.Compare(tasks[i].timeFrom, eventTimeSlots[j].timeFrom) < 0)
+            {
+                sortedList.Add(tasks[i]);
+                i++;
+            }
+            else
+            {
+                sortedList.Add(eventTimeSlots[j]);
+                j++;
+            }
+        }
 
+        while (k < reminderTimeSlots.Length && j < eventTimeSlots.Length)
+        {
+            if (DateTime.Compare(reminderTimeSlots[k].time, eventTimeSlots[j].timeFrom) < 0)
+            {
+                sortedList.Add(reminderTimeSlots[k]);
+                k++;
+            }
+            else
+            {
+                sortedList.Add(eventTimeSlots[j]);
+                j++;
+            }
+        }
+
+        while (i < tasks.Length && k < reminderTimeSlots.Length)
+        {
+            if (DateTime.Compare(tasks[i].timeFrom, reminderTimeSlots[k].time) < 0)
+            {
+                sortedList.Add(tasks[i]);
+                i++;
+            }
+            else
+            {
+                sortedList.Add(reminderTimeSlots[k]);
+                k++;
+            }
+        }
+
+        while (i < tasks.Length)
+        {
+            sortedList.Add(tasks[i]);
+            i++;
+        }
+
+        while (j < eventTimeSlots.Length)
+        {
+            sortedList.Add(eventTimeSlots[j]);
+            j++;
+        }
+
+        while (k < reminderTimeSlots.Length)
+        {
+            sortedList.Add(reminderTimeSlots[k]);
+            k++;
+        }
+
+        return sortedList.ToArray();
     }
 }
