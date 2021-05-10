@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DayLayoutController : MonoBehaviour
 {
@@ -28,13 +30,18 @@ public class DayLayoutController : MonoBehaviour
 
     #region Controls
 
-    #region Gesture Control
+    #region Variables
+    [HideInInspector]
+    public Pages currentPage;
+    [HideInInspector]
+    public DateTime currentDay;
+
+    public GameObject dayInfo;
 
     #endregion
 
     #region Page change 
 
-    private Pages currentPage;
     public GameObject dayLayoutContent;
     public GameObject dayLayoutElementPrefab;
     public GameObject rowPrefab;
@@ -42,13 +49,123 @@ public class DayLayoutController : MonoBehaviour
     public GameObject emptyPanelPrefab;
 
 
-    private void OnAllPageSelected()
-    {
-        TaskModel[] tasks = TaskModel.GetTasks();
-        EventModel[] events = EventModel.GetEvents();
-        ReminderModel[] reminders = ReminderModel.GetReminders();
-        List<object> all = new List<object>();
-    }
+    //private void OnAllPageSelected()
+    //{
+    //    object[] all = Helper.MergeSort3ArraysByTime(
+    //        GetDaysTasksOrdered(currentDay),
+    //        GetDaysEventsOrdered(currentDay),
+    //        GetDaysRemindersOrdered(currentDay)
+    //        );
+
+    //    for (int i = 0; i < all.Length; i++)
+    //    {
+    //        DateTime currentChildTime = new DateTime();
+    //        if (all[i] is TaskModel)
+    //        {
+    //            currentChildTime = ((TaskModel)all[i]).timeFrom;
+    //        }
+    //        if (all[i] is EventTimeSlotModel)
+    //        {
+    //            currentChildTime = ((EventTimeSlotModel)all[i]).timeFrom;
+    //        }
+    //        if (all[i] is ReminderTimeSlotModel)
+    //        {
+    //            currentChildTime = ((ReminderTimeSlotModel)all[i]).time;
+    //        }
+    //        DateTime previousChildTime = new DateTime
+    //        if (i + 1 < all.Length)
+    //        {
+    //            DateTime nextChildTime = new DateTime();
+    //            if (all[i + 1] is TaskModel)
+    //            {
+    //                nextChildTime = ((TaskModel)all[i + 1]).timeFrom;
+    //            }
+    //            if (all[i + 1] is EventTimeSlotModel)
+    //            {
+    //                nextChildTime = ((EventTimeSlotModel)all[i + 1]).timeFrom;
+    //            }
+    //            if (all[i + 1] is ReminderTimeSlotModel)
+    //            {
+    //                nextChildTime = ((ReminderTimeSlotModel)all[i + 1]).time;
+    //            }
+
+    //            if (DateTime.Compare(currentChildTime, nextChildTime) == 0)
+    //            {
+    //                GameObject rowGameObject = Instantiate(rowPrefab, columnGameObject.transform);
+    //                GameObject child1Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
+    //                {
+    //                    if (all[i] is TaskModel)
+    //                    {
+    //                        obj.GetComponent<DayLayoutElementController>().currentTask = (TaskModel)all[i];
+    //                    }
+    //                    if (all[i] is EventTimeSlotModel)
+    //                    {
+    //                        obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = (EventTimeSlotModel)all[i];
+    //                    }
+    //                    if (all[i] is ReminderTimeSlotModel)
+    //                    {
+    //                        obj.GetComponent<DayLayoutElementController>().currentReminderTimeSlot = (ReminderTimeSlotModel)all[i];
+    //                    }
+    //                    obj.GetComponent<DayLayoutElementController>().currentPageType = currentPageType;
+    //                    obj.GetComponent<DayLayoutElementController>().currentDate = currentDate;
+    //                });
+    //                while (DateTime.Compare(currentChildTime, nextChildTime) == 0 && i + 1 < currentEventTimeSlot.parentEvent.allEventsTimeSlots.Length)
+    //                {
+    //                    i++;
+    //                    GameObject child2Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
+    //                    {
+    //                        if (all[i] is TaskModel)
+    //                        {
+    //                            obj.GetComponent<DayLayoutElementController>().currentTask = (TaskModel)all[i];
+    //                        }
+    //                        if (all[i] is EventTimeSlotModel)
+    //                        {
+    //                            obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = (EventTimeSlotModel)all[i];
+    //                        }
+    //                        if (all[i] is ReminderTimeSlotModel)
+    //                        {
+    //                            obj.GetComponent<DayLayoutElementController>().currentReminderTimeSlot = (ReminderTimeSlotModel)all[i];
+    //                        }
+    //                        obj.GetComponent<DayLayoutElementController>().currentPageType = currentPageType;
+    //                        obj.GetComponent<DayLayoutElementController>().currentDate = currentDate;
+    //                    });
+    //                    if (all[i + 1] is TaskModel)
+    //                    {
+    //                        nextChildTime = ((TaskModel)all[i + 1]).timeFrom;
+    //                    }
+    //                    if (all[i + 1] is EventTimeSlotModel)
+    //                    {
+    //                        nextChildTime = ((EventTimeSlotModel)all[i + 1]).timeFrom;
+    //                    }
+    //                    if (all[i + 1] is ReminderTimeSlotModel)
+    //                    {
+    //                        nextChildTime = ((ReminderTimeSlotModel)all[i + 1]).time;
+    //                    }
+    //                }
+    //                continue;
+    //            }
+
+    //        }
+
+    //        GameObject childElement = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, columnGameObject.transform, (obj) =>
+    //        {
+    //            if (all[i] is TaskModel)
+    //            {
+    //                obj.GetComponent<DayLayoutElementController>().currentTask = (TaskModel)all[i];
+    //            }
+    //            if (all[i] is EventTimeSlotModel)
+    //            {
+    //                obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = (EventTimeSlotModel)all[i];
+    //            }
+    //            if (all[i] is ReminderTimeSlotModel)
+    //            {
+    //                obj.GetComponent<DayLayoutElementController>().currentReminderTimeSlot = (ReminderTimeSlotModel)all[i];
+    //            }
+    //            obj.GetComponent<DayLayoutElementController>().currentPageType = currentPageType;
+    //            obj.GetComponent<DayLayoutElementController>().currentDate = currentDate;
+    //        });
+    //    }
+    //}
 
     private void OnTaskPageSelected()
     {
@@ -215,7 +332,6 @@ public class DayLayoutController : MonoBehaviour
 
     #region Change Day
 
-    private DateTime currentDay;
 
     #endregion
 
@@ -225,15 +341,15 @@ public class DayLayoutController : MonoBehaviour
 
     private void OnChangePage(Pages page)
     {
-        if(page.Value == Pages.All.Value)
-        {
-            OnAllPageSelected();
-        }else if(page.Value == Pages.Events.Value)
+        if(page.Value == Pages.Events.Value)
         {
             OnEventsPageSelected();
         }else if(page.Value == Pages.Reminders.Value)
         {
             OnRemindersPageSelected();
+        }else if(page.Value == Pages.Tasks.Value)
+        {
+            OnTaskPageSelected();
         }
     }
 
@@ -253,9 +369,35 @@ public class DayLayoutController : MonoBehaviour
     
     private void OnStartUp()
     {
-        currentPage = Pages.All;
-        currentDay = DateTime.Now.Date;
-        OnAllPageSelected();
+        if (currentPage != null && currentDay != null)
+        {
+            if (currentPage.Value == Pages.Events.Value)
+            {
+                OnEventsPageSelected();
+            }else if(currentPage.Value == Pages.Reminders.Value)
+            {
+                OnRemindersPageSelected();
+            }else if(currentPage.Value == Pages.Tasks.Value)
+            {
+                OnTaskPageSelected();
+            }
+            else
+            {
+                Debug.LogError("You attached the wrong type of page");
+            }
+
+            dayInfo.GetComponentInChildren<TMP_Text>().text = currentDay.ToString("MMM dd, yyyy");
+            if(DateTime.Compare(currentDay.Date, DateTime.Now.Date) == 0)
+            {
+                dayInfo.GetComponent<Image>().color = new Color(43, 47, 212);
+            }
+
+        }
+        else
+        {
+            Debug.LogError("You forgot to set the current page and the current day");
+        }
+        //OnAllPageSelected();
     }
 
     #region Helpers

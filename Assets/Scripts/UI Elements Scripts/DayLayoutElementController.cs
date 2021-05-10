@@ -15,12 +15,6 @@ public class DayLayoutElementController : MonoBehaviour
         OnStartUp();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     #endregion
 
     #region Data variables
