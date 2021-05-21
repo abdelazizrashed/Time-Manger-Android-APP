@@ -42,6 +42,11 @@ public class ReminderModel: System.Object
         return new ReminderModel[] { new ReminderModel(_reminderTitle: "reminder 1"), new ReminderModel(_reminderTitle: "reminder 2"), new ReminderModel(_reminderTitle: "reminder 3"), };
     }
 
+    public static void MarkReminderDone(ReminderTimeSlotModel timeSlot, DateTime time)
+    {
+        //Todo: implement this method
+    }
+
     public static ReminderTimeSlotModel[] SetTimeSlotParentReminder(ReminderModel parentReminder)
     {
         ReminderTimeSlotModel[] timeSlots = parentReminder.timeSlots;

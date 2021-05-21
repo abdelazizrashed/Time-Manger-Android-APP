@@ -249,12 +249,12 @@ public class EventModel: System.Object
         return orderedSlots.ToArray();
     }
     
-    public static void StartEvent(EventModel _event, DateTime _time)
+    public static void StartEvent(EventTimeSlotModel timeSlot, DateTime time)
     {
         //Todo: implement this method
     }
 
-    public static void FinishEvent(EventModel _event, DateTime _time)
+    public static void FinishEvent(EventTimeSlotModel timeSlot, DateTime time)
     {
         //Todo: Implement this method
     }

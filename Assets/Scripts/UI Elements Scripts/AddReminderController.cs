@@ -24,9 +24,11 @@ public class AddReminderController : MonoBehaviour
         Destroy(gameObject);
     }
 
+    private ReminderModel currentReminder;
     public TMP_Text addReminderTitleTxt;
     public void SetUpFieldsForEdit(ReminderModel reminder)
     {
+        markDoneBtn.gameObject.SetActive(true);
         //title
         title = reminder.reminderTitle;
         if(reminderTitleInputField != null)
@@ -66,6 +68,70 @@ public class AddReminderController : MonoBehaviour
         //parent
         parentEvent = reminder.parentEvent;
         chooseParentBtn.GetComponentInChildren<TMP_Text>().text = "Event: " + parentEvent.eventTitle;
+
+        currentReminder = reminder;
+    }
+
+    public Button markDoneBtn;
+
+    private void OnMarkDoneBtnClicked()
+    {
+        List<string> timeSlotsTimesTitles = new List<string>();
+        for (int i = 0; i < currentReminder.timeSlots.Length; i++)
+        {
+            timeSlotsTimesTitles.Add(timeSlots[i].time.ToString("t, MMM dd, yyyy"));
+        }
+        AGAlertDialog.ShowChooserDialog(
+            "Choose time slot to start",
+            timeSlotsTimesTitles.ToArray(),
+            index =>
+            {
+                ReminderTimeSlotModel chosenTimeSlot = currentReminder.timeSlots[index];
+                string[] titles = { "Now", "Choose specific time" };
+                AGAlertDialog.ShowChooserDialog(
+                    "Choose time",
+                    titles,
+                    i =>
+                    {
+                        if (i == 0)
+                        {
+                            ReminderModel.MarkReminderDone(chosenTimeSlot, DateTime.Now);
+                        }
+                        else
+                        {
+                            AGDateTimePicker.ShowDatePicker(
+                                DateTime.Now.Year,
+                                DateTime.Now.Month,
+                                DateTime.Now.Day,
+                                (year, month, day) =>
+                                {
+                                    AGDateTimePicker.ShowTimePicker(
+                                        DateTime.Now.Hour,
+                                        DateTime.Now.Minute,
+                                        (hour, minute) =>
+                                        {
+                                            ReminderModel.MarkReminderDone(chosenTimeSlot, new DateTime(year, month, day, hour, minute, 0));
+                                        },
+                                        () =>
+                                        {
+                                            AGUIMisc.ShowToast("No time was selected so the reminder wasn't registed as done", AGUIMisc.ToastLength.Long);
+                                        },
+                                        AGDialogTheme.Dark
+                                        );
+                                },
+                                () =>
+                                {
+                                    AGUIMisc.ShowToast("No date was selected so the reminder wasn't registed as done", AGUIMisc.ToastLength.Long);
+                                },
+                                AGDialogTheme.Dark
+                                );
+                        }
+                    },
+                    AGDialogTheme.Dark
+                    );
+            },
+            AGDialogTheme.Dark
+            );
     }
 
     #region Save Cancel
@@ -283,6 +349,11 @@ public class AddReminderController : MonoBehaviour
         if(chooseParentBtn != null)
         {
             chooseParentBtn.onClick.AddListener(OnChooseParentBtnClicked);
+        }
+
+        if(markDoneBtn != null)
+        {
+            markDoneBtn.onClick.AddListener(OnMarkDoneBtnClicked);
         }
     }
 

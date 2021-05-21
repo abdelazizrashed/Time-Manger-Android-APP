@@ -71,16 +71,59 @@ public class AddEventController : MonoBehaviour
 
     private void OnMarkStartedBtnClicked()
     {
-        string[] titles = { "Now", "Pick specific time" };
+        List<string> timeSlotsTimesTitles = new List<string>();
+        for(int i = 0; i< currentEvent.timeSlots.Length; i++)
+        {
+            timeSlotsTimesTitles.Add(timeSlots[i].timeFrom.ToString("t, MMM dd, yyyy"));
+        }
         AGAlertDialog.ShowChooserDialog(
-            "Choose start time",
-            titles,
+            "Choose time slot to start",
+            timeSlotsTimesTitles.ToArray(),
             index =>
             {
-                if(index == 0)
-                {
-
-                }
+                EventTimeSlotModel chosenTimeSlot = currentEvent.timeSlots[index];
+                string[] titles = { "Now", "Choose specific time" };
+                AGAlertDialog.ShowChooserDialog(
+                    "Choose time",
+                    titles,
+                    i =>
+                    {
+                        if (i == 0)
+                        {
+                            EventModel.StartEvent(chosenTimeSlot, DateTime.Now);
+                        }
+                        else
+                        {
+                            AGDateTimePicker.ShowDatePicker(
+                                DateTime.Now.Year,
+                                DateTime.Now.Month,
+                                DateTime.Now.Day,
+                                (year, month, day) =>
+                                {
+                                    AGDateTimePicker.ShowTimePicker(
+                                        DateTime.Now.Hour,
+                                        DateTime.Now.Minute,
+                                        (hour, minute) =>
+                                        {
+                                            EventModel.StartEvent(chosenTimeSlot, new DateTime(year, month, day, hour, minute, 0));
+                                        },
+                                        () =>
+                                        {
+                                            AGUIMisc.ShowToast("No time was selected so the event wasn't registed as started", AGUIMisc.ToastLength.Long);
+                                        },
+                                        AGDialogTheme.Dark
+                                        );
+                                },
+                                () =>
+                                {
+                                    AGUIMisc.ShowToast("No date was selected so the event wasn't registed as started", AGUIMisc.ToastLength.Long);
+                                },
+                                AGDialogTheme.Dark
+                                );
+                        }
+                    },
+                    AGDialogTheme.Dark
+                    );
             },
             AGDialogTheme.Dark
             );
@@ -88,7 +131,62 @@ public class AddEventController : MonoBehaviour
 
     private void OnMarkFinishedBtnClicked()
     {
-
+        List<string> timeSlotsTimesTitles = new List<string>();
+        for (int i = 0; i < currentEvent.timeSlots.Length; i++)
+        {
+            timeSlotsTimesTitles.Add(timeSlots[i].timeFrom.ToString("t, MMM dd, yyyy"));
+        }
+        AGAlertDialog.ShowChooserDialog(
+            "Choose time slot to finish",
+            timeSlotsTimesTitles.ToArray(),
+            index =>
+            {
+                EventTimeSlotModel chosenTimeSlot = currentEvent.timeSlots[index];
+                string[] titles = { "Now", "Choose specific time" };
+                AGAlertDialog.ShowChooserDialog(
+                    "Choose time",
+                    titles,
+                    i =>
+                    {
+                        if (i == 0)
+                        {
+                            EventModel.FinishEvent(chosenTimeSlot, DateTime.Now);
+                        }
+                        else
+                        {
+                            AGDateTimePicker.ShowDatePicker(
+                                DateTime.Now.Year,
+                                DateTime.Now.Month,
+                                DateTime.Now.Day,
+                                (year, month, day) =>
+                                {
+                                    AGDateTimePicker.ShowTimePicker(
+                                        DateTime.Now.Hour,
+                                        DateTime.Now.Minute,
+                                        (hour, minute) =>
+                                        {
+                                            EventModel.FinishEvent(chosenTimeSlot, new DateTime(year, month, day, hour, minute, 0));
+                                        },
+                                        () =>
+                                        {
+                                            AGUIMisc.ShowToast("No time was selected so the event wasn't registed as finished", AGUIMisc.ToastLength.Long);
+                                        },
+                                        AGDialogTheme.Dark
+                                        );
+                                },
+                                () =>
+                                {
+                                    AGUIMisc.ShowToast("No date was selected so the event wasn't registed as finished", AGUIMisc.ToastLength.Long);
+                                },
+                                AGDialogTheme.Dark
+                                );
+                        }
+                    },
+                    AGDialogTheme.Dark
+                    );
+            },
+            AGDialogTheme.Dark
+            );
     }
 
     #endregion

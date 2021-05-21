@@ -30,9 +30,12 @@ public class AddTaskController : MonoBehaviour
         DeattachMethodsFromEvents();
     }
 
+    private TaskModel currentTask;
     public TMP_Text addTaskTitleTxt;
     public void SetUpFieldsForEdit(TaskModel editTask)
     {
+        markFinishedBtn.gameObject.SetActive(true);
+        markStartedBtn.gameObject.SetActive(true);
         //choose list
 
         choosenList = editTask.taskList;
@@ -99,7 +102,109 @@ public class AddTaskController : MonoBehaviour
         {
             chooseParentBtn.GetComponentInChildren<TMP_Text>().text = "Event: " + parentEvent.eventTitle;
         }
+
+        currentTask = editTask;
     }
+
+    #region Start Finish
+
+    public Button markStartedBtn;
+    public Button markFinishedBtn;
+
+    private void OnMarkStartedBtnClicked()
+    {
+        string[] titles = { "Now", "Choose specific time" };
+        AGAlertDialog.ShowChooserDialog(
+            "Choose time",
+            titles,
+            i =>
+            {
+                if (i == 0)
+                {
+                    TaskModel.StartTask(currentTask, DateTime.Now);
+                }
+                else
+                {
+                    AGDateTimePicker.ShowDatePicker(
+                        DateTime.Now.Year,
+                        DateTime.Now.Month,
+                        DateTime.Now.Day,
+                        (year, month, day) =>
+                        {
+                            AGDateTimePicker.ShowTimePicker(
+                                DateTime.Now.Hour,
+                                DateTime.Now.Minute,
+                                (hour, minute) =>
+                                {
+                                    TaskModel.StartTask(currentTask, new DateTime(year, month, day, hour, minute, 0));
+                                    
+                                },
+                                () =>
+                                {
+                                    AGUIMisc.ShowToast("No time was selected so the task wasn't registed as started", AGUIMisc.ToastLength.Long);
+                                },
+                                AGDialogTheme.Dark
+                                );
+                        },
+                        () =>
+                        {
+                            AGUIMisc.ShowToast("No date was selected so the task wasn't registed as started", AGUIMisc.ToastLength.Long);
+                        },
+                        AGDialogTheme.Dark
+                        );
+                }
+            },
+            AGDialogTheme.Dark
+            );
+    }
+
+    private void OnMarkFinishedBtnClicked()
+    {
+        string[] titles = { "Now", "Choose specific time" };
+        AGAlertDialog.ShowChooserDialog(
+            "Choose time",
+            titles,
+            i =>
+            {
+                if (i == 0)
+                {
+                    TaskModel.FinishTask(currentTask, DateTime.Now);
+                }
+                else
+                {
+                    AGDateTimePicker.ShowDatePicker(
+                        DateTime.Now.Year,
+                        DateTime.Now.Month,
+                        DateTime.Now.Day,
+                        (year, month, day) =>
+                        {
+                            AGDateTimePicker.ShowTimePicker(
+                                DateTime.Now.Hour,
+                                DateTime.Now.Minute,
+                                (hour, minute) =>
+                                {
+                                    TaskModel.FinishTask(currentTask, new DateTime(year, month, day, hour, minute, 0));
+                                },
+                                () =>
+                                {
+                                    AGUIMisc.ShowToast("No time was selected so the task wasn't registed as finished", AGUIMisc.ToastLength.Long);
+                                },
+                                AGDialogTheme.Dark
+                                );
+                        },
+                        () =>
+                        {
+                            AGUIMisc.ShowToast("No date was selected so the task wasn't registed as finished", AGUIMisc.ToastLength.Long);
+                        },
+                        AGDialogTheme.Dark
+                        );
+                }
+            },
+            AGDialogTheme.Dark
+            );
+    }
+
+    #endregion
 
     #region Cancel and Save functionalities
 
@@ -725,6 +830,16 @@ public class AddTaskController : MonoBehaviour
         if(chooseParentBtn != null)
         {
             chooseParentBtn.onClick.AddListener(OnChooseParentBtnClicked);
+        }
+
+        if(markStartedBtn != null)
+        {
+            markStartedBtn.onClick.AddListener(OnMarkStartedBtnClicked);
+        }
+
+        if(markFinishedBtn != null)
+        {
+            markFinishedBtn.onClick.AddListener(OnMarkFinishedBtnClicked);
         }
     }
 

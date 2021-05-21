@@ -160,4 +160,14 @@ public class TaskModel: System.Object
         TaskModel[] tasks = new TaskModel[] { new TaskModel(_taskTitle: "Task 1"), new TaskModel(_taskTitle: "Task 2") }; //Just a place holder
         return tasks;
     }
+
+    public static void StartTask(TaskModel task, DateTime time)
+    {
+        //Todo: implement this method
+    }
+
+    public static void FinishTask(TaskModel task, DateTime time)
+    {
+        //Todo:implement this method
+    }
 }
