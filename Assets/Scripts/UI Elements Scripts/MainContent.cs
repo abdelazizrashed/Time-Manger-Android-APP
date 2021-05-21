@@ -25,37 +25,66 @@ public class MainContent : MonoBehaviour
     private Pages currentPage;
     #region Gesture Control
 
+
+    private Vector2 fingerDown = new Vector2();
+    private Vector2 fingerUp = new Vector2();
+
     /// <summary>
     /// This method checks the directions along the x axis.
     /// </summary>
     /// <returns></returns>
     private void CheckSwipeDirectionAlongX()
     {
-        Vector2 fingerDown = new Vector2();
-        Vector2 fingerUp = new Vector2();
-
         float SWIPE_THRESHOLD = 10f;
         foreach (Touch touch in Input.touches)
         {
             if (touch.phase == TouchPhase.Began)
             {
+                Debug.Log("Touch began");
                 fingerUp = touch.position;
                 fingerDown = touch.position;
             }
 
+            //if(touch.phase == TouchPhase.Moved)
+            //{
+            //    fingerDown = touch.position;
+            //    Debug.Log("The horizontal destance: " + (fingerDown.x - fingerUp.x).ToString());
+            //    if (Mathf.Abs(fingerDown.x - fingerUp.x) > SWIPE_THRESHOLD && Mathf.Abs(fingerDown.x - fingerUp.x) > Mathf.Abs(fingerDown.y - fingerUp.y))
+            //    {
+            //        Debug.Log("The horizontal destance: " + (fingerDown.x - fingerUp.x).ToString());
+            //        //Debug.Log("Horizontal");
+            //        if (fingerDown.x - fingerUp.x > 0)//Right swipe
+            //        {
+            //            Debug.Log("Swiped Right");
+            //            OnSwipeRight();
+            //        }
+            //        else if (fingerDown.x - fingerUp.x < 0)//Left swipe
+            //        {
+            //            Debug.Log("Swiped Left");
+            //            OnSwipeLeft();
+            //        }
+            //        fingerUp = fingerDown;
+
+            //    }
+            //}
+            //else 
             //Detects swipe after finger is released
             if (touch.phase == TouchPhase.Ended)
             {
                 fingerDown = touch.position;
+                Debug.Log("The horizontal destance: " + (fingerDown.x - fingerUp.x).ToString());
                 if (Mathf.Abs(fingerDown.x - fingerUp.x) > SWIPE_THRESHOLD && Mathf.Abs(fingerDown.x - fingerUp.x) > Mathf.Abs(fingerDown.y - fingerUp.y))
                 {
+                    Debug.Log("The horizontal destance: " + (fingerDown.x - fingerUp.x).ToString());
                     //Debug.Log("Horizontal");
                     if (fingerDown.x - fingerUp.x > 0)//Right swipe
                     {
+                        Debug.Log("Swiped Right");
                         OnSwipeRight();
                     }
                     else if (fingerDown.x - fingerUp.x < 0)//Left swipe
                     {
+                        Debug.Log("Swiped Left");
                         OnSwipeLeft();
                     }
                     fingerUp = fingerDown;

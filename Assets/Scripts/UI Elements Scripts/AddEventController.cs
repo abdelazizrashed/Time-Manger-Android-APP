@@ -23,10 +23,18 @@ public class AddEventController : MonoBehaviour
 
     #region Control
 
+    #region Edit Event
+
+    private EventModel currentEvent;
+
     public TMP_Text addEventTitleTxt;
+    public Button markAsStartedBtn;
+    public Button markAsFinishedBtn;
 
     public void SetUpFieldsForEdit(EventModel editEvent)
     {
+        markAsFinishedBtn.gameObject.SetActive(true);
+        markAsStartedBtn.gameObject.SetActive(true);
         if (addEventTitleTxt != null)
         {
             addEventTitleTxt.text = editEvent.eventTitle;
@@ -56,8 +64,36 @@ public class AddEventController : MonoBehaviour
         }
         color = editEvent.color;
         SetChooseColorBtn(color);
+        currentEvent = editEvent;
+    }
+
+    #region Start Finish
+
+    private void OnMarkStartedBtnClicked()
+    {
+        string[] titles = { "Now", "Pick specific time" };
+        AGAlertDialog.ShowChooserDialog(
+            "Choose start time",
+            titles,
+            index =>
+            {
+                if(index == 0)
+                {
+
+                }
+            },
+            AGDialogTheme.Dark
+            );
+    }
+
+    private void OnMarkFinishedBtnClicked()
+    {
 
     }
+
+    #endregion
+
+    #endregion
 
     #region Save Cancel
 
@@ -278,6 +314,16 @@ public class AddEventController : MonoBehaviour
         if(chooseParentBtn != null)
         {
             chooseParentBtn.onClick.AddListener(OnChooseParentBtnClicked);
+        }
+
+        if(markAsStartedBtn != null)
+        {
+            markAsStartedBtn.onClick.AddListener(OnMarkStartedBtnClicked);
+        }
+
+        if(markAsFinishedBtn != null)
+        {
+            markAsFinishedBtn.onClick.AddListener(OnMarkFinishedBtnClicked);
         }
     }
 

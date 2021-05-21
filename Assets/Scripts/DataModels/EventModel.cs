@@ -248,4 +248,14 @@ public class EventModel: System.Object
 
         return orderedSlots.ToArray();
     }
+    
+    public static void StartEvent(EventModel _event, DateTime _time)
+    {
+        //Todo: implement this method
+    }
+
+    public static void FinishEvent(EventModel _event, DateTime _time)
+    {
+        //Todo: Implement this method
+    }
 }
