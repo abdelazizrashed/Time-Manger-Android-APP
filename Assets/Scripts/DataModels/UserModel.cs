@@ -33,7 +33,6 @@ public sealed class UserModel
                 if (instance == null)
                 {
                     instance = new UserModel();
-                    //Todo: set the values of the user.
                 }
                 return instance;
             }

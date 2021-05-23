@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 
 public class EventModel: System.Object
 {
@@ -43,11 +44,48 @@ public class EventModel: System.Object
 
     }
 
+    public static EventModel GetEventByEventID(int id)
+    {
+        string query = @" SELECT * FROM Events WHERE event_id = " + id.ToString() + " ;";
+        IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        while (dbDataReader.Read())
+        {
+            return new EventModel(
+                dbDataReader.GetInt32(0),
+                dbDataReader.GetString(1),
+                dbDataReader.GetString(2),
+                dbDataReader.GetInt32(3),
+                EventTimeSlotModel.GetTimeSlotsByParentEventID(dbDataReader.GetInt32(0)),
+                ColorModel.GetColorByColorID(dbDataReader.GetInt32(4)),
+                EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
+                );
+        }
+        return null;
+    }
+
     public static EventModel[] GetEvents()
     {
-        //Todo: implement this method
-        EventModel[] events = new EventModel[] { new EventModel(_eventTitle: "e 1"), new EventModel(_eventTitle: "e 2") }; //Just a place holder
-        return events;
+        string query = @"
+                        SELECT * FROM Events;
+                        ";
+        IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        List<EventModel> events = new List<EventModel>();
+        while (dbDataReader.Read())
+        { 
+            events.Add(new EventModel(
+                dbDataReader.GetInt32(0),
+                dbDataReader.GetString(1),
+                dbDataReader.GetString(2),
+                dbDataReader.GetInt32(3),
+                EventTimeSlotModel.GetTimeSlotsByParentEventID(dbDataReader.GetInt32(0)),
+                ColorModel.GetColorByColorID(dbDataReader.GetInt32(4)),
+                EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
+                ));
+        }
+
+        dbDataReader?.Close();
+        dbDataReader = null;
+        return events.ToArray();
     }
 
     public static string[] GetEventsTitles(EventModel[] events)

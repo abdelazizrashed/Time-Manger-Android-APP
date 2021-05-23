@@ -9,6 +9,9 @@ public class EventTimeSlotModel
     public DateTime timeFrom { get; set; }
     public DateTime dateTo { get; set; }
     public DateTime timeTo { get; set; }
+    public DateTime timeStarted { get; set; }
+    public DateTime timeFinished { get; set; }
+    public bool isCompleted { get; set; }
     public RepeatModel repeat { get; set; }
     public string location { get; set; }
     public NotifiAlarmReminderModel[] reminders { get; set; }
@@ -33,6 +36,11 @@ public class EventTimeSlotModel
         location = _location;
         reminders = _reminders;
         parentEvent = _parentEvent;
+    }
+
+    public static EventTimeSlotModel[] GetTimeSlotsByParentEventID(int parentEventID)
+    {
+        //Todo:implement this method
     }
 
     public static EventTimeSlotModel[] OrderTimeSlots(List<EventTimeSlotModel> timeSlots)

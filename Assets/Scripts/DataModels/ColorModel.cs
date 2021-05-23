@@ -15,6 +15,11 @@ public class ColorModel
         colorValue = value;
     }
 
+    public static ColorModel GetColorByColorID(int colorID)
+    {
+        //Todo: implement this method
+    }
+
     public static ColorModel[] GetColors()
     {
         //Todo: implement this method
