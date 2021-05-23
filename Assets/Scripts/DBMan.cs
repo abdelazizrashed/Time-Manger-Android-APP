@@ -112,6 +112,7 @@ public class DBMan
 
         query = @"
                     CREATE TABLE IF NOT EXISTS EventsTimeSlots(
+                        time_slot_id INT PRIMARY KEY AUTOINCREMENT,
                         time_from TEXT NOT NULL,
                         time_to TEXT NOT NULL,
                         time_started TEXT DEFAULT NULL,
@@ -224,7 +225,9 @@ public class DBMan
     {
         dbCommand.CommandText = query;
         PrintQuery(query);
-        return dbCommand.ExecuteNonQuery();
+        int rowsAffected = dbCommand.ExecuteNonQuery();
+        PrintRowAffected(rowsAffected);
+        return rowsAffected;
     }
 
     public long ExecuteQueryAndReturnTheRowID(string query)

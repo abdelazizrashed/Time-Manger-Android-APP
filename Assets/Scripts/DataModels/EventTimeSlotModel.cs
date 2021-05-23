@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class EventTimeSlotModel
 {
+    public int timeSlotID { get; set; }
     public DateTime dateFrom { get; set; }
     public DateTime timeFrom { get; set; }
     public DateTime dateTo { get; set; }
@@ -18,6 +19,7 @@ public class EventTimeSlotModel
     public EventModel parentEvent { get; set; }
 
     public EventTimeSlotModel(
+
         DateTime? _timeFrom = null,
         DateTime? _dateFrom = null,
         DateTime? _timeTo = null,
@@ -36,6 +38,11 @@ public class EventTimeSlotModel
         location = _location;
         reminders = _reminders;
         parentEvent = _parentEvent;
+    }
+
+    public static void SaveTimeSlot(ref EventTimeSlotModel timeSlot)
+    {
+        //Todo: implement this method
     }
 
     public static EventTimeSlotModel[] GetTimeSlotsByParentEventID(int parentEventID)

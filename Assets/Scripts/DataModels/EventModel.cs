@@ -98,8 +98,37 @@ public class EventModel: System.Object
         return eventsTitles.ToArray();
     }
 
-    public static void SaveEvent(ref EventModel newEvent){
-        //Todo: implement this method
+    public static void SaveEvent(ref EventModel newEvent)
+    {
+        for(int i = 0; i<newEvent.timeSlots.Length; i++)
+        {
+            EventTimeSlotModel.SaveTimeSlot(ref newEvent.timeSlots[i]);
+        }
+        string query =
+            "INSERT INTO Events (event_title, event_description, user_id, color_id, parent_event_id)"
+            + "VALUES (" 
+            + newEvent.eventTitle + ", " 
+            + newEvent.eventDescription + ", " 
+            + newEvent.userID + ", " 
+            + newEvent.color.colorID + ", " 
+            + newEvent.parentEvent.eventID 
+            + ");"
+            ;
+
+        newEvent.eventID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
+    }
+
+    public static void UpdateEvent(ref EventModel updatedEvent)
+    {
+        string query =
+            "UPDATE Events"
+            + "SET "
+            + "event_title = " + updatedEvent.eventTitle + ", "
+            + "event_description = " + updatedEvent.eventDescription + ", "
+            + "user_id = " + updatedEvent.userID + ", "
+            + "color_id = " + updatedEvent.color.colorID
+            + " WHERE event_id = " + updatedEvent.eventID + ";" ;
+        DBMan.Instance.ExecuteQueryAndReturnRowsAffected(query);
     }
 
     public static TaskModel[] GetChildrenTasksOrdered(ref EventModel parentEvent)
@@ -289,11 +318,20 @@ public class EventModel: System.Object
     
     public static void StartEvent(EventTimeSlotModel timeSlot, DateTime time)
     {
-        //Todo: implement this method
+        string query =
+            "UPDATE EventsTimeSlots SET "
+            + "time_started = " + time.ToString()
+            + " WHERE time_slot_id = " + timeSlot.timeSlotID + ";";
+        DBMan.Instance.ExecuteQueryAndReturnRowsAffected(query);
     }
 
     public static void FinishEvent(EventTimeSlotModel timeSlot, DateTime time)
     {
-        //Todo: Implement this method
+        string query =
+            "UPDATE EventsTimeSlots SET "
+           + "time_finished = " + time.ToString() + ", "
+           + "is_completed = " + 1 + " "
+           + "WHERE time_slot_id = " + timeSlot.timeSlotID + ";";
+        DBMan.Instance.ExecuteQueryAndReturnRowsAffected(query);
     }
 }
