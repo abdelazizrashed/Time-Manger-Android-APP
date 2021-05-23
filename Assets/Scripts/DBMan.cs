@@ -117,11 +117,10 @@ public class DBMan
                         time_to TEXT NOT NULL,
                         time_started TEXT DEFAULT NULL,
                         time_finished TEXT DEFAULT NULL,
-                        is_completed INTE DEFAULT NULL,
+                        is_completed INT DEFAULT 0,
                         location TEXT DEFAULT NULL,
                         repeat TEXT DEFAULT NULL,
                         reminder TEXT DEFAULT NULL,
-                        is_completed INT DEFAULT 0,
                         event_id INTEGER DEFAULT NULL,
                         FOREIGN KEY (event_id) REFERENCES Events(event_id)
                     );

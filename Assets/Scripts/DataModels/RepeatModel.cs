@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public class RepeatModel: System.Object
 {
@@ -16,23 +19,10 @@ public class RepeatModel: System.Object
         repeatDays = days;
         endDate = end;
     }
+
+    public string JSON()
+    {
+        return JsonConvert.SerializeObject(this);
+    }
 }
 
-public enum WeekDays
-{
-    Sunday,
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saterday
-}
-
-public enum RepeatPeriod
-{
-    Day,
-    Week,
-    Month,
-    Year
-}

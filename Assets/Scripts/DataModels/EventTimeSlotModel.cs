@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Data;
 
 public class EventTimeSlotModel
 {
     public int timeSlotID { get; set; }
-    public DateTime dateFrom { get; set; }
     public DateTime timeFrom { get; set; }
-    public DateTime dateTo { get; set; }
     public DateTime timeTo { get; set; }
     public DateTime timeStarted { get; set; }
     public DateTime timeFinished { get; set; }
@@ -19,21 +17,24 @@ public class EventTimeSlotModel
     public EventModel parentEvent { get; set; }
 
     public EventTimeSlotModel(
-
+        int _timeSlotID = 0,
         DateTime? _timeFrom = null,
-        DateTime? _dateFrom = null,
         DateTime? _timeTo = null,
-        DateTime? _dateTo = null,
+        DateTime? _timeStarted = null,
+        DateTime? _timeFinished = null,
+        int _isCompleted = 0,
         RepeatModel _repeat = null,
         string _location = "",
         NotifiAlarmReminderModel[] _reminders = null,
         EventModel _parentEvent = null
         )
     {
-        dateFrom = _dateFrom ?? dateFrom;
-        dateTo = _dateTo ?? dateTo;
+        timeSlotID = _timeSlotID;
         timeFrom = _timeFrom ?? timeFrom;
         timeTo = _timeTo ?? timeTo;
+        timeStarted = _timeStarted ?? timeStarted;
+        timeFinished = _timeFinished ?? timeFinished;
+        isCompleted = _isCompleted == 1;
         repeat = _repeat;
         location = _location;
         reminders = _reminders;
@@ -42,12 +43,70 @@ public class EventTimeSlotModel
 
     public static void SaveTimeSlot(ref EventTimeSlotModel timeSlot)
     {
-        //Todo: implement this method
+
+        string query =
+            "INSERT INTO EventsTimeSlots(" +
+            "time_from, " +
+            "time_to, " +
+            "time_started, " +
+            "time_finished, " +
+            "is_completed, " +
+            "location, " +
+            "repeat, " +
+            "reminder, " +
+            "event_id" + ")" +
+            "VALUES ( " +
+            timeSlot.timeFrom + ", " +
+            timeSlot.timeTo + ", " +
+            timeSlot.timeStarted + ", " +
+            timeSlot.timeFinished + ", " +
+            timeSlot.isCompleted + ", " +
+            timeSlot.location + ", " +
+            timeSlot.repeat.JSON() + ", " +
+            JsonConvert.SerializeObject(timeSlot.reminders) + ", " +
+            timeSlot.parentEvent.eventID + ");";
+
+        timeSlot.timeSlotID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
+    }
+
+    public static void UpdateTimeSlot(ref EventTimeSlotModel timeSlot)
+    {
+        string query =
+            "UPDATE EventsTimeSlots SET " +
+            "time_from = " + timeSlot.timeFrom + ", " +
+            "time_to = " + timeSlot.timeTo + ", " +
+            "time_started = " + timeSlot.timeStarted + ", " +
+            "time_finished = " + timeSlot.timeFinished + ", " +
+            "is_completed = " + timeSlot.isCompleted + ", " +
+            "location = " + timeSlot.location + ", " +
+            "repeat = " + timeSlot.repeat.JSON() + ", " +
+            "reminder = " + JsonConvert.SerializeObject(timeSlot.reminders) + ", " +
+            "event_id = " + timeSlot.parentEvent.eventID + ", " +
+            "WHERE time_slot_id = " + timeSlot.timeSlotID + "; ";
+        DBMan.Instance.ExecuteQueryAndReturnRowsAffected(query);
     }
 
     public static EventTimeSlotModel[] GetTimeSlotsByParentEventID(int parentEventID)
     {
-        //Todo:implement this method
+        string query = "SELECT * FROM EventsTimeSlots WHERE event_id = " + parentEventID + ";";
+        IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        List<EventTimeSlotModel> timeSlots = new List<EventTimeSlotModel>();
+        while (dbDataReader.Read())
+        {
+            timeSlots.Add(new EventTimeSlotModel(
+                dbDataReader.GetInt32(0),
+                DateTime.Parse(dbDataReader.GetString(1)),
+                DateTime.Parse(dbDataReader.GetString(2)),
+                DateTime.Parse(dbDataReader.GetString(3)),
+                DateTime.Parse(dbDataReader.GetString(4)),
+                dbDataReader.GetInt32(5),
+                (RepeatModel)JsonConvert.DeserializeObject(dbDataReader.GetString(7)),
+                dbDataReader.GetString(6),
+                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(dbDataReader.GetString(8)),
+                EventModel.GetEventByEventID(parentEventID)
+                ));
+        }
+        return timeSlots.ToArray();
     }
 
     public static EventTimeSlotModel[] OrderTimeSlots(List<EventTimeSlotModel> timeSlots)

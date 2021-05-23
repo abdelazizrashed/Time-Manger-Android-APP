@@ -120,6 +120,10 @@ public class EventModel: System.Object
 
     public static void UpdateEvent(ref EventModel updatedEvent)
     {
+        for (int i = 0; i < updatedEvent.timeSlots.Length; i++)
+        {
+            EventTimeSlotModel.UpdateTimeSlot(ref updatedEvent.timeSlots[i]);
+        }
         string query =
             "UPDATE Events"
             + "SET "
