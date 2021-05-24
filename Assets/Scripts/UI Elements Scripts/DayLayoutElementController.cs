@@ -99,12 +99,12 @@ public class DayLayoutElementController : MonoBehaviour
             {
                 elementTitle.text = currentEventTimeSlot.parentEvent.eventTitle;
                 gameObject.GetComponent<Image>().color = Helper.StringToColor(currentEventTimeSlot.parentEvent.color.colorValue);
-                if (DateTime.Compare(currentEventTimeSlot.dateFrom.Date, currentEventTimeSlot.dateTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.dateTo.Date) == 0)
+                if (DateTime.Compare(currentEventTimeSlot.timeFrom.Date, currentEventTimeSlot.timeTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeTo.Date) == 0)
                 {
                     float duration = (float)(currentEventTimeSlot.timeTo - currentEventTimeSlot.timeFrom).TotalMinutes;
                     gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 60f);
                 }
-                else if (DateTime.Compare(currentDate.Date, currentEventTimeSlot.dateTo.Date) < 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.dateFrom.Date) == 0)
+                else if (DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeTo.Date) < 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeFrom.Date) == 0)
                 {
                     float duration = (float)(
                         currentEventTimeSlot.timeFrom.Date.AddDays(1).AddSeconds(-1) 
@@ -112,7 +112,7 @@ public class DayLayoutElementController : MonoBehaviour
                         currentEventTimeSlot.timeFrom).TotalMinutes;
                     gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 60f);
                 }
-                else if(DateTime.Compare(currentDate.Date, currentEventTimeSlot.dateTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.dateFrom.Date) > 0)
+                else if(DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeFrom.Date) > 0)
                 {
                     float duration = (float)(
                         currentEventTimeSlot.timeTo

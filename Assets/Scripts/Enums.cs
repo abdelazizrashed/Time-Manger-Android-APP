@@ -32,3 +32,17 @@ public class RepeatPeriod
     public static RepeatPeriod Month { get { return new RepeatPeriod("Month"); } }
     public static RepeatPeriod Year { get { return new RepeatPeriod("Year"); } }
 }
+
+public enum ReminderType
+{
+    Alarm,
+    Notification
+}
+
+public enum TimePeriodsType
+{
+    Minutes,
+    Hours,
+    Days,
+    Weeks
+}

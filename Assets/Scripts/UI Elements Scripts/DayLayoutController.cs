@@ -446,7 +446,7 @@ public class DayLayoutController : MonoBehaviour
         List<EventTimeSlotModel> orderedSlots = new List<EventTimeSlotModel>();
         for(int i = 0; i< timeSlots.Length; i++)
         {
-            if(DateTime.Compare(timeSlots[i].dateFrom.Date, day.Date) == 0 || DateTime.Compare(timeSlots[i].dateTo.Date, day.Date) == 0)
+            if(DateTime.Compare(timeSlots[i].timeFrom.Date, day.Date) == 0 || DateTime.Compare(timeSlots[i].timeTo.Date, day.Date) == 0)
             {
                 orderedSlots.Add(timeSlots[i]);
             }

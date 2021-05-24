@@ -1,4 +1,8 @@
-﻿public class TasksListModel
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+
+public class TasksListModel
 {
     public int listID { get; set; }
 
@@ -12,21 +16,32 @@
 
     public static TasksListModel GetList(int id)
     {
-        //Todo: Get a list from the database
-        //Todo: Remove this temperary return 
-        return new TasksListModel(id: 1, title: "A new list");
+        string query = "SELECT * FROM TasksLists WHERE list_id = " + id + ";";
+        IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        while (reader.Read())
+        {
+            return new TasksListModel(reader.GetInt32(0), reader.GetString(1));
+        }
+        return null;
     }
 
     public static TasksListModel[] GetLists()
     {
-        //Todo: Get all the lists in the database
-        //Todo: Remove this temperary return
-        TasksListModel[] lists = { new TasksListModel(id: 1, title: "A new list"), new TasksListModel(id: 2, title: "list 2"), new TasksListModel(id: 3, title: "list 3") };
-        return lists;
+        string query = "SELECT * FROM TasksLists;";
+        List<TasksListModel> lists = new List<TasksListModel>();
+        IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        while (reader.Read())
+        {
+            lists.Add(new TasksListModel(reader.GetInt32(0), reader.GetString(1)));
+        }
+        reader?.Close();
+        reader = null;
+        return lists.ToArray();
     }
 
-    public static void SaveList(TasksListModel newList)
+    public static void SaveList(ref TasksListModel newList)
     {
-        //Todo:implement this method
+        string query = "INSERT INTO TasksLists(list_title) VALUES (" + newList.listTitle + ");";
+        newList.listID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
     }
 }

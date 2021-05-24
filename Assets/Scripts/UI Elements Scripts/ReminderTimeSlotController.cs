@@ -56,7 +56,7 @@ public class ReminderTimeSlotController : MonoBehaviour
 
     public ReminderTimeSlotModel GetTimeSlot()
     {
-        return new ReminderTimeSlotModel(time, date, repeat, reminders.ToArray());
+        return new ReminderTimeSlotModel(_time: time, _date: date, _repeat: repeat, _reminders:reminders.ToArray());
     }
 
     #endregion

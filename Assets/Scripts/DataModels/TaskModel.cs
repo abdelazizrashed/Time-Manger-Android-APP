@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 public class TaskModel: System.Object
@@ -63,9 +65,58 @@ public class TaskModel: System.Object
 
     public static TaskModel[] GetTasks()
     {
-        //Todo: implement this method
-        TaskModel[] tasks = new TaskModel[] { new TaskModel(_taskTitle: "Task 1"), new TaskModel(_taskTitle: "Task 2") }; //Just a place holder
-        return tasks;
+        string query = "SELECT * FROM TASKS;";
+        IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        List<TaskModel> tasks = new List<TaskModel>();
+        while (reader.Read())
+        {
+            tasks.Add(new TaskModel(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetString(2),
+                DateTime.Parse(reader.GetString(3)),
+                DateTime.Parse(reader.GetString(4)),
+                DateTime.Parse(reader.GetString(5)),
+                DateTime.Parse(reader.GetString(6)),
+                reader.GetInt32(7) == 1,
+                (RepeatModel)JsonConvert.DeserializeObject(reader.GetString(8)),
+                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(reader.GetString(9)),
+                ColorModel.GetColorByColorID(reader.GetInt32(11)),
+                reader.GetInt32(12),
+                EventModel.GetEventByEventID(reader.GetInt32(13)),
+                TaskModel.GetTaskByTaskID(reader.GetInt32(14)),
+                TasksListModel.GetList(reader.GetInt32(10))
+                ));
+        }
+        return tasks.ToArray();
+    }
+
+    public static TaskModel GetTaskByTaskID(int id)
+    {
+        string query = "SELECT * FROM TASKS WHERE task_id = " + id + ";";
+        IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        while (reader.Read())
+        {
+
+            return new TaskModel(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetString(2),
+                DateTime.Parse(reader.GetString(3)),
+                DateTime.Parse(reader.GetString(4)),
+                DateTime.Parse(reader.GetString(5)),
+                DateTime.Parse(reader.GetString(6)),
+                reader.GetInt32(7) == 1,
+                (RepeatModel)JsonConvert.DeserializeObject(reader.GetString(8)),
+                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(reader.GetString(9)),
+                ColorModel.GetColorByColorID(reader.GetInt32(11)),
+                reader.GetInt32(12),
+                EventModel.GetEventByEventID(reader.GetInt32(13)),
+                TaskModel.GetTaskByTaskID(reader.GetInt32(14)),
+                TasksListModel.GetList(reader.GetInt32(10))
+                );
+        }
+        return null;
     }
 
     public static string[] GetTasksTitles(TaskModel[] tasks)
@@ -81,7 +132,24 @@ public class TaskModel: System.Object
 
     public static void SaveTask(ref TaskModel task)
     {
-        //Todo: implement this method
+        string query =
+            "INSERT INTO Tasks " +
+            "VALUES ( NULL, " +
+            task.taskTitle + ", " +
+            task.taskDescription + ", " +
+            task.timeFrom.ToString() + ", " +
+            task.timeTo.ToString() + ", " +
+            task.timeStarted.ToString() + ", " +
+            task.timeFinished.ToString() + ", " +
+            (task.isCompleted ? 1 : 0).ToString() + ", " +
+            JsonConvert.SerializeObject(task.repeat) + ", " +
+            JsonConvert.SerializeObject(task.reminders) + ", " +
+            task.taskList.listID + ", " +
+            task.color.colorID + ", " +
+            task.userID + ", " +
+            task.parentEvent.eventID + ", " +
+            task.parentTask.taskID + "); ";
+        task.taskID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
     }
 
     public static TaskModel[] GetTaskChildrenOrderedByStartTime(ref TaskModel parentTask)
@@ -155,19 +223,48 @@ public class TaskModel: System.Object
 
     public static TaskModel[] GetListTasks(TasksListModel list)
     {
-
-        //Todo: implement this method
-        TaskModel[] tasks = new TaskModel[] { new TaskModel(_taskTitle: "Task 1"), new TaskModel(_taskTitle: "Task 2") }; //Just a place holder
-        return tasks;
+        string query = "SELECT * FROM TASKS WHERE list_id = " + list.listID + ";";
+        IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        List<TaskModel> tasks = new List<TaskModel>();
+        while (reader.Read())
+        {
+            tasks.Add(new TaskModel(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetString(2),
+                DateTime.Parse(reader.GetString(3)),
+                DateTime.Parse(reader.GetString(4)),
+                DateTime.Parse(reader.GetString(5)),
+                DateTime.Parse(reader.GetString(6)),
+                reader.GetInt32(7) == 1,
+                (RepeatModel)JsonConvert.DeserializeObject(reader.GetString(8)),
+                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(reader.GetString(9)),
+                ColorModel.GetColorByColorID(reader.GetInt32(11)),
+                reader.GetInt32(12),
+                EventModel.GetEventByEventID(reader.GetInt32(13)),
+                TaskModel.GetTaskByTaskID(reader.GetInt32(14)),
+                TasksListModel.GetList(reader.GetInt32(10))
+                ));
+        }
+        return tasks.ToArray();
     }
 
     public static void StartTask(TaskModel task, DateTime time)
     {
-        //Todo: implement this method
+        string query = 
+            "UPDATE Tasks " +
+            "SET time_started = " + time.ToString() + 
+            "WHERE task_id = " + task.taskID + "; ";
+        DBMan.Instance.ExecuteQueryAndReturnRowsAffected(query);
     }
 
     public static void FinishTask(TaskModel task, DateTime time)
     {
-        //Todo:implement this method
+        string query =
+            "UPDATE Tasks " +
+            "SET time_finished = " + time.ToString() +
+            "is_completed = " + 1 + " " +
+            "WHERE task_id = " + task.taskID + "; ";
+        DBMan.Instance.ExecuteQueryAndReturnRowsAffected(query);
     }
 }

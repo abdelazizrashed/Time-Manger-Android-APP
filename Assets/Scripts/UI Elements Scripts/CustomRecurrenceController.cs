@@ -37,7 +37,7 @@ public class CustomRecurrenceController : MonoBehaviour
     #region Data Variables
 
     private int repeatEveryNum = 0;
-    private RepeatPeriod? repeatPeriodSelectedOption = null;
+    private RepeatPeriod repeatPeriodSelectedOption = null;
 
     private bool isSunBtnSelected = false;
     private bool isMonBtnSelected = false;

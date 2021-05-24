@@ -216,7 +216,7 @@ public class AddReminderController : MonoBehaviour
             _color: color,
             _parentEvent: parentEvent
             );
-        ReminderModel.SaveReminder(newReminder);
+        ReminderModel.SaveReminder(ref newReminder);
         EventSystem.instance.AddNewReminder();
         HideAddReminderPanel();
 

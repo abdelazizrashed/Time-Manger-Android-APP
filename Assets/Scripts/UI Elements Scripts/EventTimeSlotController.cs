@@ -35,8 +35,8 @@ public class EventTimeSlotController : MonoBehaviour
         }
         if(dateFromBtn != null)
         {
-            SetTextOfTimeBtn(ref dateFromBtn, timeSlot.dateFrom.ToString("ddd, dd MMM, yyy"));
-            dateFrom = timeSlot.dateFrom;
+            SetTextOfTimeBtn(ref dateFromBtn, timeSlot.timeFrom.ToString("ddd, dd MMM, yyy"));
+            dateFrom = timeSlot.timeFrom.Date;
         }
         if(timeToBtn != null)
         {
@@ -45,8 +45,8 @@ public class EventTimeSlotController : MonoBehaviour
         }
         if(dateToBtn != null)
         {
-            SetTextOfTimeBtn(ref dateToBtn, timeSlot.dateTo.ToString("ddd, dd MMM, yyy"));
-            dateTo = timeSlot.dateTo;
+            SetTextOfTimeBtn(ref dateToBtn, timeSlot.timeTo.Date.ToString("ddd, dd MMM, yyy"));
+            dateTo = timeSlot.timeTo.Date;
         }
 
         location = timeSlot.location;
@@ -85,7 +85,7 @@ public class EventTimeSlotController : MonoBehaviour
             return null;
         }
 
-        return new EventTimeSlotModel(timeFrom, dateFrom, timeTo, dateTo, repeat, location, reminders.ToArray());
+        return new EventTimeSlotModel(_timeFrom: timeFrom, _timeTo: timeTo, _repeat: repeat, _location: location, _reminders: reminders.ToArray());
 
     }
 

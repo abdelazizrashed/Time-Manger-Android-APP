@@ -18,17 +18,3 @@ public class NotifiAlarmReminderModel
         return JsonConvert.SerializeObject(this);
     }
 }
-
-public enum ReminderType
-{
-    Alarm,
-    Notification
-}
-
-public enum TimePeriodsType
-{
-    Minutes,
-    Hours,
-    Days,
-    Weeks
-}

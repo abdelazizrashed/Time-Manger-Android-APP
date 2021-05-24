@@ -25,8 +25,7 @@ public class EventTimeSlotModel
         int _isCompleted = 0,
         RepeatModel _repeat = null,
         string _location = "",
-        NotifiAlarmReminderModel[] _reminders = null,
-        EventModel _parentEvent = null
+        NotifiAlarmReminderModel[] _reminders = null
         )
     {
         timeSlotID = _timeSlotID;
@@ -38,7 +37,6 @@ public class EventTimeSlotModel
         repeat = _repeat;
         location = _location;
         reminders = _reminders;
-        parentEvent = _parentEvent;
     }
 
     public static void SaveTimeSlot(ref EventTimeSlotModel timeSlot)
@@ -102,8 +100,7 @@ public class EventTimeSlotModel
                 dbDataReader.GetInt32(5),
                 (RepeatModel)JsonConvert.DeserializeObject(dbDataReader.GetString(7)),
                 dbDataReader.GetString(6),
-                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(dbDataReader.GetString(8)),
-                EventModel.GetEventByEventID(parentEventID)
+                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(dbDataReader.GetString(8))
                 ));
         }
         return timeSlots.ToArray();

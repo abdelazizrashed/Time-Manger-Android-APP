@@ -68,7 +68,7 @@ public class CreateNewListController : MonoBehaviour
         }
 
         TasksListModel newList = new TasksListModel(title: listTitle);
-        TasksListModel.SaveList(newList);
+        TasksListModel.SaveList(ref newList);
         EventSystem.instance.AddNewTasksList();
         HideAddTasksListPanel();
 
