@@ -19,24 +19,24 @@ public class SideMenu : MonoBehaviour
 
     #region Controls
 
-    private void CloseSideMenu()
-    {
-        Debug.Log("Close side menu");
-        GameObject shadowPanel = GameObject.FindGameObjectWithTag("MenusShadowPanel");
-        if(shadowPanel != null)
-        {
-            shadowPanel.SetActive(false);
-            if (gameObject != null)
-            {
-                gameObject.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-2000f, -2355.483f), 0.25f);
-                Destroy(gameObject);
-            }
-        }
-        else
-        {
-            Debug.LogError("Shadow panel need to be attached");
-        }
-    }
+    //private void CloseSideMenu()
+    //{
+    //    Debug.Log("Close side menu");
+    //    GameObject shadowPanel = GameObject.FindGameObjectWithTag("MenusShadowPanel");
+    //    if(shadowPanel != null)
+    //    {
+    //        shadowPanel.SetActive(false);
+    //        if (gameObject != null)
+    //        {
+    //            gameObject.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-2000f, -2355.483f), 0.25f);
+    //            Destroy(gameObject);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("Shadow panel need to be attached");
+    //    }
+    //}
 
     #endregion
 
@@ -93,7 +93,7 @@ public class SideMenu : MonoBehaviour
     {
         GameObject background = GameObject.FindGameObjectWithTag("MainBackground");
         Instantiate(createNewListPrefab, background.transform);
-        //CloseSideMenu();
+        EventSystem.instance.CloseSideMenuPanel();
     }
 
     #endregion

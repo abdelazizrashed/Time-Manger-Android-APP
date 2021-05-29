@@ -50,7 +50,8 @@ public class EventModel: System.Object
         IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
         while (dbDataReader.Read())
         {
-            return new EventModel(
+            DBMan.Instance.PrintDataReader(dbDataReader);
+            EventModel newEvent =  new EventModel(
                 dbDataReader.GetInt32(0),
                 dbDataReader.GetString(1),
                 dbDataReader.GetString(2),
@@ -59,6 +60,9 @@ public class EventModel: System.Object
                 ColorModel.GetColorByColorID(dbDataReader.GetInt32(4)),
                 EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
                 );
+            dbDataReader?.Close();
+            dbDataReader = null;
+            return newEvent;
         }
         return null;
     }
@@ -71,7 +75,8 @@ public class EventModel: System.Object
         IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
         List<EventModel> events = new List<EventModel>();
         while (dbDataReader.Read())
-        { 
+        {
+            DBMan.Instance.PrintDataReader(dbDataReader);
             events.Add(new EventModel(
                 dbDataReader.GetInt32(0),
                 dbDataReader.GetString(1),

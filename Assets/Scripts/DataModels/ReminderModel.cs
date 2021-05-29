@@ -56,6 +56,7 @@ public class ReminderModel: System.Object
         List<ReminderModel> reminders = new List<ReminderModel>();
         while (dbDataReader.Read())
         {
+            DBMan.Instance.PrintDataReader(dbDataReader);
             reminders.Add(new ReminderModel(
                 dbDataReader.GetInt32(0),
                 dbDataReader.GetString(1),
@@ -66,6 +67,8 @@ public class ReminderModel: System.Object
                 EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
                 ));
         }
+        dbDataReader?.Close();
+        dbDataReader = null;
         return reminders.ToArray(); 
     }
 

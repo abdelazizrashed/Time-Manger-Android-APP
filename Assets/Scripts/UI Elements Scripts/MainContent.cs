@@ -13,12 +13,17 @@ public class MainContent : MonoBehaviour
     {
         AddListenersToBtns();
         OnStartUp();
+        EventSystem.instance.hideAddOptionsBtns += HideAddOptionsBtns;
     }
 
     // Update is called once per frame
     void Update()
     {
         CheckSwipeDirectionAlongX();
+    }
+    private void OnDestroy()
+    {
+        EventSystem.instance.hideAddOptionsBtns -= HideAddOptionsBtns;
     }
 
     private DateTime currentDay;
@@ -40,7 +45,6 @@ public class MainContent : MonoBehaviour
         {
             if (touch.phase == TouchPhase.Began)
             {
-                Debug.Log("Touch began");
                 fingerUp = touch.position;
                 fingerDown = touch.position;
             }
@@ -72,19 +76,15 @@ public class MainContent : MonoBehaviour
             if (touch.phase == TouchPhase.Ended)
             {
                 fingerDown = touch.position;
-                Debug.Log("The horizontal destance: " + (fingerDown.x - fingerUp.x).ToString());
                 if (Mathf.Abs(fingerDown.x - fingerUp.x) > SWIPE_THRESHOLD && Mathf.Abs(fingerDown.x - fingerUp.x) > Mathf.Abs(fingerDown.y - fingerUp.y))
                 {
-                    Debug.Log("The horizontal destance: " + (fingerDown.x - fingerUp.x).ToString());
                     //Debug.Log("Horizontal");
                     if (fingerDown.x - fingerUp.x > 0)//Right swipe
                     {
-                        Debug.Log("Swiped Right");
                         OnSwipeRight();
                     }
                     else if (fingerDown.x - fingerUp.x < 0)//Left swipe
                     {
-                        Debug.Log("Swiped Left");
                         OnSwipeLeft();
                     }
                     fingerUp = fingerDown;
@@ -246,7 +246,7 @@ public class MainContent : MonoBehaviour
             Destroy(addOptionsMenuPanelGameObject);
             addOptionsMenuPanelGameObject = null; //For good luck
         }
-
+        ShowAddBtn();
     }
 
     #endregion

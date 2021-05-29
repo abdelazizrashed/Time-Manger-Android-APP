@@ -102,7 +102,7 @@ public class NavBar : MonoBehaviour
         sideMenuBtn.onClick.Invoke();
         if (isSideMenuOpen)
         {
-            sideMenuBtn.onClick.Invoke();
+            //sideMenuBtn.onClick.Invoke();
             CloseSideMenu();
         }
 
@@ -218,18 +218,19 @@ public class NavBar : MonoBehaviour
             {
                 pageTitleTxt.text = page.Value;
             }
-            //Todo: update the content
         }
     }
 
     private void AttachActionsToEvents()
     {
         EventSystem.instance.onChangePage += OnChagePage;
+        EventSystem.instance.closeSideMenuPanel += CloseSideMenu;
     }
 
     private void DeattachActionsToEvents()
     {
         EventSystem.instance.onChangePage -= OnChagePage;
+        EventSystem.instance.closeSideMenuPanel -= CloseSideMenu;
     }
 
     #endregion

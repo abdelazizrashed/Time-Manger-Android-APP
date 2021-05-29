@@ -9,7 +9,7 @@ public class UIMan : MonoBehaviour
     void Start()
     {
         Screen.fullScreen = false;
-        #if ANDROID
+        #if UNITY_ANDROID && ! UNITY_EDITOR
             AGUIMisc.ShowStatusBar();
         #endif
     }

@@ -58,6 +58,7 @@ public class ReminderTimeSlotModel
         List<ReminderTimeSlotModel> timeSlots = new List<ReminderTimeSlotModel>();
         while (dbDataReader.Read())
         {
+            DBMan.Instance.PrintDataReader(dbDataReader);
             timeSlots.Add(new ReminderTimeSlotModel(
                 dbDataReader.GetInt32(0), 
                 DateTime.Parse(dbDataReader.GetString(1)), 
@@ -68,6 +69,8 @@ public class ReminderTimeSlotModel
                 (NotifiAlarmReminderModel[]) JsonConvert.DeserializeObject(dbDataReader.GetString(5))
                 ));
         }
+        dbDataReader?.Close();
+        dbDataReader = null;
         return timeSlots.ToArray();
     }
 }

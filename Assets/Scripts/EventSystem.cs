@@ -120,4 +120,22 @@ public class EventSystem : MonoBehaviour
             onAddNewTasksList();
         }
     }
+
+    public event Action closeSideMenuPanel;
+    public void CloseSideMenuPanel()
+    {
+        if(closeSideMenuPanel != null)
+        {
+            closeSideMenuPanel();
+        }
+    }
+
+    public event Action hideAddOptionsBtns;
+    public void HideAddOptionsBtns()
+    {
+        if(hideAddOptionsBtns!= null)
+        {
+            hideAddOptionsBtns();
+        }
+    }
 }

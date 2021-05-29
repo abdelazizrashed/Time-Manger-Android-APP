@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mono.Data.Sqlite;
 using System.Data;
+using System.IO;
 
 public class DBMan
 {
@@ -13,16 +14,18 @@ public class DBMan
     private string connectionStr;
     private IDbConnection dbConnection;
     private IDbCommand dbCommand;
-    private string dbFileName = "/MainDB.db";
+    private string dbFileName = "/database.db";
     
     public bool doesPrintQuery { get; set; }
     public bool doesPrintRowsAffected { get; set; }
+    public bool doesPrintDataReader { get; set; }
 
     DBMan()
     {
         StartDB();
         doesPrintQuery = false;
         doesPrintRowsAffected = false;
+        doesPrintDataReader = false;
     }
 
     ~DBMan()
@@ -47,9 +50,40 @@ public class DBMan
 
     public void StartDB()
     {
-        connectionStr = "URI=file:" + Application.dataPath + dbFileName;
-        dbConnection = (IDbConnection)new SqliteConnection(connectionStr);
-        dbConnection.Open(); //Open connection to the database.
+        string filepath = Application.persistentDataPath + "/" + dbFileName;
+
+        if (!File.Exists(filepath))
+
+        {
+
+            Debug.LogWarning("File \"" + filepath + "\" does not exist. Attempting to create from \"" +
+
+            Application.dataPath + "!/assets/" + dbFileName);
+
+            // if it doesn't ->
+
+            // open StreamingAssets directory and load the db ->
+
+            WWW loadDB = new WWW("jar:file://" + Application.dataPath + "!/assets/" + "data.sqlite");
+
+            while (!loadDB.isDone) { }
+
+            // then save to Application.persistentDataPath
+
+            File.WriteAllBytes(filepath, loadDB.bytes);
+
+        }
+
+        //open db connection
+
+        connectionStr = "URI=file:" + filepath;
+
+        Debug.Log("Stablishing connection to: " + connectionStr);
+
+        dbConnection = new SqliteConnection(connectionStr);
+
+        dbConnection.Open();
+
         dbCommand = dbConnection.CreateCommand();
         CreateTables();
 
@@ -112,12 +146,12 @@ public class DBMan
 
         query = @"
                     CREATE TABLE IF NOT EXISTS EventsTimeSlots(
-                        time_slot_id INT PRIMARY KEY AUTOINCREMENT,
+                        time_slot_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         time_from TEXT NOT NULL,
                         time_to TEXT NOT NULL,
                         time_started TEXT DEFAULT NULL,
                         time_finished TEXT DEFAULT NULL,
-                        is_completed INT DEFAULT 0,
+                        is_completed INTEGER DEFAULT 0,
                         location TEXT DEFAULT NULL,
                         repeat TEXT DEFAULT NULL,
                         reminder TEXT DEFAULT NULL,
@@ -177,7 +211,7 @@ public class DBMan
                         time_slot_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         time TEXT NOT NULL,
                         time_done TEXT DEFAULT NULL,
-                        is_completed INT DEFAULT 0,
+                        is_completed INTEGER DEFAULT 0,
                         repeat TEXT DEFAULT NULL,
                         reminder TEXT DEFAULT NULL,
                         reminder_id INTEGER NOT NULL,
@@ -231,17 +265,24 @@ public class DBMan
 
     public long ExecuteQueryAndReturnTheRowID(string query)
     {
-        dbCommand.CommandText = query;
+        dbCommand.CommandText = query + " SELECT last_insert_rowid();";
         PrintQuery(query);
-        return (long)dbCommand.ExecuteScalar();
-
+        if(dbCommand == null)
+        {
+            Debug.Log("dbCommand is null");
+        }
+        long rowID = (long)dbCommand?.ExecuteScalar();
+        Debug.Log(rowID);
+        return rowID;
     }
 
     public IDataReader ExecuteQueryAndReturnDataReader(string query)
     {
         dbCommand.CommandText = query;
         PrintQuery(query);
-        return dbCommand.ExecuteReader();
+        IDataReader dbDataReader = dbCommand.ExecuteReader();
+        IDataReader reader2 = dbDataReader;
+        return dbDataReader;
     }
 
     void CloseDB()
@@ -264,6 +305,19 @@ public class DBMan
         if (doesPrintRowsAffected)
         {
             Debug.Log("Rows Affected: " + noOFRow.ToString());
+        }
+    }
+
+    public void PrintDataReader(IDataReader reader)
+    {
+        if (doesPrintDataReader)
+        {
+            string readerData = "";
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                readerData += reader.GetName(i) + ": " + reader.GetValue(i).ToString() + "\n";
+            }
+            Debug.Log(readerData);
         }
     }
 }

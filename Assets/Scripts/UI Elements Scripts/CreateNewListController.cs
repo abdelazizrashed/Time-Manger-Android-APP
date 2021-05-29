@@ -1,4 +1,5 @@
 ﻿using DeadMosquito.AndroidGoodies;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -21,12 +22,6 @@ public class CreateNewListController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     #endregion
 
     #region Controller
@@ -42,59 +37,98 @@ public class CreateNewListController : MonoBehaviour
 
     private void OnCancelBtnClicked()
     {
-        AGAlertDialog.ShowMessageDialog(
-            "",
-            "Discard this list?",
-            "Keep editing", () => { },
-            negativeButtonText: "Discard", onNegativeButtonClick: () =>
+        try
+        {
+            if(Application.platform == RuntimePlatform.Android)
+            {
+                Debug.Log("The current platform is android");
+                AGAlertDialog.ShowMessageDialog(
+                    "",
+                    "Discard this list?",
+                    "Keep editing", () => { },
+                    negativeButtonText: "Discard", onNegativeButtonClick: () =>
+                    {
+                        HideAddTasksListPanel();
+                    },
+                    theme: AGDialogTheme.Dark
+                    );
+            }
+            else
             {
                 HideAddTasksListPanel();
-            },
-            theme: AGDialogTheme.Dark
-            );
+
+            }
+        }catch(Exception e)
+        {
+            if(Application.platform == RuntimePlatform.Android)
+            {
+                AGUIMisc.ShowToast(e.Message, AGUIMisc.ToastLength.Long);
+            }
+            else
+            {
+                Debug.LogError(e.Message);
+            }
+        }
     }
 
     private void OnSaveBtnClicked()
     {
-        if (listTitleInputField != null)
+        try
         {
-            string str = listTitleInputField.text;
-            if (string.IsNullOrEmpty(str))
+            if (listTitleInputField != null)
             {
-                AGUIMisc.ShowToast("List title is required.", AGUIMisc.ToastLength.Short);
-                return;
+                string str = listTitleInputField.text;
+                if (string.IsNullOrEmpty(str))
+                {
+#if UNITY_ANDROID && !UNITY_EDITOR
+                    AGUIMisc.ShowToast("List title is required.", AGUIMisc.ToastLength.Short);
+#else
+                    Debug.LogError("List title is required");
+#endif
+                    return;
+                }
+                listTitle = str;
             }
-            listTitle = str;
-        }
 
-        TasksListModel newList = new TasksListModel(title: listTitle);
-        TasksListModel.SaveList(ref newList);
-        EventSystem.instance.AddNewTasksList();
-        HideAddTasksListPanel();
+            TasksListModel newList = new TasksListModel(title: listTitle);
+            TasksListModel.SaveList(ref newList);
+            EventSystem.instance.AddNewTasksList();
+            HideAddTasksListPanel();
+        }catch(Exception e)
+        {
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                AGUIMisc.ShowToast(e.Message, AGUIMisc.ToastLength.Long);
+            }
+            else
+            {
+                Debug.LogError(e.Message);
+            }
+        }
 
     }
 
-    #endregion
-    #endregion
+#endregion
+#endregion
 
-    #region Input handling
+#region Input handling
 
-    #region Data vairables
+#region Data vairables
 
     private string listTitle;
 
-    #endregion 
+#endregion
 
     public TMP_InputField listTitleInputField;
 
-    #endregion
+#endregion
 
-    #region Event system
+#region Event system
 
-    #endregion
+#endregion
 
-    #region General
+#region General
 
-    #endregion
+#endregion
 
 }

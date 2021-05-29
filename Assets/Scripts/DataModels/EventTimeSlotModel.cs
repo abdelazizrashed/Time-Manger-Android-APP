@@ -91,6 +91,7 @@ public class EventTimeSlotModel
         List<EventTimeSlotModel> timeSlots = new List<EventTimeSlotModel>();
         while (dbDataReader.Read())
         {
+            DBMan.Instance.PrintDataReader(dbDataReader);
             timeSlots.Add(new EventTimeSlotModel(
                 dbDataReader.GetInt32(0),
                 DateTime.Parse(dbDataReader.GetString(1)),
@@ -103,6 +104,8 @@ public class EventTimeSlotModel
                 (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(dbDataReader.GetString(8))
                 ));
         }
+        dbDataReader?.Close();
+        dbDataReader = null;
         return timeSlots.ToArray();
     }
 

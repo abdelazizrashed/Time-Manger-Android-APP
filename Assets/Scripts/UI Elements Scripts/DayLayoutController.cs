@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -15,13 +16,7 @@ public class DayLayoutController : MonoBehaviour
         OnStartUp();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    private void OnApplicationQuit()
+    private void OnDestroy()
     {
         DeattachEvents();
     }
@@ -42,10 +37,14 @@ public class DayLayoutController : MonoBehaviour
 
     private void DestroyAllChildren(GameObject parent)
     {
-        while(parent.transform.childCount != 0)
+        foreach (Transform child in parent.transform)
         {
-            Destroy(parent.transform.GetChild(0).gameObject);
+            GameObject.Destroy(child.gameObject);
         }
+        //while (parent.transform.childCount != 0)
+        //{
+        //    Destroy(parent.transform.GetChild(0).gameObject);
+        //}
     }
 
     #region Page change 
@@ -177,18 +176,32 @@ public class DayLayoutController : MonoBehaviour
 
     private void OnTaskPageSelected()
     {
+        Debug.Log("Tasks page selected");
+        //Destroy all the content to make room for the new content
         DestroyAllChildren(dayLayoutContent);
         if (currentPage.Value == Pages.Tasks.Value)
         {
             TasksListModel list = currentPage.tasksList;
-            TaskModel[] tasks = GetDaysTasksOrdered(currentDay);
+            TaskModel[] tasks = GetDaysTasksOrdered(currentDay, list);
+            for(int i = 0; i<tasks.Length; i++) 
+            {
+                Debug.Log("task: " + JsonConvert.SerializeObject(tasks[i]));
+            }
+            //Generate empty place holder in the place where there is not any elements
+            if(tasks.Length != 0)
+            {
+                float duration = (float)(tasks[0].timeFrom - tasks[0].timeFrom.Date).TotalHours;
+                GameObject emptyPlaceHolder = Instantiate(emptyPanelPrefab, dayLayoutContent.transform);
+                emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 60f);
+            }
             for (int i = 0; i < tasks.Length; i++)
             {
-                if(DateTime.Compare(tasks[i-1].timeTo, tasks[i].timeFrom) < 0)
+                //if there is time defference between one task and the next put an empty place holder to make the time accurate
+                if(i>0 && DateTime.Compare(tasks[i-1].timeTo, tasks[i].timeFrom) < 0)
                 {
-                    float duration = (float)(tasks[i].timeFrom - tasks[i - 1].timeTo).TotalHours;
+                    float d = (float)(tasks[i].timeFrom - tasks[i - 1].timeTo).TotalHours;
                     GameObject emptyPlaceHolder = Instantiate(emptyPanelPrefab, dayLayoutContent.transform);
-                    emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 60f);
+                    emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, d * 60f);
                 }
                 if (i + 1 < tasks.Length)
                 {
@@ -199,6 +212,7 @@ public class DayLayoutController : MonoBehaviour
                             ) == 0
                             )
                     {
+                        //if two tasks start at the same time put them side by side
                         GameObject rowGameObject = Instantiate(rowPrefab, dayLayoutContent.transform);
                         GameObject child1Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
                         {
@@ -206,12 +220,16 @@ public class DayLayoutController : MonoBehaviour
                             obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
                             obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
                         });
+                        float d = (float)(tasks[i].timeTo - tasks[i].timeFrom).TotalHours;
+                        child1Element.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, d * 60f);
+                        child1Element.GetComponent<Image>().color = Helper.StringToColor(tasks[i].color?.colorValue);
                         while (
+                            i + 1 < tasks.Length
+                            &&
                             DateTime.Compare(
                             tasks[i].timeFrom,
                             tasks[i + 1].timeFrom
-                            ) == 0 &&
-                            i + 1 < tasks.Length
+                            ) == 0 
                             )
                         {
                             i++;
@@ -221,6 +239,9 @@ public class DayLayoutController : MonoBehaviour
                                 obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
                                 obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
                             });
+                            d = (float)(tasks[i].timeTo - tasks[i].timeFrom).TotalHours;
+                            child2Element.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, d * 60f);
+                            child2Element.GetComponent<Image>().color = Helper.StringToColor(tasks[i].color.colorValue);
                         }
                         continue;
                     }
@@ -231,6 +252,9 @@ public class DayLayoutController : MonoBehaviour
                     obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
                     obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
                 });
+                float duration = (float)(tasks[i].timeTo - tasks[i].timeFrom).TotalHours;
+                childElement.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 60f);
+                childElement.GetComponent<Image>().color = Helper.StringToColor(tasks[i].color.colorValue);
             }
 
         }
@@ -352,6 +376,8 @@ public class DayLayoutController : MonoBehaviour
 
     private void OnChangePage(Pages page)
     {
+        currentPage = page;
+        Debug.Log(currentPage.Value);
         if(page.Value == Pages.Events.Value)
         {
             OnEventsPageSelected();
@@ -364,14 +390,25 @@ public class DayLayoutController : MonoBehaviour
         }
     }
 
+    private void OnAddSomething()
+    {
+        OnChangePage(currentPage);
+    }
+
     private void AttachEvents()
     {
         EventSystem.instance.onChangePage += OnChangePage;
+        EventSystem.instance.onAddNewEvent += OnAddSomething;
+        EventSystem.instance.onAddNewReminder += OnAddSomething;
+        EventSystem.instance.onNewTaskAdded += OnAddSomething;
     }
 
     private void DeattachEvents()
     {
         EventSystem.instance.onChangePage -= OnChangePage;
+        EventSystem.instance.onAddNewEvent -= OnAddSomething;
+        EventSystem.instance.onAddNewReminder -= OnAddSomething;
+        EventSystem.instance.onNewTaskAdded -= OnAddSomething;
     }
 
     #endregion
@@ -428,11 +465,11 @@ public class DayLayoutController : MonoBehaviour
             tasks = TaskModel.GetTasks();
         }
         List<TaskModel> daysTasks = new List<TaskModel>();
-        foreach(TaskModel task in tasks)
+        for(int i = 0; i< tasks.Length; i++)
         {
-            if(DateTime.Compare(task.timeFrom.Date, day.Date) == 0 || DateTime.Compare(task.timeTo.Date, day.Date) == 0)
+            if(DateTime.Compare(tasks[i].timeFrom.Date, day.Date) == 0 || DateTime.Compare(tasks[i].timeTo.Date, day.Date) == 0)
             {
-                daysTasks.Add(task);
+                daysTasks.Add(tasks[i]);
             }
         }
         tasks = null;

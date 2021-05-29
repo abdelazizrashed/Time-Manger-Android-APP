@@ -12,7 +12,7 @@ public class AddTaskController : MonoBehaviour
     public GameObject background;
     private int pageNumber;
 
-
+    #region Main Methods
     // Start is called before the first frame update
     void Start()
     {
@@ -30,10 +30,14 @@ public class AddTaskController : MonoBehaviour
         DeattachMethodsFromEvents();
     }
 
+    #endregion
+
     private TaskModel currentTask;
     public TMP_Text addTaskTitleTxt;
+    private bool isEdit = false;
     public void SetUpFieldsForEdit(TaskModel editTask)
     {
+        isEdit = true;
         markFinishedBtn.gameObject.SetActive(true);
         markStartedBtn.gameObject.SetActive(true);
         //choose list
@@ -96,11 +100,11 @@ public class AddTaskController : MonoBehaviour
         parentTask = editTask.parentTask;
         if(parentTask != null)
         {
-            chooseParentBtn.GetComponentInChildren<TMP_Text>().text = "Task: " + parentTask.taskTitle;
+            chooseParentBtn.GetComponentInChildren<TMP_Text>().text = "Task: " + parentTask?.taskTitle;
         }
         else
         {
-            chooseParentBtn.GetComponentInChildren<TMP_Text>().text = "Event: " + parentEvent.eventTitle;
+            chooseParentBtn.GetComponentInChildren<TMP_Text>().text = "Event: " + parentEvent?.eventTitle;
         }
 
         currentTask = editTask;
@@ -113,6 +117,7 @@ public class AddTaskController : MonoBehaviour
 
     private void OnMarkStartedBtnClicked()
     {
+
         string[] titles = { "Now", "Choose specific time" };
         AGAlertDialog.ShowChooserDialog(
             "Choose time",
@@ -217,6 +222,7 @@ public class AddTaskController : MonoBehaviour
 
     private void OnCancelButtonClicked()
     {
+#if UNITY_ANDROID && !UNITY_EDITOR
         AGAlertDialog.ShowMessageDialog(
             "",
             "Discard this task?",
@@ -227,11 +233,20 @@ public class AddTaskController : MonoBehaviour
             },
             theme: AGDialogTheme.Dark
             );
+#else
+        HideAddTaskPanel();
+#endif
 
     }
 
     private void OnSaveBtnClicked()
     {
+        if(choosenList == null)
+        {
+            AGUIMisc.ShowToast("Tasks list is required.", AGUIMisc.ToastLength.Short);
+            return;
+        }
+
         if (IsTaskTitleEmpty())
         {
             AGUIMisc.ShowToast("Task title is required.", AGUIMisc.ToastLength.Long);
@@ -241,18 +256,17 @@ public class AddTaskController : MonoBehaviour
 
         taskDescription = GetTheTaskDescription();
 
-        if(choosenList == null)
-        {
-            AGUIMisc.ShowToast("Tasks list is required.", AGUIMisc.ToastLength.Short);
-            return;
-        }
-
         timeFrom = new DateTime(dateFrom.Year, dateFrom.Month, dateFrom.Day, timeFrom.Hour, timeFrom.Minute, timeFrom.Second);
         timeTo = new DateTime(dateTo.Year, dateTo.Month, dateTo.Day, timeTo.Hour, timeTo.Minute, timeTo.Second);
 
         if(DateTime.Compare(timeFrom, timeTo)> 0)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             AGUIMisc.ShowToast("The start time must be earlier than the finish time", AGUIMisc.ToastLength.Long);
+#else
+            Debug.LogError("The start time must be earlier than the finish time");
+#endif
+
             return;
         }
 
@@ -270,7 +284,11 @@ public class AddTaskController : MonoBehaviour
 
             if (!isWithinParentTimeRange)
             {
+#if UNITY_ANDROID && !UNITY_EDITOR
                 AGUIMisc.ShowToast("Event time frame must be with its parent.", AGUIMisc.ToastLength.Long);
+#else
+                Debug.LogError("Event time frame must be with its parent.");
+#endif
                 return;
             }
         }
@@ -279,25 +297,46 @@ public class AddTaskController : MonoBehaviour
         {
             if (DateTime.Compare(timeFrom, parentTask.timeFrom) < 0 && DateTime.Compare(timeTo, parentTask.timeTo) > 0)
             {
+#if UNITY_ANDROID && !UNITY_EDITOR
                 AGUIMisc.ShowToast("Event time frame must be with its parent.", AGUIMisc.ToastLength.Long);
+#endif
+
                 return;
             }
         }
 
-        TaskModel newTask = new TaskModel(
-            _taskTitle: taskTitle,
-            _taskDescription: taskDescription,
-            _timeFrom: timeFrom,
-            _timeTo: timeTo,
-            _repeat: choosenRepeatOption,
-            _reminders: chosenReminders.ToArray(),
-            _color: chosenColor,
-            _userID: UserModel.Instance.userID,
-            _parentEvent: parentEvent,
-            _parentTask: parentTask,
-            _taskList: choosenList
-            );
-        TaskModel.SaveTask(ref newTask);
+        if (isEdit)
+        {
+            currentTask.taskTitle = taskTitle;
+            currentTask.taskDescription = taskDescription;
+            currentTask.timeFrom = timeFrom;
+            currentTask.timeTo = timeTo;
+            currentTask.taskList = choosenList;
+            currentTask.repeat = choosenRepeatOption;
+            currentTask.reminders = chosenReminders.ToArray();
+            currentTask.color = chosenColor;
+            currentTask.parentEvent = parentEvent;
+            currentTask.parentTask = parentTask;
+            TaskModel.UpdateTask(ref currentTask);
+        }
+        else
+        {
+            TaskModel newTask = new TaskModel(
+                _taskTitle: taskTitle,
+                _taskDescription: taskDescription,
+                _timeFrom: timeFrom,
+                _timeTo: timeTo,
+                _repeat: choosenRepeatOption,
+                _reminders: chosenReminders.ToArray(),
+                _color: chosenColor,
+                _userID: UserModel.Instance.userID,
+                _parentEvent: parentEvent,
+                _parentTask: parentTask,
+                _taskList: choosenList
+                );
+            TaskModel.SaveTask(ref newTask);
+
+        }
         EventSystem.instance.NewTaskAdded();
         HideAddTaskPanel();
     }
@@ -315,11 +354,11 @@ public class AddTaskController : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Input handling
+#region Input handling
 
-    #region Data variables
+#region Data variables
 
     private string taskTitle = "";
     private string taskDescription = "";
@@ -331,9 +370,9 @@ public class AddTaskController : MonoBehaviour
     private DateTime timeFrom;
     private DateTime timeTo;
 
-    private RepeatModel choosenRepeatOption;
+    private RepeatModel choosenRepeatOption = null;
 
-    private List<NotifiAlarmReminderModel> chosenReminders;
+    private List<NotifiAlarmReminderModel> chosenReminders = new List<NotifiAlarmReminderModel>();
 
     private ColorModel chosenColor = null;
 
@@ -341,9 +380,9 @@ public class AddTaskController : MonoBehaviour
     private EventModel parentEvent = null;
 
 
-    #endregion
+#endregion
 
-    #region Choose List
+#region Choose List
 
     public Button chooseListBtn;
 
@@ -355,23 +394,29 @@ public class AddTaskController : MonoBehaviour
         {
             listsTitles.Add(list.listTitle);
         }
-
-        AGAlertDialog.ShowChooserDialog("Choose List", listsTitles.ToArray(), listIndex =>
-        {
-            choosenList = lists[listIndex];
-            if (chooseListBtn != null)
+#if UNITY_ANDROID && !UNITY_EDITOR
+            Debug.Log("The platform is android");
+            AGAlertDialog.ShowChooserDialog("Choose List", listsTitles.ToArray(), listIndex =>
             {
-                chooseListBtn.GetComponentInChildren<TMP_Text>().text = choosenList.listTitle;
-            }
-        },
-        theme: AGDialogTheme.Dark
-        );
+                choosenList = lists[listIndex];
+                if (chooseListBtn != null)
+                {
+                    chooseListBtn.GetComponentInChildren<TMP_Text>().text = choosenList.listTitle;
+                }
+            },
+            theme: AGDialogTheme.Dark
+            );
+#else
+            Debug.Log("Choose list is clicked and chosen the first option");
+            choosenList = lists[0];
+            chooseListBtn.GetComponentInChildren<TMP_Text>().text = choosenList.listTitle;
+#endif
     }
 
 
-    #endregion
+#endregion
 
-    #region Title and Description
+#region Title and Description
 
     public TMP_InputField taskTitleInputField;
     public TMP_InputField taskDescriptionInputField;
@@ -405,9 +450,9 @@ public class AddTaskController : MonoBehaviour
     }
 
 
-    #endregion
+#endregion
 
-    #region Time from and Time to
+#region Time from and Time to
 
     public Button dateFromBtn;
     public Button timeFromBtn;
@@ -418,36 +463,41 @@ public class AddTaskController : MonoBehaviour
     {
         if (timeFrom != null)
         {
-            AGDateTimePicker.ShowTimePicker(
-                timeFrom.Hour,
-                timeFrom.Minute,
-                (hour, minute) =>
-                {
-                    timeFrom = new DateTime(timeFrom.Year, timeFrom.Month, timeFrom.Day, hour, minute, 0);
+#if UNITY_ANDROID && !UNITY_EDITOR
+                AGDateTimePicker.ShowTimePicker(
+                    timeFrom.Hour,
+                    timeFrom.Minute,
+                    (hour, minute) =>
+                    {
+                        timeFrom = new DateTime(timeFrom.Year, timeFrom.Month, timeFrom.Day, hour, minute, 0);
 
-                    if (timeFromBtn != null)
-                    {
-                        SetTextOfTimeBtn(ref timeFromBtn, timeFrom.ToString("hh:mm tt"));
-                    }
-                    if (timeTo.Hour <= timeFrom.Hour)
-                    {
-                        if (timeTo.Minute <= timeFrom.Hour)
+                        if (timeFromBtn != null)
                         {
-                            timeTo = new DateTime(timeTo.Year, timeTo.Month, timeTo.Day, timeFrom.Hour + 1, timeTo.Minute, 0);
+                            SetTextOfTimeBtn(ref timeFromBtn, timeFrom.ToString("hh:mm tt"));
                         }
-                    }
-                },
-                () => { },
-                AGDialogTheme.Dark,
-                false
-                );
+                        if (timeTo.Hour <= timeFrom.Hour)
+                        {
+                            if (timeTo.Minute <= timeFrom.Hour)
+                            {
+                                timeTo = new DateTime(timeTo.Year, timeTo.Month, timeTo.Day, timeFrom.Hour + 1, timeTo.Minute, 0);
+                            }
+                        }
+                    },
+                    () => { },
+                    AGDialogTheme.Dark,
+                    false
+                    );
+#else
+            Debug.Log("Pretend to do something but nothing will happen because it is not android");
+#endif
         }
     }
 
     private void OnDateFromBtnClicked()
     {
-        if (dateFrom != null)
+        if (dateFromBtn != null)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             AGDateTimePicker.ShowDatePicker(
                 dateFrom.Year,
                 dateFrom.Month,
@@ -475,11 +525,16 @@ public class AddTaskController : MonoBehaviour
                 () => { },
                 AGDialogTheme.Dark
                 );
+#else
+            Debug.Log("Pretend to do something but every thing will be the same because this is not an android device");
+#endif
         }
     }
 
     private void OnTimeToBtnClicked()
     {
+
+#if UNITY_ANDROID && !UNITY_EDITOR
         DateTime now = DateTime.Now;
         AGDateTimePicker.ShowTimePicker(
             DateTime.Now.Hour,
@@ -497,6 +552,9 @@ public class AddTaskController : MonoBehaviour
             AGDialogTheme.Dark,
             false
             );
+#else
+        Debug.Log("Pretend to do something but every thing will be the same because this is not an android device");
+#endif
 
     }
 
@@ -504,6 +562,7 @@ public class AddTaskController : MonoBehaviour
     {
         if (dateTo != null)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             AGDateTimePicker.ShowDatePicker(
                 dateTo.Year,
                 dateTo.Month,
@@ -520,6 +579,9 @@ public class AddTaskController : MonoBehaviour
                 () => { },
                 AGDialogTheme.Dark
                 );
+#else
+            Debug.Log("Pretend to do something but every thing will be the same because this is not an android device");
+#endif
         }
 
     }
@@ -553,15 +615,17 @@ public class AddTaskController : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Repeat
+#region Repeat
 
     public Button repeatBtn;
     public GameObject customRecurrancePanelPrefab;
     
     private void OnRepeatBtnClicked()
     {
+
+#if UNITY_ANDROID && !UNITY_EDITOR
         string[] repeatOptionsTitles =
         {
             "Does not repeat",
@@ -571,7 +635,6 @@ public class AddTaskController : MonoBehaviour
             "Every year",
             "Custom"
         };
-
         AGAlertDialog.ShowChooserDialog("", repeatOptionsTitles, optionIndex =>
         {
             switch (optionIndex)
@@ -597,6 +660,10 @@ public class AddTaskController : MonoBehaviour
 
             }
         }, AGDialogTheme.Dark);
+#else
+        Debug.Log("Pretend to do something but every thing will be the same because this is not an android device");
+        choosenRepeatOption = new RepeatModel(RepeatPeriod.Day, new WeekDays[] { });
+#endif
     }
 
     private void OnCustomRepeatChoosen()
@@ -609,9 +676,9 @@ public class AddTaskController : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Reminder
+#region Reminder
 
     public Button addReminderBtn;
     public GameObject customReminderPrefab;
@@ -629,9 +696,9 @@ public class AddTaskController : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Color
+#region Color
     public Button chooseColorBtn;
     public GameObject colorBtnPrefab;
 
@@ -659,9 +726,9 @@ public class AddTaskController : MonoBehaviour
                 );
         }
     }
-    #endregion
+#endregion
 
-    #region Choose Parent
+#region Choose Parent
     public Button chooseParentBtn;
     private void OnChooseParentBtnClicked()
     {
@@ -712,12 +779,12 @@ public class AddTaskController : MonoBehaviour
         chooseParentBtn.GetComponentInChildren<TMP_Text>().text = chooseParentBtnTxt;
     }
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
 
-    #region Events
+#region Events
 
     //private void SetTasksLists(TasksListModel[] lists)
     //{
@@ -773,7 +840,7 @@ public class AddTaskController : MonoBehaviour
         //EventSystem.instance.getTasksLists -= SetTasksLists;
 
     }
-    #endregion
+#endregion
 
     private void AddListnersToBtns()
     {
@@ -845,9 +912,9 @@ public class AddTaskController : MonoBehaviour
 
     public void OnStartup()
     {
-        dateFrom = DateTime.Now;
+        dateFrom = DateTime.Now.Date;
         timeFrom = DateTime.Now;
-        dateTo = DateTime.Now;
+        dateTo = DateTime.Now.Date;
         timeTo = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour + 1, DateTime.Now.Minute, 0, 0);
         SetTaskDateTimeOnStartup();
         ColorModel[] colors = ColorModel.GetColors();

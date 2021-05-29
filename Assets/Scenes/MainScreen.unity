@@ -1446,6 +1446,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb59924a2a04ad44c9ba70133f6bde8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doesPrintQuery: 0
+  doesPrintRowsAffected: 0
+  doesPrintDataReader: 1
 --- !u!4 &1414708499
 Transform:
   m_ObjectHideFlags: 0

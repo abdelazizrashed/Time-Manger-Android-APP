@@ -70,7 +70,8 @@ public class TaskModel: System.Object
         List<TaskModel> tasks = new List<TaskModel>();
         while (reader.Read())
         {
-            tasks.Add(new TaskModel(
+            DBMan.Instance.PrintDataReader(reader);
+            TaskModel newTask = new TaskModel(
                 reader.GetInt32(0),
                 reader.GetString(1),
                 reader.GetString(2),
@@ -79,14 +80,22 @@ public class TaskModel: System.Object
                 DateTime.Parse(reader.GetString(5)),
                 DateTime.Parse(reader.GetString(6)),
                 reader.GetInt32(7) == 1,
-                (RepeatModel)JsonConvert.DeserializeObject(reader.GetString(8)),
-                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(reader.GetString(9)),
-                ColorModel.GetColorByColorID(reader.GetInt32(11)),
+                new RepeatModel(RepeatPeriod.Day, new WeekDays[] { }),
+                new NotifiAlarmReminderModel[] { },
+                new ColorModel(reader.GetInt32(11), "", ""),
                 reader.GetInt32(12),
-                EventModel.GetEventByEventID(reader.GetInt32(13)),
-                TaskModel.GetTaskByTaskID(reader.GetInt32(14)),
-                TasksListModel.GetList(reader.GetInt32(10))
-                ));
+                !String.IsNullOrEmpty(reader.GetValue(13).ToString()) ? EventModel.GetEventByEventID(reader.GetInt32(13)) : null,
+                !String.IsNullOrEmpty(reader.GetValue(14).ToString()) ? TaskModel.GetTaskByTaskID(reader.GetInt32(14)) : null,
+                new TasksListModel(reader.GetInt32(10))
+                );
+            tasks.Add(newTask);
+        }
+        reader?.Close();
+        reader = null;
+        for (int i = 0; i < tasks.Count; i++)
+        {
+            tasks[i].taskList = TaskModel.SetTasksList(tasks[i].taskList);
+            tasks[i].color = TaskModel.SetTaskColorModel(tasks[i].color);
         }
         return tasks.ToArray();
     }
@@ -97,8 +106,8 @@ public class TaskModel: System.Object
         IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
         while (reader.Read())
         {
-
-            return new TaskModel(
+            DBMan.Instance.PrintDataReader(reader);
+            TaskModel newTask =  new TaskModel(
                 reader.GetInt32(0),
                 reader.GetString(1),
                 reader.GetString(2),
@@ -107,15 +116,23 @@ public class TaskModel: System.Object
                 DateTime.Parse(reader.GetString(5)),
                 DateTime.Parse(reader.GetString(6)),
                 reader.GetInt32(7) == 1,
-                (RepeatModel)JsonConvert.DeserializeObject(reader.GetString(8)),
-                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(reader.GetString(9)),
-                ColorModel.GetColorByColorID(reader.GetInt32(11)),
+                new RepeatModel(RepeatPeriod.Day, new WeekDays[] { }),
+                new NotifiAlarmReminderModel[] { },
+                new ColorModel(reader.GetInt32(11), "", ""),
                 reader.GetInt32(12),
-                EventModel.GetEventByEventID(reader.GetInt32(13)),
-                TaskModel.GetTaskByTaskID(reader.GetInt32(14)),
-                TasksListModel.GetList(reader.GetInt32(10))
+                !String.IsNullOrEmpty(reader.GetValue(13).ToString()) ? EventModel.GetEventByEventID(reader.GetInt32(13)) : null,
+                !String.IsNullOrEmpty(reader.GetValue(14).ToString()) ? TaskModel.GetTaskByTaskID(reader.GetInt32(14)) : null,
+                new TasksListModel(reader.GetInt32(10))
                 );
+            reader?.Close();
+            reader = null;
+            newTask.taskList = TaskModel.SetTasksList(newTask.taskList);
+            newTask.color = TaskModel.SetTaskColorModel(newTask.color);
+            
+            return newTask;
         }
+        reader?.Close();
+        reader = null;
         return null;
     }
 
@@ -134,21 +151,64 @@ public class TaskModel: System.Object
     {
         string query =
             "INSERT INTO Tasks " +
-            "VALUES ( NULL, " +
-            task.taskTitle + ", " +
-            task.taskDescription + ", " +
-            task.timeFrom.ToString() + ", " +
-            task.timeTo.ToString() + ", " +
-            task.timeStarted.ToString() + ", " +
-            task.timeFinished.ToString() + ", " +
-            (task.isCompleted ? 1 : 0).ToString() + ", " +
-            JsonConvert.SerializeObject(task.repeat) + ", " +
-            JsonConvert.SerializeObject(task.reminders) + ", " +
-            task.taskList.listID + ", " +
-            task.color.colorID + ", " +
-            task.userID + ", " +
-            task.parentEvent.eventID + ", " +
-            task.parentTask.taskID + "); ";
+            "VALUES ( NULL, \"" +
+            task.taskTitle + "\", \"" +
+            task.taskDescription + "\", \"" +
+            task.timeFrom.ToString() + "\", \"" +
+            task.timeTo.ToString() + "\", \"" +
+            task.timeStarted.ToString() + "\", \"" +
+            task.timeFinished.ToString() + "\", " +
+            (task.isCompleted ? 1 : 0).ToString() + ", \"" +
+            JsonConvert.SerializeObject(task.repeat) + "\", \"" +
+            JsonConvert.SerializeObject(task.reminders) + "\", " +
+            task.taskList?.listID + ", " +
+            task.color?.colorID + ", " +
+            task.userID + ", ";
+        if(task.parentEvent != null)
+        {
+            query += task.parentEvent?.eventID + ", ";
+        }
+        else
+        {
+            query += "NULL, ";
+        }
+        if(task.parentTask != null)
+        {
+            query += task.parentTask?.taskID + "); ";
+        }
+        else
+        {
+            query += "NULL);";
+        }
+        task.taskID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
+    }
+
+    public static void UpdateTask(ref TaskModel task)
+    {
+        string query =
+            "UPDATE Tasks " +
+            "SET " +
+            "task_title = " + "\""+ task.taskTitle + "\", " +
+            "task_description = " + "\"" + task.taskDescription + "\", " +
+            "time_from = " + "\"" + task.timeFrom.ToString() + "\", " +
+            "time_to = " + "\"" + task.timeTo.ToString() + "\", " +
+            "time_started = " + "\"" + task.timeStarted.ToString() + "\", " +
+            "time_finished = " + "\"" + task.timeFinished.ToString() + "\", " +
+            "is_completed = " + (task.isCompleted ? 1 : 0).ToString() + ", " +
+            "repeat = " + "\"" + JsonConvert.SerializeObject(task.repeat) + "\", " +
+            "reminder = " + "\"" + JsonConvert.SerializeObject(task.reminders) + "\", " +
+            "list_id = " + task.taskList?.listID + ", " +
+            "color_id = " + task.color?.colorID + ", " +
+            "user_id = " + task.userID + " ";
+        if (task.parentEvent != null)
+        {
+            query += ", parent_event_id = " + task.parentEvent?.eventID + ", ";
+        }
+        if (task.parentTask != null)
+        {
+            query += ", parent_task_id = " + task.parentTask?.taskID + " ";
+        }
+        query += "WHERE task_id = " + task.taskID + ";";
         task.taskID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
     }
 
@@ -162,7 +222,7 @@ public class TaskModel: System.Object
         List<TaskModel> children = new List<TaskModel>();
         for(int i = 0; i< tasks.Length; i++)
         {
-            if (tasks[i].parentTask.taskID == parentTask.taskID)
+            if (tasks[i].parentTask?.taskID == parentTask?.taskID)
             {
                 tasks[i].childrenTasks = TaskModel.GetTaskChildrenOrderedByStartTime(ref tasks[i]);
                 children.Add(tasks[i]);
@@ -198,24 +258,26 @@ public class TaskModel: System.Object
         {
             tasks[i].childrenTasks = TaskModel.GetTaskChildrenOrderedByStartTime(ref tasks[i]);
         }
+        List<TaskModel> unorderedTasks = new List<TaskModel>(tasks);
         List<TaskModel> orderedTasks = new List<TaskModel>();
-        foreach (TaskModel task in tasks)
+        for(int i = 0; i<unorderedTasks.Count; i++)
         {
-            TaskModel earlestTask = task;
-            foreach (TaskModel task2 in tasks)
+            TaskModel earlestTask = unorderedTasks[i];
+            for(int j = 0; j<unorderedTasks.Count; j++)
             {
-                if (DateTime.Compare(earlestTask.timeFrom, task2.timeFrom) > 0)
+                if (DateTime.Compare(earlestTask.timeFrom, unorderedTasks[j].timeFrom) > 0)
                 {
-                    earlestTask = task2;
+                    earlestTask = unorderedTasks[j];
                 }
-                else if (DateTime.Compare(earlestTask.timeFrom, task2.timeFrom) == 0)
+                else if (DateTime.Compare(earlestTask.timeFrom, unorderedTasks[j].timeFrom) == 0)
                 {
-                    if (DateTime.Compare(earlestTask.timeTo, task2.timeTo) > 0)
+                    if (DateTime.Compare(earlestTask.timeTo, unorderedTasks[j].timeTo) > 0)
                     {
-                        earlestTask = task2;
+                        earlestTask = unorderedTasks[j];
                     }
                 }
             }
+            unorderedTasks.Remove(earlestTask);
             orderedTasks.Add(earlestTask);
         }
         return orderedTasks.ToArray();
@@ -223,11 +285,16 @@ public class TaskModel: System.Object
 
     public static TaskModel[] GetListTasks(TasksListModel list)
     {
-        string query = "SELECT * FROM TASKS WHERE list_id = " + list.listID + ";";
+        string query = "SELECT * FROM Tasks WHERE list_id = " + list.listID + ";";
         IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
         List<TaskModel> tasks = new List<TaskModel>();
         while (reader.Read())
         {
+            DBMan.Instance.PrintDataReader(reader);
+            //for(int i = 0; i<15; i++)
+            //{
+            //    Debug.Log(reader.GetName(i) + ": " + reader.GetValue(i).ToString());
+            //}
             tasks.Add(new TaskModel(
                 reader.GetInt32(0),
                 reader.GetString(1),
@@ -237,16 +304,32 @@ public class TaskModel: System.Object
                 DateTime.Parse(reader.GetString(5)),
                 DateTime.Parse(reader.GetString(6)),
                 reader.GetInt32(7) == 1,
-                (RepeatModel)JsonConvert.DeserializeObject(reader.GetString(8)),
-                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(reader.GetString(9)),
-                ColorModel.GetColorByColorID(reader.GetInt32(11)),
+                new RepeatModel(RepeatPeriod.Day, new WeekDays[] { }),
+                new NotifiAlarmReminderModel[] { },
+                new ColorModel(reader.GetInt32(11), "", ""),
                 reader.GetInt32(12),
-                EventModel.GetEventByEventID(reader.GetInt32(13)),
-                TaskModel.GetTaskByTaskID(reader.GetInt32(14)),
-                TasksListModel.GetList(reader.GetInt32(10))
+                !String.IsNullOrEmpty(reader.GetValue(13).ToString()) ? EventModel.GetEventByEventID(reader.GetInt32(13)) : null,
+                !String.IsNullOrEmpty(reader.GetValue(14).ToString()) ? TaskModel.GetTaskByTaskID(reader.GetInt32(14)) : null,
+                new TasksListModel(reader.GetInt32(10))
                 ));
         }
+        reader?.Close();
+        reader = null;
+        for(int i = 0; i<tasks.Count; i++)
+        {
+            tasks[i].taskList = TaskModel.SetTasksList(tasks[i].taskList);
+            tasks[i].color = TaskModel.SetTaskColorModel(tasks[i].color);
+        }
         return tasks.ToArray();
+    }
+
+    public static  TasksListModel SetTasksList(TasksListModel list)
+    {
+        return TasksListModel.GetList(list.listID);
+    }
+    public static ColorModel SetTaskColorModel(ColorModel c)
+    {
+        return ColorModel.GetColorByColorID(c.colorID);
     }
 
     public static void StartTask(TaskModel task, DateTime time)

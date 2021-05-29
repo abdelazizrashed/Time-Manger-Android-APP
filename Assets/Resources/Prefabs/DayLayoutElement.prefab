@@ -138,11 +138,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c8a6f1fdfbe31847b6c5b18df6a27fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  elementTitle: {fileID: 0}
-  dayLayoutElementPrefab: {fileID: 0}
-  dayLayoutElementChildrenPrefab: {fileID: 0}
-  rowPrefab: {fileID: 0}
-  columnPrefab: {fileID: 0}
+  elementTitle: {fileID: 3038668425340855168}
+  dayLayoutElementPrefab: {fileID: 3038668424716118960}
+  dayLayoutElementChildrenPrefab: {fileID: 2695472855954665175, guid: f65b46682faffdc49947d0d32bbacc57, type: 3}
+  rowPrefab: {fileID: 4563081026106091809, guid: 5455ac070bb7e6942ab260d2fa37d8d3, type: 3}
+  columnPrefab: {fileID: 4557349810628444061, guid: 9715c0b2fe881d044a1aecf510395a48, type: 3}
 --- !u!114 &3038668424716118988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,8 +280,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 10
-  m_fontSizeBase: 10
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

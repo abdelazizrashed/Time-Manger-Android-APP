@@ -238,20 +238,28 @@ public class Helper : MonoBehaviour
 
     public static byte[] StringToByteArray(string hex)
     {
-        return Enumerable.Range(0, hex.Length)
-                         .Where(x => x % 2 == 0)
-                         .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                         .ToArray();
+        if(hex != null)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
+        }
+        return null;
     }
 
     public static Color32 StringToColor(string hex)
     {
-        return new Color32(
-                        Helper.StringToByteArray(hex)[0],
-                        Helper.StringToByteArray(hex)[1],
-                        Helper.StringToByteArray(hex)[2],
-                        0xFF
-                        );
+        if (!String.IsNullOrEmpty(hex))
+        {
+            return new Color32(
+                            Helper.StringToByteArray(hex)[0],
+                            Helper.StringToByteArray(hex)[1],
+                            Helper.StringToByteArray(hex)[2],
+                            0xFF
+                            );
+        }
+        return Color.blue;
     }
 
     /// <summary>

@@ -112,15 +112,16 @@ public class AddOptions : MonoBehaviour
 
     private void HideAddOptionsBtns()
     {
-        if (addOptionsShadowPanel != null)
-        {
-            addOptionsShadowPanel.SetActive(false);
-        }
+        //if (addOptionsShadowPanel != null)
+        //{
+        //    addOptionsShadowPanel.SetActive(false);
+        //}
 
-        if (gameObject != null)
-        {
-            gameObject.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-438, -1495), 0.25f);
-            Destroy(gameObject);
-        }
+        //if (gameObject != null)
+        //{
+        //    gameObject.GetComponent<RectTransform>().DOAnchorPos(new Vector2(-438, -1495), 0.25f);
+        //    Destroy(gameObject);
+        //}
+        EventSystem.instance.HideAddOptionsBtns();
     }
 }

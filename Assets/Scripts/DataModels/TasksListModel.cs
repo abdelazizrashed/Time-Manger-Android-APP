@@ -20,8 +20,14 @@ public class TasksListModel
         IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
         while (reader.Read())
         {
-            return new TasksListModel(reader.GetInt32(0), reader.GetString(1));
+            DBMan.Instance.PrintDataReader(reader);
+            TasksListModel newList =  new TasksListModel(reader.GetInt32(0), reader.GetString(1));
+            reader?.Close();
+            reader = null;
+            return newList;
         }
+        reader?.Close();
+        reader = null;
         return null;
     }
 
@@ -32,6 +38,7 @@ public class TasksListModel
         IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
         while (reader.Read())
         {
+            DBMan.Instance.PrintDataReader(reader);
             lists.Add(new TasksListModel(reader.GetInt32(0), reader.GetString(1)));
         }
         reader?.Close();
@@ -41,7 +48,7 @@ public class TasksListModel
 
     public static void SaveList(ref TasksListModel newList)
     {
-        string query = "INSERT INTO TasksLists(list_title) VALUES (" + newList.listTitle + ");";
+        string query = "INSERT INTO TasksLists VALUES (NULL, \"" + newList.listTitle + "\", " + UserModel.Instance.userID + ");";
         newList.listID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
     }
 }
