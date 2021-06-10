@@ -192,7 +192,7 @@ public class DayLayoutController : MonoBehaviour
             {
                 float duration = (float)(tasks[0].timeFrom - tasks[0].timeFrom.Date).TotalHours;
                 GameObject emptyPlaceHolder = Instantiate(emptyPanelPrefab, dayLayoutContent.transform);
-                emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 60f);
+                emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 180f);
             }
             for (int i = 0; i < tasks.Length; i++)
             {
@@ -201,7 +201,7 @@ public class DayLayoutController : MonoBehaviour
                 {
                     float d = (float)(tasks[i].timeFrom - tasks[i - 1].timeTo).TotalHours;
                     GameObject emptyPlaceHolder = Instantiate(emptyPanelPrefab, dayLayoutContent.transform);
-                    emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, d * 60f);
+                    emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, d * 180f);
                 }
                 if (i + 1 < tasks.Length)
                 {
@@ -221,7 +221,7 @@ public class DayLayoutController : MonoBehaviour
                             obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
                         });
                         float d = (float)(tasks[i].timeTo - tasks[i].timeFrom).TotalHours;
-                        child1Element.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, d * 60f);
+                        child1Element.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, d * 180f);
                         child1Element.GetComponent<Image>().color = Helper.StringToColor(tasks[i].color?.colorValue);
                         while (
                             i + 1 < tasks.Length
@@ -240,7 +240,7 @@ public class DayLayoutController : MonoBehaviour
                                 obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
                             });
                             d = (float)(tasks[i].timeTo - tasks[i].timeFrom).TotalHours;
-                            child2Element.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, d * 60f);
+                            child2Element.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, d * 180f);
                             child2Element.GetComponent<Image>().color = Helper.StringToColor(tasks[i].color.colorValue);
                         }
                         continue;
@@ -253,7 +253,7 @@ public class DayLayoutController : MonoBehaviour
                     obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
                 });
                 float duration = (float)(tasks[i].timeTo - tasks[i].timeFrom).TotalHours;
-                childElement.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 60f);
+                childElement.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 180f);
                 childElement.GetComponent<Image>().color = Helper.StringToColor(tasks[i].color.colorValue);
             }
 
@@ -270,7 +270,7 @@ public class DayLayoutController : MonoBehaviour
             {
                 float duration = (float)(timeSlots[i].time - timeSlots[i - 1].time).TotalHours;
                 GameObject emptyPlaceHolder = Instantiate(emptyPanelPrefab, dayLayoutContent.transform);
-                emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 60f - 15f);
+                emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 180f - 15f);
 
             }
 
@@ -319,7 +319,7 @@ public class DayLayoutController : MonoBehaviour
                 {
                     float duration = (float)(eventTimeSlots[i].timeFrom - eventTimeSlots[i - 1].timeTo).TotalHours;
                     GameObject emptyPlaceHolder = Instantiate(emptyPanelPrefab, dayLayoutContent.transform);
-                    emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 60f);
+                    emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 180f);
                 }
                 if (
                     DateTime.Compare(
@@ -464,7 +464,9 @@ public class DayLayoutController : MonoBehaviour
         {
             tasks = TaskModel.GetTasks();
         }
+        
         List<TaskModel> daysTasks = new List<TaskModel>();
+        //daysTasks.Sort((x, y) => DateTime.Compare(x.timeFrom, y.timeFrom));
         for(int i = 0; i< tasks.Length; i++)
         {
             if(DateTime.Compare(tasks[i].timeFrom.Date, day.Date) == 0 || DateTime.Compare(tasks[i].timeTo.Date, day.Date) == 0)

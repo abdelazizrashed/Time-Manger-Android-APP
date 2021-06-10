@@ -19,6 +19,7 @@ public class EventTimeSlotController : MonoBehaviour
         background = GameObject.FindGameObjectWithTag("MainBackground");
         AddListners();
         AttachMethodsToEvents();
+        OnStartup();
     }
 
     private void OnDestroy()
@@ -116,8 +117,8 @@ public class EventTimeSlotController : MonoBehaviour
         if (timeFrom != null)
         {
             AGDateTimePicker.ShowTimePicker(
-                timeFrom.Hour,
-                timeFrom.Minute,
+                DateTime.Now.Hour,
+                DateTime.Now.Minute,
                 (hour, minute) =>
                 {
                     timeFrom = new DateTime(timeFrom.Year, timeFrom.Month, timeFrom.Day, hour, minute, 0);
@@ -146,9 +147,9 @@ public class EventTimeSlotController : MonoBehaviour
         if (dateFrom != null)
         {
             AGDateTimePicker.ShowDatePicker(
-                dateFrom.Year,
-                dateFrom.Month,
-                dateFrom.Day,
+                DateTime.Now.Year,
+                DateTime.Now.Month,
+                DateTime.Now.Day,
                 (year, month, day) =>
                 {
                     dateFrom = new DateTime(year, month, day);
@@ -202,9 +203,9 @@ public class EventTimeSlotController : MonoBehaviour
         if (dateTo != null)
         {
             AGDateTimePicker.ShowDatePicker(
-                dateTo.Year,
-                dateTo.Month,
-                dateTo.Day,
+                DateTime.Now.Year,
+                DateTime.Now.Month,
+                DateTime.Now.Day,
                 (year, month, day) =>
                 {
                     dateTo = new DateTime(year, month, day);

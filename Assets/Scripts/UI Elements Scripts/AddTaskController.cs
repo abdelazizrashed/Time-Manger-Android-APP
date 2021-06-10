@@ -243,13 +243,21 @@ public class AddTaskController : MonoBehaviour
     {
         if(choosenList == null)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             AGUIMisc.ShowToast("Tasks list is required.", AGUIMisc.ToastLength.Short);
+#else
+            Debug.LogError("Tasks list is required.");
+#endif
             return;
         }
 
         if (IsTaskTitleEmpty())
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             AGUIMisc.ShowToast("Task title is required.", AGUIMisc.ToastLength.Long);
+#else
+            Debug.LogError("field cannot be empty");
+#endif
             return;
         }
         taskTitle = GetTheTaskTitle();
@@ -840,7 +848,9 @@ public class AddTaskController : MonoBehaviour
         //EventSystem.instance.getTasksLists -= SetTasksLists;
 
     }
-#endregion
+    #endregion
+
+    #region General
 
     private void AddListnersToBtns()
     {
@@ -928,4 +938,5 @@ public class AddTaskController : MonoBehaviour
             );
     }
 
+    #endregion
 }

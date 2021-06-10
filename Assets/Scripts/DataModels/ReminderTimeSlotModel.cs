@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using UnityEngine;
 
 public class ReminderTimeSlotModel
@@ -54,23 +55,35 @@ public class ReminderTimeSlotModel
     public static ReminderTimeSlotModel[] GetTimeSlotsByReminderID(int id)
     {
         string query = "SELECT * FROM RemindersTimeSlots WHERE reminder_id = " + id + ";";
-        IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        List<ReminderTimeSlotModel> timeSlots = new List<ReminderTimeSlotModel>();
-        while (dbDataReader.Read())
+        ReminderTimeSlotModel[] timeSlots = Enumerable.ToArray < ReminderTimeSlotModel > (DBMan.Instance.ExecuteQueryAndReturnRows<ReminderTimeSlotModel>(query, dbDataReader =>
         {
-            DBMan.Instance.PrintDataReader(dbDataReader);
-            timeSlots.Add(new ReminderTimeSlotModel(
-                dbDataReader.GetInt32(0), 
-                DateTime.Parse(dbDataReader.GetString(1)), 
+            return new ReminderTimeSlotModel(
+                dbDataReader.GetInt32(0),
+                DateTime.Parse(dbDataReader.GetString(1)),
                 DateTime.Parse(dbDataReader.GetString(1)).Date,
                 DateTime.Parse(dbDataReader.GetString(2)),
                 dbDataReader.GetInt32(3),
                 (RepeatModel)JsonConvert.DeserializeObject(dbDataReader.GetString(4)),
-                (NotifiAlarmReminderModel[]) JsonConvert.DeserializeObject(dbDataReader.GetString(5))
-                ));
-        }
-        dbDataReader?.Close();
-        dbDataReader = null;
-        return timeSlots.ToArray();
+                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(dbDataReader.GetString(5))
+                );
+        }));
+        //IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        //List<ReminderTimeSlotModel> timeSlots = new List<ReminderTimeSlotModel>();
+        //while (dbDataReader.Read())
+        //{
+        //    DBMan.Instance.PrintDataReader(dbDataReader);
+        //    timeSlots.Add(new ReminderTimeSlotModel(
+        //        dbDataReader.GetInt32(0), 
+        //        DateTime.Parse(dbDataReader.GetString(1)), 
+        //        DateTime.Parse(dbDataReader.GetString(1)).Date,
+        //        DateTime.Parse(dbDataReader.GetString(2)),
+        //        dbDataReader.GetInt32(3),
+        //        (RepeatModel)JsonConvert.DeserializeObject(dbDataReader.GetString(4)),
+        //        (NotifiAlarmReminderModel[]) JsonConvert.DeserializeObject(dbDataReader.GetString(5))
+        //        ));
+        //}
+        //dbDataReader?.Close();
+        //dbDataReader = null;
+        return timeSlots;
     }
 }

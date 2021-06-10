@@ -102,7 +102,7 @@ public class DayLayoutElementController : MonoBehaviour
                 if (DateTime.Compare(currentEventTimeSlot.timeFrom.Date, currentEventTimeSlot.timeTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeTo.Date) == 0)
                 {
                     float duration = (float)(currentEventTimeSlot.timeTo - currentEventTimeSlot.timeFrom).TotalMinutes;
-                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 60f);
+                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 180f);
                 }
                 else if (DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeTo.Date) < 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeFrom.Date) == 0)
                 {
@@ -110,7 +110,7 @@ public class DayLayoutElementController : MonoBehaviour
                         currentEventTimeSlot.timeFrom.Date.AddDays(1).AddSeconds(-1) 
                         -
                         currentEventTimeSlot.timeFrom).TotalMinutes;
-                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 60f);
+                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 180f);
                 }
                 else if(DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeFrom.Date) > 0)
                 {
@@ -119,11 +119,11 @@ public class DayLayoutElementController : MonoBehaviour
                         -
                         currentEventTimeSlot.timeTo.Date
                         ).TotalMinutes;
-                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 60f);
+                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 180f);
                 }
                 else
                 {
-                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, 24 * 60f);
+                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, 24 * 180f);
                 }
                 if (
                     currentEventTimeSlot.parentEvent.childrenEventsTimeSlots.Length != 0 ||
@@ -308,7 +308,7 @@ public class DayLayoutElementController : MonoBehaviour
                 if (DateTime.Compare(currentTask.timeFrom.Date, currentTask.timeTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentTask.timeFrom.Date) == 0)
                 {
                     float duration = (float)(currentTask.timeTo - currentTask.timeFrom).TotalMinutes;
-                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 60f);
+                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 180f);
                 }
                 else if (DateTime.Compare(currentDate.Date, currentTask.timeTo.Date) < 0 && DateTime.Compare(currentDate.Date, currentTask.timeFrom.Date) == 0)
                 {
@@ -316,7 +316,7 @@ public class DayLayoutElementController : MonoBehaviour
                         currentTask.timeFrom.Date.AddDays(1).AddSeconds(-1)
                         -
                         currentTask.timeFrom).TotalMinutes;
-                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 60f);
+                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 180f);
                 }
                 else if (DateTime.Compare(currentDate.Date, currentTask.timeTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentTask.timeFrom.Date) > 0)
                 {
@@ -325,11 +325,11 @@ public class DayLayoutElementController : MonoBehaviour
                         -
                         currentTask.timeTo.Date
                         ).TotalMinutes;
-                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 60f);
+                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, duration / 60 * 180f);
                 }
                 else
                 {
-                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, 24 * 60f);
+                    gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, 24 * 180f);
                 }
 
                 if (currentTask.childrenTasks.Length != 0)

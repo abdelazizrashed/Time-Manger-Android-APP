@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 public class EventTimeSlotModel
 {
@@ -87,12 +88,9 @@ public class EventTimeSlotModel
     public static EventTimeSlotModel[] GetTimeSlotsByParentEventID(int parentEventID)
     {
         string query = "SELECT * FROM EventsTimeSlots WHERE event_id = " + parentEventID + ";";
-        IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        List<EventTimeSlotModel> timeSlots = new List<EventTimeSlotModel>();
-        while (dbDataReader.Read())
+        EventTimeSlotModel[] timeSlots = Enumerable.ToArray < EventTimeSlotModel > (DBMan.Instance.ExecuteQueryAndReturnRows<EventTimeSlotModel>(query, dbDataReader =>
         {
-            DBMan.Instance.PrintDataReader(dbDataReader);
-            timeSlots.Add(new EventTimeSlotModel(
+            return new EventTimeSlotModel(
                 dbDataReader.GetInt32(0),
                 DateTime.Parse(dbDataReader.GetString(1)),
                 DateTime.Parse(dbDataReader.GetString(2)),
@@ -102,37 +100,55 @@ public class EventTimeSlotModel
                 (RepeatModel)JsonConvert.DeserializeObject(dbDataReader.GetString(7)),
                 dbDataReader.GetString(6),
                 (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(dbDataReader.GetString(8))
-                ));
-        }
-        dbDataReader?.Close();
-        dbDataReader = null;
-        return timeSlots.ToArray();
+                );
+        }));
+        //IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        //List<EventTimeSlotModel> timeSlots = new List<EventTimeSlotModel>();
+        //while (dbDataReader.Read())
+        //{
+        //    DBMan.Instance.PrintDataReader(dbDataReader);
+        //    timeSlots.Add(new EventTimeSlotModel(
+        //        dbDataReader.GetInt32(0),
+        //        DateTime.Parse(dbDataReader.GetString(1)),
+        //        DateTime.Parse(dbDataReader.GetString(2)),
+        //        DateTime.Parse(dbDataReader.GetString(3)),
+        //        DateTime.Parse(dbDataReader.GetString(4)),
+        //        dbDataReader.GetInt32(5),
+        //        (RepeatModel)JsonConvert.DeserializeObject(dbDataReader.GetString(7)),
+        //        dbDataReader.GetString(6),
+        //        (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(dbDataReader.GetString(8))
+        //        ));
+        //}
+        //dbDataReader?.Close();
+        //dbDataReader = null;
+        return timeSlots;
     }
 
     public static EventTimeSlotModel[] OrderTimeSlots(List<EventTimeSlotModel> timeSlots)
     {
-        List<EventTimeSlotModel> orderedSlots = new List<EventTimeSlotModel>();
-        foreach (EventTimeSlotModel timeSlot in timeSlots)
-        {
-            EventTimeSlotModel earlestSlot = timeSlot;
-            foreach (EventTimeSlotModel slot2 in timeSlots)
-            {
-                if (DateTime.Compare(earlestSlot.timeFrom, slot2.timeFrom) > 0)
-                {
-                    earlestSlot = slot2;
-                }
-                else if (DateTime.Compare(earlestSlot.timeFrom, slot2.timeFrom) == 0)
-                {
-                    if (DateTime.Compare(earlestSlot.timeTo, slot2.timeTo) > 0)
-                    {
-                        earlestSlot = slot2;
-                    }
-                }
-            }
-            orderedSlots.Add(earlestSlot);
-            timeSlots.Remove(earlestSlot);
-        }
+        List<EventTimeSlotModel> timeSlotsList = new List<EventTimeSlotModel>(timeSlots);
+        timeSlotsList.Sort((x, y) => DateTime.Compare(x.timeFrom, y.timeFrom));
+        //foreach (EventTimeSlotModel timeSlot in timeSlots)
+        //{
+        //    EventTimeSlotModel earlestSlot = timeSlot;
+        //    foreach (EventTimeSlotModel slot2 in timeSlots)
+        //    {
+        //        if (DateTime.Compare(earlestSlot.timeFrom, slot2.timeFrom) > 0)
+        //        {
+        //            earlestSlot = slot2;
+        //        }
+        //        else if (DateTime.Compare(earlestSlot.timeFrom, slot2.timeFrom) == 0)
+        //        {
+        //            if (DateTime.Compare(earlestSlot.timeTo, slot2.timeTo) > 0)
+        //            {
+        //                earlestSlot = slot2;
+        //            }
+        //        }
+        //    }
+        //    orderedSlots.Add(earlestSlot);
+        //    timeSlots.Remove(earlestSlot);
+        //}
 
-        return orderedSlots.ToArray();
+        return timeSlotsList.ToArray();
     }
 }

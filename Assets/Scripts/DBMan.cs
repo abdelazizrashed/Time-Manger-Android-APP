@@ -4,6 +4,7 @@ using UnityEngine;
 using Mono.Data.Sqlite;
 using System.Data;
 using System.IO;
+using System;
 
 public class DBMan
 {
@@ -11,9 +12,9 @@ public class DBMan
     private static readonly object padlock = new object();
 
 
-    private string connectionStr;
-    private IDbConnection dbConnection;
-    private IDbCommand dbCommand;
+    private string connectionStr = "";
+    //private IDbConnection dbConnection;
+    //private IDbCommand dbCommand;
     private string dbFileName = "/database.db";
     
     public bool doesPrintQuery { get; set; }
@@ -23,15 +24,15 @@ public class DBMan
     DBMan()
     {
         StartDB();
-        doesPrintQuery = false;
-        doesPrintRowsAffected = false;
-        doesPrintDataReader = false;
+        //doesPrintQuery = false;
+        //doesPrintRowsAffected = false;
+        //doesPrintDataReader = false;
     }
 
-    ~DBMan()
-    {
-        CloseDB();
-    }
+    //~DBMan()
+    //{
+    //    CloseDB();
+    //}
 
     public static DBMan Instance
     {
@@ -49,6 +50,19 @@ public class DBMan
     }
 
     public void StartDB()
+    {
+        SetConnectionStr();
+
+        //dbConnection = new SqliteConnection(connectionStr);
+
+        //dbConnection.Open();
+
+        //dbCommand = dbConnection.CreateCommand();
+        CreateTables();
+
+    }
+
+    public void SetConnectionStr()
     {
         string filepath = Application.persistentDataPath + "/" + dbFileName;
 
@@ -77,34 +91,35 @@ public class DBMan
         //open db connection
 
         connectionStr = "URI=file:" + filepath;
+    }
 
+    public IDbConnection CreateDBConnection()
+    {
+        if (string.IsNullOrEmpty(connectionStr))
+        {
+            SetConnectionStr();
+        }
         Debug.Log("Stablishing connection to: " + connectionStr);
 
-        dbConnection = new SqliteConnection(connectionStr);
+        IDbConnection  dbConnection = new SqliteConnection(connectionStr);
 
         dbConnection.Open();
 
-        dbCommand = dbConnection.CreateCommand();
-        CreateTables();
+        return dbConnection;
+    }
 
+    public void DisposeConnectionNCommand(ref IDbConnection dbConnection, ref IDbCommand dbCommand)
+    {
+        dbCommand?.Dispose();
+        dbCommand = null;
+        dbConnection?.Close();
+        dbConnection = null;
     }
 
     public void CreateTables()
     {
-        //string query = @"
-        //            CREATE TABLE IF NOT EXISTS Users(
-        //                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        //                username TEXT UNIQUE NOT NULL,
-        //                is_admin INTEGER DEFAULT 0,
-        //                password TEXT NOT NULL,
-        //                email TEXT UNIQUE NOT NULL,
-        //                first_name TEXT NOT NULL,
-        //                last_name TEXT NOT NULL
-        //            );
-        //            ";
-        //dbCommand.CommandText = query;
-        //PrintQuery(query);
-        //PrintRowAffected(dbCommand.ExecuteNonQuery());
+        IDbConnection dbConnection = CreateDBConnection();
+        IDbCommand dbCommand = dbConnection.CreateCommand();
 
         string query = @"
                     CREATE TABLE IF NOT EXISTS Colors(
@@ -240,11 +255,15 @@ public class DBMan
         dbCommand.CommandText = query;
         PrintQuery(query);
         PrintRowAffected(dbCommand.ExecuteNonQuery());
+
+        DisposeConnectionNCommand(ref dbConnection, ref dbCommand);
     }
 
     public void DropTables()
     {
-
+        IDbConnection dbConnection = CreateDBConnection();
+        IDbCommand dbCommand = dbConnection.CreateCommand();
+        
         string query = @"
                         select 'drop table ' || name || ';' from sqlite_master
                         where type = 'table';
@@ -252,19 +271,29 @@ public class DBMan
         dbCommand.CommandText = query;
         PrintQuery(query);
         PrintRowAffected(dbCommand.ExecuteNonQuery());
+        
+        DisposeConnectionNCommand(ref dbConnection, ref dbCommand);
     }
 
     public int ExecuteQueryAndReturnRowsAffected(string query)
     {
+        IDbConnection dbConnection = CreateDBConnection();
+        IDbCommand dbCommand = dbConnection.CreateCommand();
+
         dbCommand.CommandText = query;
         PrintQuery(query);
         int rowsAffected = dbCommand.ExecuteNonQuery();
         PrintRowAffected(rowsAffected);
+
+        DisposeConnectionNCommand(ref dbConnection, ref dbCommand);
         return rowsAffected;
     }
 
     public long ExecuteQueryAndReturnTheRowID(string query)
     {
+        IDbConnection dbConnection = CreateDBConnection();
+        IDbCommand dbCommand = dbConnection.CreateCommand();
+
         dbCommand.CommandText = query + " SELECT last_insert_rowid();";
         PrintQuery(query);
         if(dbCommand == null)
@@ -273,25 +302,56 @@ public class DBMan
         }
         long rowID = (long)dbCommand?.ExecuteScalar();
         Debug.Log(rowID);
+
+        DisposeConnectionNCommand(ref dbConnection, ref dbCommand);
         return rowID;
     }
 
-    public IDataReader ExecuteQueryAndReturnDataReader(string query)
+    public IEnumerable<T> ExecuteQueryAndReturnRows<T>(string query, Func<IDataRecord, T> copyRow)
     {
+        IDbConnection dbConnection = CreateDBConnection();
+        IDbCommand dbCommand = dbConnection.CreateCommand();
+
         dbCommand.CommandText = query;
-        PrintQuery(query);
-        IDataReader dbDataReader = dbCommand.ExecuteReader();
-        IDataReader reader2 = dbDataReader;
-        return dbDataReader;
+        PrintQuery(query: query);
+        using (var rdr = dbCommand.ExecuteReader())
+        {
+            while (rdr.Read())
+            {
+                yield return copyRow(rdr);
+            }
+            rdr.Close();
+        }
+
+        DisposeConnectionNCommand(ref dbConnection, ref dbCommand);
     }
 
-    void CloseDB()
-    {
-        dbCommand?.Dispose();
-        dbCommand = null;
-        dbConnection?.Close();
-        dbConnection = null;
-    }
+    //private IEnumerable<T> GetRows<T>(string sql, Action<SqlParameterCollection> addParameters, Func<IDataRecord, T> copyRow)
+    //{
+    //    using (var cn = new SqlConnection("Connection string here"))
+    //    using (var cmd = new SqlCommand(sql, cn)
+    //    {
+    //        cmd.CommandType = CommandType.StoredProcedure;
+    //    addParameters(cmd.Parameters);
+    //    cn.Open();
+    //    using (var rdr = cmd.ExecuteReader())
+    //    {
+    //        while (rdr.Read())
+    //        {
+    //            yield return copyRow(rdr);
+    //        }
+    //        rdr.Close();
+    //    }
+    //}
+//}
+
+//void CloseDB()
+//{
+//    dbCommand?.Dispose();
+//    dbCommand = null;
+//    dbConnection?.Close();
+//    dbConnection = null;
+//}
     void PrintQuery(string query)
     {
         if (doesPrintQuery)

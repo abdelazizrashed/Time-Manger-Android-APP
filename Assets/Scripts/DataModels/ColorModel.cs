@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using UnityEngine;
 
 public class ColorModel
@@ -34,41 +35,43 @@ public class ColorModel
         }
 
         string query = "SELECT * FROM Colors WHERE color_id = " + colorID + ";";
-        IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        while (reader.Read())
-        {
-            DBMan.Instance.PrintDataReader(reader);
-            ColorModel newColor =  new ColorModel(
+
+        colors = Enumerable.ToArray < ColorModel > (DBMan.Instance.ExecuteQueryAndReturnRows<ColorModel>(query, reader => {
+            return new ColorModel(
                 reader.GetInt32(0),
                 reader.GetString(1),
                 reader.GetString(2)
                 );
-            reader?.Close();
-            return newColor;
-        }
-        reader?.Close();
-        return null;
+        }));
+        return colors[0];
     }
 
     public static ColorModel[] GetColors()
     {
         //This is the main logic
         string query = "SELECT * FROM Colors;";
-        IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        List<ColorModel> dbColors = new List<ColorModel>();
-        while (reader.Read())
-        {
-            DBMan.Instance.PrintDataReader(reader);
-            dbColors.Add(new ColorModel(
+        //IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        //List<ColorModel> dbColors = new List<ColorModel>();
+        //while (reader.Read())
+        //{
+        //    DBMan.Instance.PrintDataReader(reader);
+        //    dbColors.Add(new ColorModel(
+        //        reader.GetInt32(0),
+        //        reader.GetString(1),
+        //        reader.GetString(2)
+        //        ));
+        //}
+        //reader?.Close();
+        //reader = null;
+        ColorModel[] colors = Enumerable.ToArray < ColorModel > (DBMan.Instance.ExecuteQueryAndReturnRows<ColorModel>(query, reader => {
+            return new ColorModel(
                 reader.GetInt32(0),
                 reader.GetString(1),
                 reader.GetString(2)
-                ));
-        }
-        reader?.Close();
-        reader = null;
+                );
+        }));
         //TODO:This is temprary until conntecting the app with the online api
-        ColorModel[] colors = new ColorModel[] {
+        colors = new ColorModel[] {
             new ColorModel(1, "Black", "000000"),
             new ColorModel(2, "White", "FFFFFF"),
             new ColorModel(3, "Red", "FF0000"),

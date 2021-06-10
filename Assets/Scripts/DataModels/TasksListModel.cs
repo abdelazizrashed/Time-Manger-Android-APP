@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 public class TasksListModel
 {
@@ -17,33 +18,41 @@ public class TasksListModel
     public static TasksListModel GetList(int id)
     {
         string query = "SELECT * FROM TasksLists WHERE list_id = " + id + ";";
-        IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        while (reader.Read())
+        TasksListModel[] lists = Enumerable.ToArray<TasksListModel>(DBMan.Instance.ExecuteQueryAndReturnRows<TasksListModel>(query, reader =>
         {
-            DBMan.Instance.PrintDataReader(reader);
-            TasksListModel newList =  new TasksListModel(reader.GetInt32(0), reader.GetString(1));
-            reader?.Close();
-            reader = null;
-            return newList;
-        }
-        reader?.Close();
-        reader = null;
-        return null;
+            return new TasksListModel(reader.GetInt32(0), reader.GetString(1));
+        }));
+        return lists[0];
+        //IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
+        //while (reader.Read())
+        //{
+        //    DBMan.Instance.PrintDataReader(reader);
+        //    TasksListModel newList =  new TasksListModel(reader.GetInt32(0), reader.GetString(1));
+        //    reader?.Close();
+        //    reader = null;
+        //    return newList;
+        //}
+        //reader?.Close();
+        //reader = null;
+        //return null;
     }
 
     public static TasksListModel[] GetLists()
     {
         string query = "SELECT * FROM TasksLists;";
-        List<TasksListModel> lists = new List<TasksListModel>();
-        IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        while (reader.Read())
+        TasksListModel[] lists = Enumerable.ToArray<TasksListModel>(DBMan.Instance.ExecuteQueryAndReturnRows<TasksListModel>(query, reader =>
         {
-            DBMan.Instance.PrintDataReader(reader);
-            lists.Add(new TasksListModel(reader.GetInt32(0), reader.GetString(1)));
-        }
-        reader?.Close();
-        reader = null;
-        return lists.ToArray();
+            return new TasksListModel(reader.GetInt32(0), reader.GetString(1));
+        })); 
+        return lists;
+        //while (reader.Read())
+        //{
+        //    DBMan.Instance.PrintDataReader(reader);
+        //    lists.Add(new TasksListModel(reader.GetInt32(0), reader.GetString(1)));
+        //}
+        //reader?.Close();
+        //reader = null;
+        //return lists.ToArray();
     }
 
     public static void SaveList(ref TasksListModel newList)
