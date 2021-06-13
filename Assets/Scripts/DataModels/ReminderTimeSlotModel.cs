@@ -12,7 +12,7 @@ public class ReminderTimeSlotModel
     public DateTime time { get; set; }
     public DateTime date { get; set; }
     public DateTime timeDone { get; set; }
-    public bool isCompleted { get; set; }
+    public int isCompleted { get; set; }
     public RepeatModel repeat { get; set; }
     public NotifiAlarmReminderModel[] reminders { get; set; }
     public int parentReminderID { get; set; }
@@ -31,7 +31,7 @@ public class ReminderTimeSlotModel
         time = _time ?? time;
         date = _date ?? date;
         timeDone = _timeDone ?? timeDone;
-        isCompleted = _isCompleted == 1;
+        isCompleted = _isCompleted;
         repeat = _repeat;
         reminders = _reminders;
     }

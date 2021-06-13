@@ -15,7 +15,7 @@ public class TaskModel: System.Object
     public DateTime timeTo { get; set; }
     public DateTime timeStarted { get; set; }
     public DateTime timeFinished { get; set; }
-    public bool isCompleted { get; set; }
+    public int isCompleted { get; set; }
     public RepeatModel repeat { get; set; }
     public NotifiAlarmReminderModel[] reminders { get; set; }
     public ColorModel color { get; set; }
@@ -34,7 +34,7 @@ public class TaskModel: System.Object
         DateTime? _timeTo = null,
         DateTime? _timeStarted = null,
         DateTime? _timeFinished = null,
-        bool _isCompleted = false,
+        int _isCompleted = 0,
         RepeatModel _repeat = null,
         NotifiAlarmReminderModel[] _reminders = null,
         ColorModel _color = null,
@@ -77,7 +77,7 @@ public class TaskModel: System.Object
                 DateTime.Parse(reader.GetString(4)),
                 DateTime.Parse(reader.GetString(5)),
                 DateTime.Parse(reader.GetString(6)),
-                reader.GetInt32(7) == 1,
+                reader.GetInt32(7),
                 new RepeatModel(RepeatPeriod.Day, new WeekDays[] { }),
                 new NotifiAlarmReminderModel[] { },
                 new ColorModel(reader.GetInt32(11), "", ""),
@@ -108,7 +108,7 @@ public class TaskModel: System.Object
                 DateTime.Parse(reader.GetString(4)),
                 DateTime.Parse(reader.GetString(5)),
                 DateTime.Parse(reader.GetString(6)),
-                reader.GetInt32(7) == 1,
+                reader.GetInt32(7),
                 new RepeatModel(RepeatPeriod.Day, new WeekDays[] { }),
                 new NotifiAlarmReminderModel[] { },
                 new ColorModel(reader.GetInt32(11), "", ""),
@@ -151,7 +151,7 @@ public class TaskModel: System.Object
             task.timeTo.ToString() + "\", \"" +
             task.timeStarted.ToString() + "\", \"" +
             task.timeFinished.ToString() + "\", " +
-            (task.isCompleted ? 1 : 0).ToString() + ", \"" +
+            (task.isCompleted).ToString() + ", \"" +
             JsonConvert.SerializeObject(task.repeat) + "\", \"" +
             JsonConvert.SerializeObject(task.reminders) + "\", " +
             task.taskList?.listID + ", " +
@@ -187,7 +187,7 @@ public class TaskModel: System.Object
             "time_to = " + "\"" + task.timeTo.ToString() + "\", " +
             "time_started = " + "\"" + task.timeStarted.ToString() + "\", " +
             "time_finished = " + "\"" + task.timeFinished.ToString() + "\", " +
-            "is_completed = " + (task.isCompleted ? 1 : 0).ToString() + ", " +
+            "is_completed = " + (task.isCompleted).ToString() + ", " +
             "repeat = " + "\"" + JsonConvert.SerializeObject(task.repeat) + "\", " +
             "reminder = " + "\"" + JsonConvert.SerializeObject(task.reminders) + "\", " +
             "list_id = " + task.taskList?.listID + ", " +
@@ -269,7 +269,7 @@ public class TaskModel: System.Object
                 DateTime.Parse(reader.GetString(4)),
                 DateTime.Parse(reader.GetString(5)),
                 DateTime.Parse(reader.GetString(6)),
-                reader.GetInt32(7) == 1,
+                reader.GetInt32(7),
                 new RepeatModel(RepeatPeriod.Day, new WeekDays[] { }),
                 new NotifiAlarmReminderModel[] { },
                 new ColorModel(reader.GetInt32(11), "", ""),

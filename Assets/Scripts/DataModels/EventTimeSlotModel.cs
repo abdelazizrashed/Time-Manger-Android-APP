@@ -12,7 +12,7 @@ public class EventTimeSlotModel
     public DateTime timeTo { get; set; }
     public DateTime timeStarted { get; set; }
     public DateTime timeFinished { get; set; }
-    public bool isCompleted { get; set; }
+    public int isCompleted { get; set; }
     public RepeatModel repeat { get; set; }
     public string location { get; set; }
     public NotifiAlarmReminderModel[] reminders { get; set; }
@@ -60,7 +60,7 @@ public class EventTimeSlotModel
         timeTo = _timeTo ?? timeTo;
         timeStarted = _timeStarted ?? timeStarted;
         timeFinished = _timeFinished ?? timeFinished;
-        isCompleted = _isCompleted == 1;
+        isCompleted = _isCompleted;
         repeat = _repeat;
         location = _location;
         reminders = _reminders;
