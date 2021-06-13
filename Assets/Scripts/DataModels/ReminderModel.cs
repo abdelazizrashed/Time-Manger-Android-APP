@@ -50,6 +50,24 @@ public class ReminderModel: System.Object
         reminder.reminderID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
     }
 
+    public static ReminderModel GetReminderByID(int reminderID)
+    {
+        string query = "SELECT * FROM Reminders WHERE reminder_id = " + reminderID + ";";
+        ReminderModel[] reminders = Enumerable.ToArray<ReminderModel>(DBMan.Instance.ExecuteQueryAndReturnRows<ReminderModel>(query, dbDataReader =>
+        {
+            return new ReminderModel(
+                dbDataReader.GetInt32(0),
+                dbDataReader.GetString(1),
+                dbDataReader.GetString(2),
+                dbDataReader.GetInt32(3),
+                ReminderTimeSlotModel.GetTimeSlotsByReminderID(dbDataReader.GetInt32(0)),
+                ColorModel.GetColorByColorID(dbDataReader.GetInt32(4)),
+                EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
+                );
+        }));
+        return reminders[0];
+    }
+
     public static ReminderModel[] GetReminders()
     {
         string query = "SELECT * FROM Reminders;";
@@ -65,23 +83,6 @@ public class ReminderModel: System.Object
                 EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
                 );
         }));
-        //IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        //List<ReminderModel> reminders = new List<ReminderModel>();
-        //while (dbDataReader.Read())
-        //{
-        //    DBMan.Instance.PrintDataReader(dbDataReader);
-        //    reminders.Add(new ReminderModel(
-        //        dbDataReader.GetInt32(0),
-        //        dbDataReader.GetString(1),
-        //        dbDataReader.GetString(2),
-        //        dbDataReader.GetInt32(3),
-        //        ReminderTimeSlotModel.GetTimeSlotsByReminderID(dbDataReader.GetInt32(0)),
-        //        ColorModel.GetColorByColorID(dbDataReader.GetInt32(4)),
-        //        EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
-        //        ));
-        //}
-        //dbDataReader?.Close();
-        //dbDataReader = null;
         return reminders; 
     }
 
@@ -101,7 +102,7 @@ public class ReminderModel: System.Object
         ReminderTimeSlotModel[] timeSlots = parentReminder.timeSlots;
         for (int i = 0; i < timeSlots.Length; i++)
         {
-            timeSlots[i].parentReminder = parentReminder;
+            timeSlots[i].parentReminderID = parentReminder.reminderID;
         }
         return timeSlots;
     }

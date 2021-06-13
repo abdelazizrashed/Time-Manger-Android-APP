@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using UnityEngine;
 
 public class EventTimeSlotModel
 {
@@ -15,7 +16,32 @@ public class EventTimeSlotModel
     public RepeatModel repeat { get; set; }
     public string location { get; set; }
     public NotifiAlarmReminderModel[] reminders { get; set; }
-    public EventModel parentEvent { get; set; }
+    public int parentEventID { get; set; }
+    //public EventModel ParentEvent
+    //{
+    //    get
+    //    {
+    //        if(parentEvent != null)
+    //        {
+    //            parentEvent.timeSlots = null;
+    //            parentEvent.childrenEventsTimeSlots = null;
+    //            parentEvent.childrenRemindersTimeSlots = null;
+    //            return parentEvent;
+    //        }
+    //        return null;
+    //    }
+    //    set
+    //    {
+    //        if(value != null)
+    //        {
+    //            value.timeSlots = null;
+    //            value.childrenEventsTimeSlots = null;
+    //            value.childrenRemindersTimeSlots = null;
+    //            parentEvent = value;
+    //        }
+    //    }
+    //}
+
 
     public EventTimeSlotModel(
         int _timeSlotID = 0,
@@ -42,7 +68,10 @@ public class EventTimeSlotModel
 
     public static void SaveTimeSlot(ref EventTimeSlotModel timeSlot)
     {
-
+        if(timeSlot == null)
+        {
+            Debug.LogError("time slot is null");   
+        }
         string query =
             "INSERT INTO EventsTimeSlots(" +
             "time_from, " +
@@ -54,16 +83,16 @@ public class EventTimeSlotModel
             "repeat, " +
             "reminder, " +
             "event_id" + ")" +
-            "VALUES ( " +
-            timeSlot.timeFrom + ", " +
-            timeSlot.timeTo + ", " +
-            timeSlot.timeStarted + ", " +
-            timeSlot.timeFinished + ", " +
-            timeSlot.isCompleted + ", " +
-            timeSlot.location + ", " +
-            timeSlot.repeat.JSON() + ", " +
-            JsonConvert.SerializeObject(timeSlot.reminders) + ", " +
-            timeSlot.parentEvent.eventID + ");";
+            "VALUES ( \"" +  
+            timeSlot?.timeFrom + "\", \"" +
+            timeSlot?.timeTo + "\", \"" +
+            timeSlot?.timeStarted + "\", \"" +
+            timeSlot?.timeFinished + "\", " +
+            timeSlot?.isCompleted + ", \"" +
+            timeSlot?.location + "\", \"" +
+            timeSlot?.repeat?.JSON() + "\", \"" +
+            JsonConvert.SerializeObject(timeSlot?.reminders) + "\", " +
+            timeSlot.parentEventID + ");";
 
         timeSlot.timeSlotID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
     }
@@ -72,15 +101,15 @@ public class EventTimeSlotModel
     {
         string query =
             "UPDATE EventsTimeSlots SET " +
-            "time_from = " + timeSlot.timeFrom + ", " +
-            "time_to = " + timeSlot.timeTo + ", " +
-            "time_started = " + timeSlot.timeStarted + ", " +
-            "time_finished = " + timeSlot.timeFinished + ", " +
-            "is_completed = " + timeSlot.isCompleted + ", " +
-            "location = " + timeSlot.location + ", " +
-            "repeat = " + timeSlot.repeat.JSON() + ", " +
-            "reminder = " + JsonConvert.SerializeObject(timeSlot.reminders) + ", " +
-            "event_id = " + timeSlot.parentEvent.eventID + ", " +
+            "time_from = \"" + timeSlot?.timeFrom + "\", " +
+            "time_to = \"" + timeSlot?.timeTo + "\", " +
+            "time_started = \"" + timeSlot?.timeStarted + "\", " +
+            "time_finished = \"" + timeSlot?.timeFinished + "\", " +
+            "is_completed = " + timeSlot?.isCompleted + ", " +
+            "location = \"" + timeSlot?.location + "\", " +
+            "repeat = \"" + timeSlot?.repeat?.JSON() + "\", " +
+            "reminder = \"" + JsonConvert.SerializeObject(timeSlot.reminders) + "\", " +
+            "event_id = " + timeSlot.parentEventID + ", " +
             "WHERE time_slot_id = " + timeSlot.timeSlotID + "; ";
         DBMan.Instance.ExecuteQueryAndReturnRowsAffected(query);
     }
@@ -90,37 +119,20 @@ public class EventTimeSlotModel
         string query = "SELECT * FROM EventsTimeSlots WHERE event_id = " + parentEventID + ";";
         EventTimeSlotModel[] timeSlots = Enumerable.ToArray < EventTimeSlotModel > (DBMan.Instance.ExecuteQueryAndReturnRows<EventTimeSlotModel>(query, dbDataReader =>
         {
-            return new EventTimeSlotModel(
+            EventTimeSlotModel newTimeSlot = new EventTimeSlotModel(
                 dbDataReader.GetInt32(0),
                 DateTime.Parse(dbDataReader.GetString(1)),
                 DateTime.Parse(dbDataReader.GetString(2)),
                 DateTime.Parse(dbDataReader.GetString(3)),
                 DateTime.Parse(dbDataReader.GetString(4)),
                 dbDataReader.GetInt32(5),
-                (RepeatModel)JsonConvert.DeserializeObject(dbDataReader.GetString(7)),
+                null,
                 dbDataReader.GetString(6),
-                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(dbDataReader.GetString(8))
+                null
                 );
+            return newTimeSlot;
         }));
-        //IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        //List<EventTimeSlotModel> timeSlots = new List<EventTimeSlotModel>();
-        //while (dbDataReader.Read())
-        //{
-        //    DBMan.Instance.PrintDataReader(dbDataReader);
-        //    timeSlots.Add(new EventTimeSlotModel(
-        //        dbDataReader.GetInt32(0),
-        //        DateTime.Parse(dbDataReader.GetString(1)),
-        //        DateTime.Parse(dbDataReader.GetString(2)),
-        //        DateTime.Parse(dbDataReader.GetString(3)),
-        //        DateTime.Parse(dbDataReader.GetString(4)),
-        //        dbDataReader.GetInt32(5),
-        //        (RepeatModel)JsonConvert.DeserializeObject(dbDataReader.GetString(7)),
-        //        dbDataReader.GetString(6),
-        //        (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(dbDataReader.GetString(8))
-        //        ));
-        //}
-        //dbDataReader?.Close();
-        //dbDataReader = null;
+        
         return timeSlots;
     }
 

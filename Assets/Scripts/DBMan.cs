@@ -318,6 +318,7 @@ public class DBMan
         {
             while (rdr.Read())
             {
+                PrintDataReader(rdr);
                 yield return copyRow(rdr);
             }
             rdr.Close();
@@ -368,7 +369,7 @@ public class DBMan
         }
     }
 
-    public void PrintDataReader(IDataReader reader)
+    public void PrintDataReader(IDataRecord reader)
     {
         if (doesPrintDataReader)
         {

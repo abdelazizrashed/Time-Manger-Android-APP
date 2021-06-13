@@ -116,6 +116,9 @@ public class EventTimeSlotController : MonoBehaviour
     {
         if (timeFrom != null)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
             AGDateTimePicker.ShowTimePicker(
                 DateTime.Now.Hour,
                 DateTime.Now.Minute,
@@ -146,6 +149,9 @@ public class EventTimeSlotController : MonoBehaviour
     {
         if (dateFrom != null)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
             AGDateTimePicker.ShowDatePicker(
                 DateTime.Now.Year,
                 DateTime.Now.Month,
@@ -179,6 +185,9 @@ public class EventTimeSlotController : MonoBehaviour
     private void OnTimeToBtnClicked()
     {
         DateTime now = DateTime.Now;
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
         AGDateTimePicker.ShowTimePicker(
             DateTime.Now.Hour,
             DateTime.Now.Minute,
@@ -202,6 +211,9 @@ public class EventTimeSlotController : MonoBehaviour
     {
         if (dateTo != null)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
             AGDateTimePicker.ShowDatePicker(
                 DateTime.Now.Year,
                 DateTime.Now.Month,
@@ -270,6 +282,9 @@ public class EventTimeSlotController : MonoBehaviour
             "Custom"
         };
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
         AGAlertDialog.ShowChooserDialog("", repeatOptionsTitles, optionIndex =>
         {
             switch (optionIndex)

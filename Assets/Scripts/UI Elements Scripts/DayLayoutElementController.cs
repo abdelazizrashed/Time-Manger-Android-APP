@@ -50,7 +50,7 @@ public class DayLayoutElementController : MonoBehaviour
             { 
                 GameObject addEventPanelPrefab = Resources.Load<GameObject>("Prefabs/AddEventPanel");
                 GameObject editEventGameObject = Instantiate(addEventPanelPrefab, background.transform);
-                editEventGameObject.GetComponent<AddEventController>().SetUpFieldsForEdit(currentEventTimeSlot.parentEvent);
+                editEventGameObject.GetComponent<AddEventController>().SetUpFieldsForEdit(EventModel.GetEventByEventID(currentEventTimeSlot.parentEventID));
             }else if(currentTask != null)
             {
                 GameObject addTaskPanelPrefab = Resources.Load<GameObject>("Prefabs/AddTaskPanel");
@@ -60,7 +60,7 @@ public class DayLayoutElementController : MonoBehaviour
             {
                 GameObject addReminderPanelPrefab = Resources.Load<GameObject>("Prefabs/AddReminderPanel");
                 GameObject editReminderGO = Instantiate(addReminderPanelPrefab, background.transform);
-                editReminderGO.GetComponent<AddReminderController>().SetUpFieldsForEdit(currentReminderTimeSlot.parentReminder);
+                editReminderGO.GetComponent<AddReminderController>().SetUpFieldsForEdit(ReminderModel.GetReminderByID(currentReminderTimeSlot.parentReminderID));
             }
 
         }
@@ -97,8 +97,9 @@ public class DayLayoutElementController : MonoBehaviour
         {
             if (currentEventTimeSlot != null)
             {
-                elementTitle.text = currentEventTimeSlot.parentEvent.eventTitle;
-                gameObject.GetComponent<Image>().color = Helper.StringToColor(currentEventTimeSlot.parentEvent.color.colorValue);
+                EventModel parentEvent = EventModel.GetEventByEventID(currentEventTimeSlot.parentEventID);
+                elementTitle.text = parentEvent.eventTitle;
+                gameObject.GetComponent<Image>().color = Helper.StringToColor(parentEvent.color.colorValue);
                 if (DateTime.Compare(currentEventTimeSlot.timeFrom.Date, currentEventTimeSlot.timeTo.Date) == 0 && DateTime.Compare(currentDate.Date, currentEventTimeSlot.timeTo.Date) == 0)
                 {
                     float duration = (float)(currentEventTimeSlot.timeTo - currentEventTimeSlot.timeFrom).TotalMinutes;
@@ -126,45 +127,45 @@ public class DayLayoutElementController : MonoBehaviour
                     gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, 24 * 180f);
                 }
                 if (
-                    currentEventTimeSlot.parentEvent.childrenEventsTimeSlots.Length != 0 ||
-                    currentEventTimeSlot.parentEvent.childrenTasks.Length != 0 ||
-                    currentEventTimeSlot.parentEvent.childrenRemindersTimeSlots.Length != 0
+                    parentEvent?.childrenEventsTimeSlots.Length != 0 ||
+                    parentEvent?.childrenTasks.Length != 0 ||
+                    parentEvent?.childrenRemindersTimeSlots.Length != 0
                     )
                 {
                     GameObject dayLayoutElementChildrenGameObject = Instantiate(dayLayoutElementChildrenPrefab, gameObject.transform);
                     GameObject columnGameObject = Instantiate(columnPrefab, dayLayoutElementChildrenGameObject.transform);
-                    if (currentPageType.Value == Pages.Events.Value && currentEventTimeSlot.parentEvent.childrenEventsTimeSlots.Length != 0)
+                    if (currentPageType.Value == Pages.Events.Value && parentEvent.childrenEventsTimeSlots.Length != 0)
                     {
-                        for (int i = 0; i < currentEventTimeSlot.parentEvent.childrenEventsTimeSlots.Length; i++)
+                        for (int i = 0; i < parentEvent.childrenEventsTimeSlots.Length; i++)
                         {
-                            if(i + 1 < currentEventTimeSlot.parentEvent.childrenEventsTimeSlots.Length)
+                            if(i + 1 < parentEvent.childrenEventsTimeSlots.Length)
                             {
                                 if (
                                     DateTime.Compare(
-                                        currentEventTimeSlot.parentEvent.childrenEventsTimeSlots[i].timeFrom,
-                                        currentEventTimeSlot.parentEvent.childrenEventsTimeSlots[i + 1].timeFrom
+                                        parentEvent.childrenEventsTimeSlots[i].timeFrom,
+                                        parentEvent.childrenEventsTimeSlots[i + 1].timeFrom
                                         ) == 0 
                                         )
                                 {
                                     GameObject rowGameObject = Instantiate(rowPrefab, columnGameObject.transform);
                                     GameObject child1Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
                                     {
-                                        obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = currentEventTimeSlot.parentEvent.childrenEventsTimeSlots[i];
+                                        obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = parentEvent.childrenEventsTimeSlots[i];
                                         obj.GetComponent<DayLayoutElementController>().currentPageType = currentPageType;
                                         obj.GetComponent<DayLayoutElementController>().currentDate = currentDate;
                                     });
                                     while (
                                         DateTime.Compare(
-                                            currentEventTimeSlot.parentEvent.childrenEventsTimeSlots[i].timeFrom,
-                                            currentEventTimeSlot.parentEvent.childrenEventsTimeSlots[i + 1].timeFrom
+                                            parentEvent.childrenEventsTimeSlots[i].timeFrom,
+                                            parentEvent.childrenEventsTimeSlots[i + 1].timeFrom
                                             ) == 0 &&
-                                        i + 1 < currentEventTimeSlot.parentEvent.childrenEventsTimeSlots.Length
+                                        i + 1 < parentEvent.childrenEventsTimeSlots.Length
                                         )
                                     {
                                         i++;
                                         GameObject child2Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
                                         {
-                                            obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = currentEventTimeSlot.parentEvent.childrenEventsTimeSlots[i];
+                                            obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = parentEvent.childrenEventsTimeSlots[i];
                                             obj.GetComponent<DayLayoutElementController>().currentPageType = currentPageType;
                                             obj.GetComponent<DayLayoutElementController>().currentDate = currentDate;
                                         });
@@ -174,7 +175,7 @@ public class DayLayoutElementController : MonoBehaviour
                             }
                             GameObject childElement = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, columnGameObject.transform, (obj) =>
                             {
-                                obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = currentEventTimeSlot.parentEvent.childrenEventsTimeSlots[i];
+                                obj.GetComponent<DayLayoutElementController>().currentEventTimeSlot = parentEvent.childrenEventsTimeSlots[i];
                                 obj.GetComponent<DayLayoutElementController>().currentPageType = currentPageType;
                                 obj.GetComponent<DayLayoutElementController>().currentDate = currentDate;
                             });
@@ -183,9 +184,9 @@ public class DayLayoutElementController : MonoBehaviour
                     if (currentPageType.Value == Pages.All.Value)
                     {
                         object[] children = Helper.MergeSort3ArraysByTime(
-                            currentEventTimeSlot.parentEvent.childrenTasks,
-                            currentEventTimeSlot.parentEvent.childrenEventsTimeSlots,
-                            currentEventTimeSlot.parentEvent.childrenRemindersTimeSlots
+                            parentEvent.childrenTasks,
+                            parentEvent.childrenEventsTimeSlots,
+                            parentEvent.childrenRemindersTimeSlots
                             );
                         for (int i = 0; i < children.Length; i++)
                         {
@@ -238,7 +239,7 @@ public class DayLayoutElementController : MonoBehaviour
                                         obj.GetComponent<DayLayoutElementController>().currentPageType = currentPageType;
                                         obj.GetComponent<DayLayoutElementController>().currentDate = currentDate;
                                     });
-                                    while (DateTime.Compare(currentChildTime, nextChildTime) == 0 && i + 1 < currentEventTimeSlot.parentEvent.childrenEventsTimeSlots.Length)
+                                    while (DateTime.Compare(currentChildTime, nextChildTime) == 0 && i + 1 < parentEvent.childrenEventsTimeSlots.Length)
                                     {
                                         i++;
                                         GameObject child2Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
@@ -358,7 +359,7 @@ public class DayLayoutElementController : MonoBehaviour
                                     currentTask.childrenTasks[i].timeFrom,
                                     currentTask.childrenTasks[i + 1].timeFrom
                                     ) == 0 &&
-                                    i + 1 < currentEventTimeSlot.parentEvent.childrenEventsTimeSlots.Length
+                                    i + 1 < currentTask.childrenTasks.Length
                                     )
                                 {
                                     i++;
@@ -384,8 +385,9 @@ public class DayLayoutElementController : MonoBehaviour
                
             else if (currentReminderTimeSlot != null)
             {
-                elementTitle.text = currentReminderTimeSlot.parentReminder.reminderTitle;
-                gameObject.GetComponent<Image>().color = Helper.StringToColor(currentReminderTimeSlot.parentReminder.color.colorValue);
+                ReminderModel parentReminder = ReminderModel.GetReminderByID(currentReminderTimeSlot.parentReminderID);
+                elementTitle.text = parentReminder.reminderTitle;
+                gameObject.GetComponent<Image>().color = Helper.StringToColor(parentReminder.color.colorValue);
                 gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, 15f);
 
             }

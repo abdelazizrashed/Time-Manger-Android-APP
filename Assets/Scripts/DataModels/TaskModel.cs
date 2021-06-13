@@ -87,32 +87,6 @@ public class TaskModel: System.Object
                 new TasksListModel(reader.GetInt32(10))
                 );
         }));
-        //IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        //List<TaskModel> tasks = new List<TaskModel>();
-        //while (reader.Read())
-        //{
-        //    DBMan.Instance.PrintDataReader(reader);
-        //    TaskModel newTask = new TaskModel(
-        //        reader.GetInt32(0),
-        //        reader.GetString(1),
-        //        reader.GetString(2),
-        //        DateTime.Parse(reader.GetString(3)),
-        //        DateTime.Parse(reader.GetString(4)),
-        //        DateTime.Parse(reader.GetString(5)),
-        //        DateTime.Parse(reader.GetString(6)),
-        //        reader.GetInt32(7) == 1,
-        //        new RepeatModel(RepeatPeriod.Day, new WeekDays[] { }),
-        //        new NotifiAlarmReminderModel[] { },
-        //        new ColorModel(reader.GetInt32(11), "", ""),
-        //        reader.GetInt32(12),
-        //        !String.IsNullOrEmpty(reader.GetValue(13).ToString()) ? EventModel.GetEventByEventID(reader.GetInt32(13)) : null,
-        //        !String.IsNullOrEmpty(reader.GetValue(14).ToString()) ? TaskModel.GetTaskByTaskID(reader.GetInt32(14)) : null,
-        //        new TasksListModel(reader.GetInt32(10))
-        //        );
-        //    tasks.Add(newTask);
-        //}
-        //reader?.Close();
-        //reader = null;
         for (int i = 0; i < tasks.Length; i++)
         {
             tasks[i].taskList = TaskModel.SetTasksList(tasks[i].taskList);
@@ -151,36 +125,7 @@ public class TaskModel: System.Object
             newTask.color = TaskModel.SetTaskColorModel(newTask.color);
             return newTask;
         }
-        //IDataReader reader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        //while (reader.Read())
-        //{
-        //    DBMan.Instance.PrintDataReader(reader);
-        //    TaskModel newTask =  new TaskModel(
-        //        reader.GetInt32(0),
-        //        reader.GetString(1),
-        //        reader.GetString(2),
-        //        DateTime.Parse(reader.GetString(3)),
-        //        DateTime.Parse(reader.GetString(4)),
-        //        DateTime.Parse(reader.GetString(5)),
-        //        DateTime.Parse(reader.GetString(6)),
-        //        reader.GetInt32(7) == 1,
-        //        new RepeatModel(RepeatPeriod.Day, new WeekDays[] { }),
-        //        new NotifiAlarmReminderModel[] { },
-        //        new ColorModel(reader.GetInt32(11), "", ""),
-        //        reader.GetInt32(12),
-        //        !String.IsNullOrEmpty(reader.GetValue(13).ToString()) ? EventModel.GetEventByEventID(reader.GetInt32(13)) : null,
-        //        !String.IsNullOrEmpty(reader.GetValue(14).ToString()) ? TaskModel.GetTaskByTaskID(reader.GetInt32(14)) : null,
-        //        new TasksListModel(reader.GetInt32(10))
-        //        );
-        //    reader?.Close();
-        //    reader = null;
-        //newTask.taskList = TaskModel.SetTasksList(newTask.taskList);
-        //    newTask.color = TaskModel.SetTaskColorModel(newTask.color);
-            
-        //    return newTask;
-        //}
-        //reader?.Close();
-        //reader = null;
+        
         return null;
     }
 
@@ -308,27 +253,6 @@ public class TaskModel: System.Object
         }
         List<TaskModel> tasksList = new List<TaskModel>(tasks);
         tasksList.Sort((x, y) => DateTime.Compare(x.timeFrom, y.timeFrom));
-        //List<TaskModel> orderedTasks = new List<TaskModel>();
-        //for(int i = 0; i<unorderedTasks.Count; i++)
-        //{
-        //    TaskModel earlestTask = unorderedTasks[i];
-        //    for(int j = 0; j<unorderedTasks.Count; j++)
-        //    {
-        //        if (DateTime.Compare(earlestTask.timeFrom, unorderedTasks[j].timeFrom) > 0)
-        //        {
-        //            earlestTask = unorderedTasks[j];
-        //        }
-        //        else if (DateTime.Compare(earlestTask.timeFrom, unorderedTasks[j].timeFrom) == 0)
-        //        {
-        //            if (DateTime.Compare(earlestTask.timeTo, unorderedTasks[j].timeTo) > 0)
-        //            {
-        //                earlestTask = unorderedTasks[j];
-        //            }
-        //        }
-        //    }
-        //    unorderedTasks.Remove(earlestTask);
-        //    orderedTasks.Add(earlestTask);
-        //}
         return tasksList.ToArray();
     }
 

@@ -121,6 +121,9 @@ public class CustomRecurrenceController : MonoBehaviour
     {
         string[] repeatPeriodOptions = {"weeks", "months", "years" };
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
         AGAlertDialog.ShowChooserDialog("", repeatPeriodOptions, index =>
         {
             if (repeatEveryPeriodBtn != null)
@@ -261,6 +264,9 @@ public class CustomRecurrenceController : MonoBehaviour
     private void OnChooseEndsOptionBtnClicked()
     {
         string[] options = { "Never", "On day" };
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
         AGAlertDialog.ShowChooserDialog("Repeat End", options, index =>
         {
             if (index == 0)

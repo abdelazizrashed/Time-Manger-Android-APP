@@ -57,6 +57,9 @@ public class CustomNotifiAlarmReminderController : MonoBehaviour
     private void OnBeforePeriodTypeBtnClicked()
     {
         string[] options = { "Minutes", "Hours", "Days", "Weeks" };
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
         AGAlertDialog.ShowChooserDialog(
             "Choose the period type",
             options,
@@ -89,6 +92,9 @@ public class CustomNotifiAlarmReminderController : MonoBehaviour
     private void OnReminderTypeOptionBtnClicked()
     {
         string[] options = { "Alarm", "Notification" };
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
         AGAlertDialog.ShowChooserDialog(
             "Choose reminder type",
             options,

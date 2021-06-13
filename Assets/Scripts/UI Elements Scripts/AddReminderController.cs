@@ -81,6 +81,7 @@ public class AddReminderController : MonoBehaviour
         {
             timeSlotsTimesTitles.Add(timeSlots[i].time.ToString("t, MMM dd, yyyy"));
         }
+#if UNITY_ANDROID && !UNITY_EDITOR
         AGAlertDialog.ShowChooserDialog(
             "Choose time slot to start",
             timeSlotsTimesTitles.ToArray(),
@@ -132,15 +133,19 @@ public class AddReminderController : MonoBehaviour
             },
             AGDialogTheme.Dark
             );
+#else
+        ReminderModel.MarkReminderDone(timeSlots[0], DateTime.Now);
+#endif
     }
 
-    #region Save Cancel
+#region Save Cancel
 
     public Button cancelBtn;
     public Button saveBtn;
 
     private void OnCancelBtnClicked()
     {
+#if UNITY_ANDROID && !UNITY_EDITOR
         AGAlertDialog.ShowMessageDialog(
             "",
             "Discard this task?",
@@ -151,6 +156,9 @@ public class AddReminderController : MonoBehaviour
             },
             theme: AGDialogTheme.Dark
             );
+#else
+        HideAddReminderPanel();
+#endif
     }
 
     private void OnSaveBtnClicked()
@@ -160,7 +168,11 @@ public class AddReminderController : MonoBehaviour
             string str = reminderTitleInputField.text;
             if (string.IsNullOrEmpty(str))
             {
+#if UNITY_ANDROID && !UNITY_EDITOR
                 AGUIMisc.ShowToast("Reminder title is required.", AGUIMisc.ToastLength.Short);
+#else
+                Debug.LogError("Reminder title is required.");
+#endif
                 return;
             }
             title = str;
@@ -182,7 +194,12 @@ public class AddReminderController : MonoBehaviour
 
         if (timeSlots.Count == 0)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             AGUIMisc.ShowToast("You need to supply at least one time slot.", AGUIMisc.ToastLength.Long);
+#else
+            Debug.LogError("You need to supply at least one time slot.");
+#endif
+            return;
         }
 
         if (parentEvent != null)
@@ -201,7 +218,11 @@ public class AddReminderController : MonoBehaviour
 
                 if (!isWithinParentTimeRange)
                 {
+#if UNITY_ANDROID && !UNITY_EDITOR
                     AGUIMisc.ShowToast("Event time frame must be with its parent.", AGUIMisc.ToastLength.Long);
+#else
+                    Debug.LogError("Event time frame must be with its parent.");
+#endif
                     return;
                 }
 
@@ -222,13 +243,13 @@ public class AddReminderController : MonoBehaviour
 
     }
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
-    #region Input handling
+#region Input handling
 
-    #region Data variables
+#region Data variables
 
     private string title;
     private string description;
@@ -237,16 +258,16 @@ public class AddReminderController : MonoBehaviour
     private ColorModel color;
     private EventModel parentEvent;
 
-    #endregion
+#endregion
 
-    #region Title and Description
+#region Title and Description
 
     public TMP_InputField reminderTitleInputField;
     public TMP_InputField reminderDescriptionInputField;
 
-    #endregion
+#endregion
 
-    #region Time slots
+#region Time slots
 
     public Button addTimeSlotBtn;
     public GameObject reminderTimeSlotPrefab;
@@ -262,9 +283,9 @@ public class AddReminderController : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Choose color
+#region Choose color
 
     public Button chooseColorBtn;
     public GameObject colorBtnPrefab;
@@ -294,9 +315,9 @@ public class AddReminderController : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Choose parent
+#region Choose parent
 
     public Button chooseParentBtn;
     private void OnChooseParentBtnClicked()
@@ -305,6 +326,7 @@ public class AddReminderController : MonoBehaviour
         string chooseParentBtnTxt = "Event: ";
 
         string[] eventsTitles = EventModel.GetEventsTitles(events);
+#if UNITY_ANDROID && !UNITY_EDITOR
         AGAlertDialog.ShowChooserDialog(
             "Choose Parent Event",
             eventsTitles,
@@ -315,15 +337,19 @@ public class AddReminderController : MonoBehaviour
             },
             AGDialogTheme.Dark
             );
+#else
+        parentEvent = events[0];
+        chooseParentBtnTxt += parentEvent.eventTitle;
+#endif
 
         chooseParentBtn.GetComponentInChildren<TMP_Text>().text = chooseParentBtnTxt;
     }
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
-    #region General
+#region General
     private void AddListners()
     {
         if(cancelBtn != null)
@@ -370,5 +396,5 @@ public class AddReminderController : MonoBehaviour
             );
     }
 
-    #endregion
+#endregion
 }

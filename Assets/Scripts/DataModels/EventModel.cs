@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using UnityEngine;
 
 public class EventModel: System.Object
 {
@@ -50,15 +52,16 @@ public class EventModel: System.Object
         string query = @" SELECT * FROM Events WHERE event_id = " + id.ToString() + " ;";
         EventModel[] events = Enumerable.ToArray < EventModel > (DBMan.Instance.ExecuteQueryAndReturnRows<EventModel>(query, dbDataReader =>
         {
-            return new EventModel(
+            EventModel newEvent =  new EventModel(
                 dbDataReader.GetInt32(0),
                 dbDataReader.GetString(1),
                 dbDataReader.GetString(2),
                 dbDataReader.GetInt32(3),
                 EventTimeSlotModel.GetTimeSlotsByParentEventID(dbDataReader.GetInt32(0)),
                 ColorModel.GetColorByColorID(dbDataReader.GetInt32(4)),
-                EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
+                !String.IsNullOrEmpty(dbDataReader.GetValue(5).ToString()) ? EventModel.GetEventByEventID(dbDataReader.GetInt32(5)) : null
                 );
+            return newEvent;
         }));
         return events[0];
     }
@@ -70,34 +73,18 @@ public class EventModel: System.Object
                         ";
         EventModel[] events = Enumerable.ToArray < EventModel > (DBMan.Instance.ExecuteQueryAndReturnRows<EventModel>(query, dbDataReader =>
         {
-            return new EventModel(
+            EventModel newEvent = new EventModel(
                 dbDataReader.GetInt32(0),
                 dbDataReader.GetString(1),
                 dbDataReader.GetString(2),
                 dbDataReader.GetInt32(3),
                 EventTimeSlotModel.GetTimeSlotsByParentEventID(dbDataReader.GetInt32(0)),
                 ColorModel.GetColorByColorID(dbDataReader.GetInt32(4)),
-                EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
+                !String.IsNullOrEmpty(dbDataReader.GetValue(5).ToString()) ? EventModel.GetEventByEventID(dbDataReader.GetInt32(5)) : null
                 );
+            //DBMan.Instance.PrintDataReader(dbDataReader);
+            return newEvent;
         }));
-        //IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        //List<EventModel> events = new List<EventModel>();
-        //while (dbDataReader.Read())
-        //{
-        //    DBMan.Instance.PrintDataReader(dbDataReader);
-        //    events.Add(new EventModel(
-        //        dbDataReader.GetInt32(0),
-        //        dbDataReader.GetString(1),
-        //        dbDataReader.GetString(2),
-        //        dbDataReader.GetInt32(3),
-        //        EventTimeSlotModel.GetTimeSlotsByParentEventID(dbDataReader.GetInt32(0)),
-        //        ColorModel.GetColorByColorID(dbDataReader.GetInt32(4)),
-        //        EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
-        //        ));
-        //}
-
-        //dbDataReader?.Close();
-        //dbDataReader = null;
         return events;
     }
 
@@ -113,39 +100,57 @@ public class EventModel: System.Object
 
     public static void SaveEvent(ref EventModel newEvent)
     {
-        for(int i = 0; i<newEvent.timeSlots.Length; i++)
-        {
-            EventTimeSlotModel.SaveTimeSlot(ref newEvent.timeSlots[i]);
-        }
         string query =
             "INSERT INTO Events (event_title, event_description, user_id, color_id, parent_event_id)"
-            + "VALUES (" 
-            + newEvent.eventTitle + ", " 
-            + newEvent.eventDescription + ", " 
-            + newEvent.userID + ", " 
-            + newEvent.color.colorID + ", " 
-            + newEvent.parentEvent.eventID 
+            + "VALUES ( \""
+            + newEvent.eventTitle + "\", \""
+            + newEvent.eventDescription + "\", "
+            + newEvent.userID + ", "
+            + newEvent.color?.colorID;
+        if(newEvent.parentEvent != null)
+        {
+            query += ", "
+            + newEvent.parentEvent?.eventID
             + ");"
             ;
-
+        }
+        else
+        {
+            query += ",  null);";
+        }
         newEvent.eventID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
+
+        Debug.Log("debug  log works");
+        Debug.Log(JsonConvert.SerializeObject(newEvent));
+        for (int i = 0; i < newEvent.timeSlots?.Length; i++)
+        {
+            if (newEvent.timeSlots[i] == null)
+            {
+                Debug.Log("the time slot is null");
+            }
+            newEvent.timeSlots[i].parentEventID = newEvent.eventID;
+
+            Debug.Log(JsonConvert.SerializeObject(newEvent));
+            EventTimeSlotModel.SaveTimeSlot(ref newEvent.timeSlots[i]);
+        }
+
     }
 
     public static void UpdateEvent(ref EventModel updatedEvent)
     {
-        for (int i = 0; i < updatedEvent.timeSlots.Length; i++)
-        {
-            EventTimeSlotModel.UpdateTimeSlot(ref updatedEvent.timeSlots[i]);
-        }
         string query =
             "UPDATE Events"
             + "SET "
             + "event_title = " + updatedEvent.eventTitle + ", "
             + "event_description = " + updatedEvent.eventDescription + ", "
             + "user_id = " + updatedEvent.userID + ", "
-            + "color_id = " + updatedEvent.color.colorID
+            + "color_id = " + updatedEvent.color?.colorID
             + " WHERE event_id = " + updatedEvent.eventID + ";" ;
         DBMan.Instance.ExecuteQueryAndReturnRowsAffected(query);
+        for (int i = 0; i < updatedEvent.timeSlots.Length; i++)
+        {
+            EventTimeSlotModel.UpdateTimeSlot(ref updatedEvent.timeSlots[i]);
+        }
     }
 
     public static TaskModel[] GetChildrenTasksOrdered(ref EventModel parentEvent)
@@ -165,29 +170,9 @@ public class EventModel: System.Object
             }
         }
         tasks = null;
-        List<TaskModel> orderedChildren = new List<TaskModel>();
-        foreach (TaskModel child in children)
-        {
-            TaskModel earlestChild = child;
-            foreach (TaskModel child2 in children)
-            {
-                if (DateTime.Compare(earlestChild.timeFrom, child2.timeFrom) > 0)
-                {
-                    earlestChild = child2;
-                }
-                else if (DateTime.Compare(earlestChild.timeFrom, child2.timeFrom) == 0)
-                {
-                    if (DateTime.Compare(earlestChild.timeTo, child2.timeTo) > 0)
-                    {
-                        earlestChild = child2;
-                    }
-                }
-            }
-            orderedChildren.Add(earlestChild);
-            children.Remove(earlestChild);
-        }
+        children.Sort((x, y) => DateTime.Compare(x.timeFrom, y.timeFrom));
         parentEvent.isChildrenTasksOrdered = true;
-        return orderedChildren.ToArray();
+        return children.ToArray();
     }
 
     public static EventTimeSlotModel[] GetChildrenEventsTimeSlotsOrdered(ref EventModel parentEvent)
@@ -217,29 +202,10 @@ public class EventModel: System.Object
         {
             timeSlots.AddRange(EventModel.SetTimeSlotParentEvent(child));
         }
-        List<EventTimeSlotModel> orderedSlots = new List<EventTimeSlotModel>();
-        foreach (EventTimeSlotModel timeSlot in timeSlots)
-        {
-            EventTimeSlotModel earlestSlot = timeSlot;
-            foreach (EventTimeSlotModel slot2 in timeSlots)
-            {
-                if (DateTime.Compare(earlestSlot.timeFrom, slot2.timeFrom) > 0)
-                {
-                    earlestSlot = slot2;
-                }
-                else if (DateTime.Compare(earlestSlot.timeFrom, slot2.timeFrom) == 0)
-                {
-                    if (DateTime.Compare(earlestSlot.timeTo, slot2.timeTo) > 0)
-                    {
-                        earlestSlot = slot2;
-                    }
-                }
-            }
-            orderedSlots.Add(earlestSlot);
-            timeSlots.Remove(earlestSlot);
-        }
+        timeSlots.Sort((x, y) => DateTime.Compare(x.timeFrom, y.timeFrom));
+        
         parentEvent.isChildrenEventsOrdered = true;
-        return orderedSlots.ToArray();
+        return timeSlots.ToArray();
     }
 
     public static ReminderTimeSlotModel[] GetChildrenReminderTimeSlotsOrdered(ref EventModel parentEvent)
@@ -262,22 +228,24 @@ public class EventModel: System.Object
         {
             timeSlots.AddRange(ReminderModel.SetTimeSlotParentReminder(child));
         }
-        List<ReminderTimeSlotModel> orderedSlots = new List<ReminderTimeSlotModel>();
-        foreach (ReminderTimeSlotModel timeSlot in timeSlots)
-        {
-            ReminderTimeSlotModel earlestSlot = timeSlot;
-            foreach (ReminderTimeSlotModel slot2 in timeSlots)
-            {
-                if (DateTime.Compare(earlestSlot.time, slot2.time) > 0)
-                {
-                    earlestSlot = slot2;
-                }
-            }
-            orderedSlots.Add(earlestSlot);
-            timeSlots.Remove(earlestSlot);
-        }
+
+        timeSlots.Sort((x, y) => DateTime.Compare(x.time, y.time));
+        //List<ReminderTimeSlotModel> orderedSlots = new List<ReminderTimeSlotModel>();
+        //foreach (ReminderTimeSlotModel timeSlot in timeSlots)
+        //{
+        //    ReminderTimeSlotModel earlestSlot = timeSlot;
+        //    foreach (ReminderTimeSlotModel slot2 in timeSlots)
+        //    {
+        //        if (DateTime.Compare(earlestSlot.time, slot2.time) > 0)
+        //        {
+        //            earlestSlot = slot2;
+        //        }
+        //    }
+        //    orderedSlots.Add(earlestSlot);
+        //    timeSlots.Remove(earlestSlot);
+        //}
         parentEvent.isChildrenRemindersOrdered = true;
-        return orderedSlots.ToArray();
+        return timeSlots.ToArray();
     }
 
     public static EventTimeSlotModel[] SetTimeSlotParentEvent(EventModel parentEvent)
@@ -285,7 +253,7 @@ public class EventModel: System.Object
         EventTimeSlotModel[] timeSlots = parentEvent.timeSlots;
         for (int i = 0; i < timeSlots?.Length; i++)
         {
-            timeSlots[i].parentEvent = parentEvent;
+            timeSlots[i].parentEventID = parentEvent.eventID;
         }
         return timeSlots;
     }
@@ -305,32 +273,13 @@ public class EventModel: System.Object
             e.timeSlots = EventModel.SetTimeSlotParentEvent(e);
             if (e.timeSlots != null)
             {
-            timeSlots.AddRange(e.timeSlots);
+                timeSlots.AddRange(e.timeSlots);
             }
-        }
-        List<EventTimeSlotModel> orderedSlots = new List<EventTimeSlotModel>();
-        foreach (EventTimeSlotModel timeSlot in timeSlots)
-        {
-            EventTimeSlotModel earlestSlot = timeSlot;
-            foreach (EventTimeSlotModel slot2 in timeSlots)
-            {
-                if (DateTime.Compare(earlestSlot.timeFrom, slot2.timeFrom) > 0)
-                {
-                    earlestSlot = slot2;
-                }
-                else if (DateTime.Compare(earlestSlot.timeFrom, slot2.timeFrom) == 0)
-                {
-                    if (DateTime.Compare(earlestSlot.timeTo, slot2.timeTo) > 0)
-                    {
-                        earlestSlot = slot2;
-                    }
-                }
-            }
-            orderedSlots.Add(earlestSlot);
-            timeSlots.Remove(earlestSlot);
         }
 
-        return orderedSlots.ToArray();
+        timeSlots.Sort((x, y) => DateTime.Compare(x.timeFrom, y.timeFrom));
+
+        return timeSlots.ToArray();
     }
     
     public static void StartEvent(EventTimeSlotModel timeSlot, DateTime time)

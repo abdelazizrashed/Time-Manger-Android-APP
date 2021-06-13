@@ -83,6 +83,7 @@ public class ReminderTimeSlotController : MonoBehaviour
     {
         if (time != null)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             AGDateTimePicker.ShowTimePicker(
                 time.Hour,
                 time.Minute,
@@ -99,6 +100,10 @@ public class ReminderTimeSlotController : MonoBehaviour
                 AGDialogTheme.Dark,
                 false
                 );
+#else
+            time = DateTime.Now;
+            SetTextOfTimeBtn(ref timeBtn, time.ToString("hh:mm tt"));
+#endif
         }
     }
 
@@ -106,6 +111,7 @@ public class ReminderTimeSlotController : MonoBehaviour
     {
         if (date != null)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             AGDateTimePicker.ShowDatePicker(
                 date.Year,
                 date.Month,
@@ -122,6 +128,10 @@ public class ReminderTimeSlotController : MonoBehaviour
                 () => { },
                 AGDialogTheme.Dark
                 );
+#else
+            date = DateTime.Now.Date;
+            SetTextOfTimeBtn(ref dateBtn, date.ToString("ddd, dd MMM, yyy"));
+#endif
         }
     }
 
@@ -163,6 +173,7 @@ public class ReminderTimeSlotController : MonoBehaviour
             "Custom"
         };
 
+#if UNITY_ANDROID && !UNITY_EDITOR
         AGAlertDialog.ShowChooserDialog("", repeatOptionsTitles, optionIndex =>
         {
             switch (optionIndex)
@@ -188,6 +199,9 @@ public class ReminderTimeSlotController : MonoBehaviour
 
             }
         }, AGDialogTheme.Dark);
+#else
+        repeat = new RepeatModel(RepeatPeriod.Day, new WeekDays[] { });
+#endif
     }
 
     private void OnCustomRepeatChoosen()

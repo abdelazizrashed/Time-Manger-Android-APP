@@ -119,6 +119,9 @@ public class AddTaskController : MonoBehaviour
     {
 
         string[] titles = { "Now", "Choose specific time" };
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
         AGAlertDialog.ShowChooserDialog(
             "Choose time",
             titles,
@@ -130,6 +133,9 @@ public class AddTaskController : MonoBehaviour
                 }
                 else
                 {
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
                     AGDateTimePicker.ShowDatePicker(
                         DateTime.Now.Year,
                         DateTime.Now.Month,
@@ -166,6 +172,9 @@ public class AddTaskController : MonoBehaviour
     private void OnMarkFinishedBtnClicked()
     {
         string[] titles = { "Now", "Choose specific time" };
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
         AGAlertDialog.ShowChooserDialog(
             "Choose time",
             titles,
@@ -746,6 +755,9 @@ public class AddTaskController : MonoBehaviour
 
         string chooseParentBtnTxt = "";
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
         AGAlertDialog.ShowChooserDialog(
             "Choose the type of parent",
             eventTaskTitles,
@@ -756,6 +768,9 @@ public class AddTaskController : MonoBehaviour
                 case 0:
                         chooseParentBtnTxt += "Event: ";
                         string[] eventsTitles = EventModel.GetEventsTitles(events);
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
                         AGAlertDialog.ShowChooserDialog(
                             "Choose Event",
                             eventsTitles,
@@ -769,6 +784,9 @@ public class AddTaskController : MonoBehaviour
                     case 1:
                         chooseParentBtnTxt += "Task: ";
                         string[] tasksTitles = TaskModel.GetTasksTitles(tasks);
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
                         AGAlertDialog.ShowChooserDialog(
                             "Choose Task",
                             tasksTitles,

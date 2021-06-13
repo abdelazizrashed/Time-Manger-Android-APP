@@ -6,6 +6,7 @@ using TMPro;
 using DeadMosquito.AndroidGoodies;
 using DG.Tweening;
 using System;
+using Newtonsoft.Json;
 
 public class AddEventController : MonoBehaviour
 {
@@ -76,6 +77,7 @@ public class AddEventController : MonoBehaviour
         {
             timeSlotsTimesTitles.Add(timeSlots[i].timeFrom.ToString("t, MMM dd, yyyy"));
         }
+#if UNITY_ANDROID && !UNITY_EDITOR
         AGAlertDialog.ShowChooserDialog(
             "Choose time slot to start",
             timeSlotsTimesTitles.ToArray(),
@@ -127,6 +129,8 @@ public class AddEventController : MonoBehaviour
             },
             AGDialogTheme.Dark
             );
+#else
+#endif
     }
 
     private void OnMarkFinishedBtnClicked()
@@ -136,6 +140,7 @@ public class AddEventController : MonoBehaviour
         {
             timeSlotsTimesTitles.Add(timeSlots[i].timeFrom.ToString("t, MMM dd, yyyy"));
         }
+#if UNITY_ANDROID && !UNITY_EDITOR
         AGAlertDialog.ShowChooserDialog(
             "Choose time slot to finish",
             timeSlotsTimesTitles.ToArray(),
@@ -187,19 +192,22 @@ public class AddEventController : MonoBehaviour
             },
             AGDialogTheme.Dark
             );
+#else
+#endif
     }
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
-    #region Save Cancel
+#region Save Cancel
 
     public Button cancelBtn;
     public Button saveBtn;
 
     private void OnCancelBtnClicked()
     {
+#if UNITY_ANDROID && !UNITY_EDITOR
         AGAlertDialog.ShowMessageDialog(
             "",
             "Discard this task?",
@@ -210,6 +218,9 @@ public class AddEventController : MonoBehaviour
             },
             theme: AGDialogTheme.Dark
             );
+#else
+        HideAddEventPanel();
+#endif
     }
 
     private void OnSaveBtnClicked()
@@ -219,7 +230,11 @@ public class AddEventController : MonoBehaviour
             string str = eventTitleInputField.text;
             if (string.IsNullOrEmpty(str))
             {
+#if UNITY_ANDROID && !UNITY_EDITOR
                 AGUIMisc.ShowToast("Event title is required.", AGUIMisc.ToastLength.Short);
+#else
+                Debug.LogError("Event title is required.");
+#endif
                 return;
             }
             eventTitle = str;
@@ -232,7 +247,11 @@ public class AddEventController : MonoBehaviour
 
         if(timeSlotsGameObjects.Count == 0)
         {
+#if UNITY_ANDROID && !UNITY_EDITOR
             AGUIMisc.ShowToast("You need to supply at least one time slot.", AGUIMisc.ToastLength.Long);
+#else
+            Debug.LogError("You need to supply at least one time slot.");
+#endif
             return;
         }
 
@@ -260,7 +279,11 @@ public class AddEventController : MonoBehaviour
 
                 if(!isWithinParentTimeRange)
                 {
+#if UNITY_ANDROID && !UNITY_EDITOR
                     AGUIMisc.ShowToast("Event time frame must be with its parent.", AGUIMisc.ToastLength.Long);
+#else
+                    Debug.LogError("Event time frame must be with its parent.");
+#endif
                     return;
                 }
 
@@ -275,19 +298,20 @@ public class AddEventController : MonoBehaviour
             _color: color,
             _parent: parentEvent
             );
+        Debug.Log(JsonConvert.SerializeObject(newEvent));
         EventModel.SaveEvent(ref newEvent);
         EventSystem.instance.AddNewEvent();
         HideAddEventPanel();
 
     }
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
-    #region InputHandling
+#region InputHandling
 
-    #region Data variables
+#region Data variables
 
     private string eventTitle;
     private string eventDescription;
@@ -299,16 +323,16 @@ public class AddEventController : MonoBehaviour
 
     private EventModel parentEvent = null;
 
-    #endregion
+#endregion
 
-    #region Title and Description
+#region Title and Description
 
     public TMP_InputField eventTitleInputField;
     public TMP_InputField eventDescriptionInputField;
 
-    #endregion
+#endregion
 
-    #region Time Slots
+#region Time Slots
 
     public Button addTimeSlotBtn;
     public GameObject eventTimeSlotPrefab;
@@ -324,9 +348,9 @@ public class AddEventController : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Choose Color
+#region Choose Color
 
     public Button chooseColorBtn;
     public GameObject colorBtnPrefab;
@@ -356,9 +380,9 @@ public class AddEventController : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
-    #region Choose Parent
+#region Choose Parent
 
     public Button chooseParentBtn;
     private void OnChooseParentBtnClicked()
@@ -367,6 +391,7 @@ public class AddEventController : MonoBehaviour
         string chooseParentBtnTxt = "Event: ";
 
         string[] eventsTitles = EventModel.GetEventsTitles(events);
+#if UNITY_ANDROID && !UNITY_EDITOR
         AGAlertDialog.ShowChooserDialog(
             "Choose Event",
             eventsTitles,
@@ -377,15 +402,19 @@ public class AddEventController : MonoBehaviour
             },
             AGDialogTheme.Dark
             );
-                        
+# else
+        parentEvent = events[0];
+        chooseParentBtnTxt += parentEvent.eventTitle;
+#endif
+
         chooseParentBtn.GetComponentInChildren<TMP_Text>().text = chooseParentBtnTxt;
     }
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
-    #region General methods
+#region General methods
 
     private void AddListeners()
     {
@@ -448,6 +477,6 @@ public class AddEventController : MonoBehaviour
         }
     }
 
-    #endregion
+#endregion
 
 }

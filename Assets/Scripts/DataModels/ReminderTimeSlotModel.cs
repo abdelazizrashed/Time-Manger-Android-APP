@@ -15,7 +15,7 @@ public class ReminderTimeSlotModel
     public bool isCompleted { get; set; }
     public RepeatModel repeat { get; set; }
     public NotifiAlarmReminderModel[] reminders { get; set; }
-    public ReminderModel parentReminder { get; set; }
+    public int parentReminderID { get; set; }
     
     public ReminderTimeSlotModel(
         int id = 0,
@@ -46,7 +46,7 @@ public class ReminderTimeSlotModel
             timeSlot.isCompleted + ", " +
             JsonConvert.SerializeObject(timeSlot.repeat) + ", " +
             JsonConvert.SerializeObject(timeSlot.reminders) + ", " +
-            timeSlot.parentReminder.reminderID + "); ";
+            timeSlot.parentReminderID + "); ";
 
         timeSlot.timeSlotID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
 

@@ -42,6 +42,9 @@ public class CreateNewListController : MonoBehaviour
             if(Application.platform == RuntimePlatform.Android)
             {
                 Debug.Log("The current platform is android");
+#if UNITY_ANDROID && !UNITY_EDITOR
+#else
+#endif
                 AGAlertDialog.ShowMessageDialog(
                     "",
                     "Discard this list?",
