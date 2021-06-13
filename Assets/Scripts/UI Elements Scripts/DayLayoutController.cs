@@ -277,11 +277,11 @@ public class DayLayoutController : MonoBehaviour
             }
             for (int i = 0; i < timeSlots.Length; i++)
             {
-                if(DateTime.Compare(timeSlots[i-1].time, timeSlots[i].time) != 0)
+                if(i > 0 && DateTime.Compare(timeSlots[i-1].time, timeSlots[i].time) != 0)
                 {
                     float duration = (float)(timeSlots[i].time - timeSlots[i - 1].time).TotalHours;
                     GameObject emptyPlaceHolder = Instantiate(emptyPanelPrefab, dayLayoutContent.transform);
-                    emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 180f - 15f);
+                    emptyPlaceHolder.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, duration * 180f - 30f);
 
                 }
 
@@ -296,7 +296,9 @@ public class DayLayoutController : MonoBehaviour
                             obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
                             obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
                         });
-                        while(DateTime.Compare(timeSlots[i].time, timeSlots[i + 1].time) == 0 && i + 1 < timeSlots.Length)
+                        child1Element.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, 60f);
+                        child1Element.GetComponent<Image>().color = Helper.StringToColor(ReminderModel.GetReminderByID(timeSlots[i].parentReminderID).color.colorValue);
+                        while (DateTime.Compare(timeSlots[i].time, timeSlots[i + 1].time) == 0 && i + 1 < timeSlots.Length)
                         {
                             i++;
                             GameObject child2Element = Helper.Instantiate<GameObject>(dayLayoutElementPrefab, rowGameObject.transform, (obj) =>
@@ -305,6 +307,8 @@ public class DayLayoutController : MonoBehaviour
                                 obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
                                 obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
                             });
+                            child2Element.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, 60f);
+                            child2Element.GetComponent<Image>().color = Helper.StringToColor(ReminderModel.GetReminderByID(timeSlots[i].parentReminderID).color.colorValue);
                         }
                         continue;
                     }
@@ -314,6 +318,8 @@ public class DayLayoutController : MonoBehaviour
                         obj.GetComponent<DayLayoutElementController>().currentPageType = currentPage;
                         obj.GetComponent<DayLayoutElementController>().currentDate = currentDay;
                     });
+                    childElement.GetComponent<RectTransform>().sizeDelta = new Vector2(540f, 60f);
+                    childElement.GetComponent<Image>().color = Helper.StringToColor(ReminderModel.GetReminderByID(timeSlots[i].parentReminderID).color.colorValue);
                 }
             }
         }

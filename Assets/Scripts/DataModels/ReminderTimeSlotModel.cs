@@ -39,13 +39,13 @@ public class ReminderTimeSlotModel
     public static void SaveTimeSlot(ref ReminderTimeSlotModel timeSlot)
     {
         string query =
-            "INSERT INTO ReminderTimeSlots(time, time_done, is_completed, repeat, reminder, reminder_id) " +
-            "VALUES ( " +
-            timeSlot.time + ", " +
-            timeSlot.timeDone + ", " +
-            timeSlot.isCompleted + ", " +
-            JsonConvert.SerializeObject(timeSlot.repeat) + ", " +
-            JsonConvert.SerializeObject(timeSlot.reminders) + ", " +
+            "INSERT INTO RemindersTimeSlots(time, time_done, is_completed, repeat, reminder, reminder_id) " +
+            "VALUES ( \"" +
+            timeSlot.time + "\", \"" +
+            timeSlot.timeDone + "\", " +
+            timeSlot.isCompleted + ", \"" +
+            JsonConvert.SerializeObject(timeSlot.repeat) + "\", \"" +
+            JsonConvert.SerializeObject(timeSlot.reminders) + "\", " +
             timeSlot.parentReminderID + "); ";
 
         timeSlot.timeSlotID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
@@ -63,27 +63,11 @@ public class ReminderTimeSlotModel
                 DateTime.Parse(dbDataReader.GetString(1)).Date,
                 DateTime.Parse(dbDataReader.GetString(2)),
                 dbDataReader.GetInt32(3),
-                (RepeatModel)JsonConvert.DeserializeObject(dbDataReader.GetString(4)),
-                (NotifiAlarmReminderModel[])JsonConvert.DeserializeObject(dbDataReader.GetString(5))
+                null,
+                null
                 );
         }));
-        //IDataReader dbDataReader = DBMan.Instance.ExecuteQueryAndReturnDataReader(query);
-        //List<ReminderTimeSlotModel> timeSlots = new List<ReminderTimeSlotModel>();
-        //while (dbDataReader.Read())
-        //{
-        //    DBMan.Instance.PrintDataReader(dbDataReader);
-        //    timeSlots.Add(new ReminderTimeSlotModel(
-        //        dbDataReader.GetInt32(0), 
-        //        DateTime.Parse(dbDataReader.GetString(1)), 
-        //        DateTime.Parse(dbDataReader.GetString(1)).Date,
-        //        DateTime.Parse(dbDataReader.GetString(2)),
-        //        dbDataReader.GetInt32(3),
-        //        (RepeatModel)JsonConvert.DeserializeObject(dbDataReader.GetString(4)),
-        //        (NotifiAlarmReminderModel[]) JsonConvert.DeserializeObject(dbDataReader.GetString(5))
-        //        ));
-        //}
-        //dbDataReader?.Close();
-        //dbDataReader = null;
+        
         return timeSlots;
     }
 }

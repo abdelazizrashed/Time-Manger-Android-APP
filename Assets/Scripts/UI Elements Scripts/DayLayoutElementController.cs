@@ -388,7 +388,7 @@ public class DayLayoutElementController : MonoBehaviour
                 ReminderModel parentReminder = ReminderModel.GetReminderByID(currentReminderTimeSlot.parentReminderID);
                 elementTitle.text = parentReminder.reminderTitle;
                 gameObject.GetComponent<Image>().color = Helper.StringToColor(parentReminder.color.colorValue);
-                gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, 15f);
+                gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(540, 90f);
 
             }
             else

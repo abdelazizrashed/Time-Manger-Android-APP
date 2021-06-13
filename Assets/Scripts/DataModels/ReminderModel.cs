@@ -35,19 +35,28 @@ public class ReminderModel: System.Object
 
     public static void SaveReminder(ref ReminderModel reminder)
     {
-        for (int i = 0; i< reminder.timeSlots.Length; i++)
-        {
-            ReminderTimeSlotModel.SaveTimeSlot(ref reminder.timeSlots[i]);
-        }
         string query =
             "INSERT INTO Reminders (reminder_title, reminder_description, user_id, color_id, parent_event_id)" + " " +
-            "VALUES (" +
-            reminder.reminderTitle + ", " +
-            reminder.reminderDescription + ", " +
+            "VALUES (\"" +
+            reminder.reminderTitle + "\", \"" +
+            reminder.reminderDescription + "\", " +
             reminder.userID + ", " +
-            reminder.color.colorID + ", " +
-            reminder.parentEvent.eventID + ");";
+            reminder.color?.colorID + ", ";
+            
+        if(reminder.parentEvent != null)
+        {
+            query += reminder.parentEvent?.eventID+ ");";
+        }
+        else
+        {
+            query += "null );";
+        }
         reminder.reminderID = Convert.ToInt32(DBMan.Instance.ExecuteQueryAndReturnTheRowID(query));
+        for (int i = 0; i< reminder.timeSlots.Length; i++)
+        {
+            reminder.timeSlots[i].parentReminderID = reminder.reminderID;
+            ReminderTimeSlotModel.SaveTimeSlot(ref reminder.timeSlots[i]);
+        }
     }
 
     public static ReminderModel GetReminderByID(int reminderID)
@@ -62,7 +71,7 @@ public class ReminderModel: System.Object
                 dbDataReader.GetInt32(3),
                 ReminderTimeSlotModel.GetTimeSlotsByReminderID(dbDataReader.GetInt32(0)),
                 ColorModel.GetColorByColorID(dbDataReader.GetInt32(4)),
-                EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
+                !String.IsNullOrEmpty(dbDataReader.GetValue(5).ToString()) ? EventModel.GetEventByEventID(dbDataReader.GetInt32(5)) : null
                 );
         }));
         return reminders[0];
@@ -80,7 +89,7 @@ public class ReminderModel: System.Object
                 dbDataReader.GetInt32(3),
                 ReminderTimeSlotModel.GetTimeSlotsByReminderID(dbDataReader.GetInt32(0)),
                 ColorModel.GetColorByColorID(dbDataReader.GetInt32(4)),
-                EventModel.GetEventByEventID(dbDataReader.GetInt32(5))
+                !String.IsNullOrEmpty(dbDataReader.GetValue(5).ToString()) ? EventModel.GetEventByEventID(dbDataReader.GetInt32(5)) : null
                 );
         }));
         return reminders; 
@@ -119,20 +128,6 @@ public class ReminderModel: System.Object
             timeSlots.AddRange(ReminderModel.SetTimeSlotParentReminder(reminder));
         }
         timeSlots.Sort((x, y) => DateTime.Compare(x.time, y.time));
-        //List<ReminderTimeSlotModel> orderedSlots = new List<ReminderTimeSlotModel>();
-        //foreach (ReminderTimeSlotModel timeSlot in timeSlots)
-        //{
-        //    ReminderTimeSlotModel earlestSlot = timeSlot;
-        //    foreach (ReminderTimeSlotModel slot2 in timeSlots)
-        //    {
-        //        if (DateTime.Compare(earlestSlot.time, slot2.time) > 0)
-        //        {
-        //            earlestSlot = slot2;
-        //        }
-        //    }
-        //    orderedSlots.Add(earlestSlot);
-        //    timeSlots.Remove(earlestSlot);
-        //}
 
         return timeSlots.ToArray();
     }
